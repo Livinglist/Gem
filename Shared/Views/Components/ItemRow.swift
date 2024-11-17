@@ -47,6 +47,8 @@ struct ItemRow: View {
             Label(String(), systemImage: "ellipsis")
                 .padding(.leading)
                 .padding(.bottom, 12)
+                .accessibilityLabel("More options")
+                .accessibilityHint("Click to view more options")
                 .foregroundColor(.orange)
         }
     }
