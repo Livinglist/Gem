@@ -47,7 +47,6 @@ jobs:
       - name: Setup SSH key
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-          SSH_PASSPHRASE: ${{ secrets.MATCH_SSH_PASSPHRASE }}
         run: |
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
