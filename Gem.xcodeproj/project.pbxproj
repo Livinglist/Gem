@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E10D834C2F8D97BD00E0CBC5 /* HackerNewsKit in Frameworks */ = {isa = PBXBuildFile; productRef = E10D834B2F8D97BD00E0CBC5 /* HackerNewsKit */; };
 		E1D7A3C72F8D852E00D8C934 /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E1D7A3BD2F8D852E00D8C934 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E1D7A3D42F8D86B500D8C934 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1D7A3D32F8D86B500D8C934 /* UniformTypeIdentifiers.framework */; };
 		E1D7A3E02F8D86B500D8C934 /* ActionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E1D7A3D12F8D86B500D8C934 /* ActionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -40,7 +41,7 @@
 		E1D7A4242F8D872400D8C934 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E1D7A4232F8D872400D8C934 /* README.md */; };
 		E1D7A4C02F8D877800D8C934 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1D7A4BF2F8D877800D8C934 /* WidgetKit.framework */; };
 		E1D7A4C22F8D877800D8C934 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1D7A4C12F8D877800D8C934 /* SwiftUI.framework */; };
-		E1D7A4D32F8D877800D8C934 /* HomeWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E1D7A4BE2F8D877800D8C934 /* HomeWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E1D7A4D32F8D877800D8C934 /* StoryWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E1D7A4BE2F8D877800D8C934 /* StoryWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E1D7A4DA2F8D887100D8C934 /* HackerNewsKit in Frameworks */ = {isa = PBXBuildFile; productRef = E1D7A4D92F8D887100D8C934 /* HackerNewsKit */; };
 		E1D7A4DD2F8D88CA00D8C934 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = E1D7A4DC2F8D88CA00D8C934 /* AlertToast */; };
 		E1D7A4E02F8D890700D8C934 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E1D7A4DF2F8D890700D8C934 /* Alamofire */; };
@@ -77,7 +78,7 @@
 			dstSubfolder = PlugIns;
 			files = (
 				E1D7A3E02F8D86B500D8C934 /* ActionExtension.appex in Embed Foundation Extensions */,
-				E1D7A4D32F8D877800D8C934 /* HomeWidget.appex in Embed Foundation Extensions */,
+				E1D7A4D32F8D877800D8C934 /* StoryWidget.appex in Embed Foundation Extensions */,
 				E1D7A3C72F8D852E00D8C934 /* ShareExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -117,7 +118,7 @@
 		E1D7A4052F8D871800D8C934 /* zcombinator-github.xcf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "zcombinator-github.xcf"; sourceTree = "<group>"; };
 		E1D7A4062F8D871800D8C934 /* zcombinator-ipad.xcf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "zcombinator-ipad.xcf"; sourceTree = "<group>"; };
 		E1D7A4232F8D872400D8C934 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		E1D7A4BE2F8D877800D8C934 /* HomeWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = HomeWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		E1D7A4BE2F8D877800D8C934 /* StoryWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StoryWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1D7A4BF2F8D877800D8C934 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		E1D7A4C12F8D877800D8C934 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -144,12 +145,12 @@
 			);
 			target = E1D7A3AA2F8D850600D8C934 /* Gem */;
 		};
-		E1D7A4D72F8D877800D8C934 /* Exceptions for "HomeWidget" folder in "HomeWidget" target */ = {
+		E1D7A4D72F8D877800D8C934 /* Exceptions for "HomeWidget" folder in "StoryWidget" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = E1D7A4BD2F8D877800D8C934 /* HomeWidget */;
+			target = E1D7A4BD2F8D877800D8C934 /* StoryWidget */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -186,7 +187,7 @@
 		E1D7A4C32F8D877800D8C934 /* HomeWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				E1D7A4D72F8D877800D8C934 /* Exceptions for "HomeWidget" folder in "HomeWidget" target */,
+				E1D7A4D72F8D877800D8C934 /* Exceptions for "HomeWidget" folder in "StoryWidget" target */,
 			);
 			path = HomeWidget;
 			sourceTree = "<group>";
@@ -216,6 +217,7 @@
 		E1D7A4BB2F8D877800D8C934 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				E10D834C2F8D97BD00E0CBC5 /* HackerNewsKit in Frameworks */,
 				E1D7A4C22F8D877800D8C934 /* SwiftUI.framework in Frameworks */,
 				E1D7A4C02F8D877800D8C934 /* WidgetKit.framework in Frameworks */,
 			);
@@ -244,7 +246,7 @@
 				E1D7A3AB2F8D850600D8C934 /* Gem.app */,
 				E1D7A3BD2F8D852E00D8C934 /* ShareExtension.appex */,
 				E1D7A3D12F8D86B500D8C934 /* ActionExtension.appex */,
-				E1D7A4BE2F8D877800D8C934 /* HomeWidget.appex */,
+				E1D7A4BE2F8D877800D8C934 /* StoryWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -371,9 +373,9 @@
 			productReference = E1D7A3D12F8D86B500D8C934 /* ActionExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		E1D7A4BD2F8D877800D8C934 /* HomeWidget */ = {
+		E1D7A4BD2F8D877800D8C934 /* StoryWidget */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E1D7A4D42F8D877800D8C934 /* Build configuration list for PBXNativeTarget "HomeWidget" */;
+			buildConfigurationList = E1D7A4D42F8D877800D8C934 /* Build configuration list for PBXNativeTarget "StoryWidget" */;
 			buildPhases = (
 				E1D7A4BA2F8D877800D8C934 /* Sources */,
 				E1D7A4BB2F8D877800D8C934 /* Frameworks */,
@@ -384,9 +386,12 @@
 			fileSystemSynchronizedGroups = (
 				E1D7A4C32F8D877800D8C934 /* HomeWidget */,
 			);
-			name = HomeWidget;
+			name = StoryWidget;
+			packageProductDependencies = (
+				E10D834B2F8D97BD00E0CBC5 /* HackerNewsKit */,
+			);
 			productName = HomeWidgetExtension;
-			productReference = E1D7A4BE2F8D877800D8C934 /* HomeWidget.appex */;
+			productReference = E1D7A4BE2F8D877800D8C934 /* StoryWidget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -435,7 +440,7 @@
 				E1D7A3AA2F8D850600D8C934 /* Gem */,
 				E1D7A3BC2F8D852E00D8C934 /* ShareExtension */,
 				E1D7A3D02F8D86B500D8C934 /* ActionExtension */,
-				E1D7A4BD2F8D877800D8C934 /* HomeWidget */,
+				E1D7A4BD2F8D877800D8C934 /* StoryWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -527,7 +532,7 @@
 		};
 		E1D7A4D22F8D877800D8C934 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E1D7A4BD2F8D877800D8C934 /* HomeWidget */;
+			target = E1D7A4BD2F8D877800D8C934 /* StoryWidget */;
 			targetProxy = E1D7A4D12F8D877800D8C934 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -834,7 +839,7 @@
 			};
 			name = Release;
 		};
-		E1D7A4D52F8D877800D8C934 /* Debug configuration for PBXNativeTarget "HomeWidget" */ = {
+		E1D7A4D52F8D877800D8C934 /* Debug configuration for PBXNativeTarget "StoryWidget" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -844,7 +849,7 @@
 				DEVELOPMENT_TEAM = QMWX3X2NF7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HomeWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = HomeWidget;
+				INFOPLIST_KEY_CFBundleDisplayName = StoryWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -864,7 +869,7 @@
 			};
 			name = Debug;
 		};
-		E1D7A4D62F8D877800D8C934 /* Release configuration for PBXNativeTarget "HomeWidget" */ = {
+		E1D7A4D62F8D877800D8C934 /* Release configuration for PBXNativeTarget "StoryWidget" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -874,7 +879,7 @@
 				DEVELOPMENT_TEAM = QMWX3X2NF7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HomeWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = HomeWidget;
+				INFOPLIST_KEY_CFBundleDisplayName = StoryWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -929,11 +934,11 @@
 			);
 			defaultConfigurationName = Release;
 		};
-		E1D7A4D42F8D877800D8C934 /* Build configuration list for PBXNativeTarget "HomeWidget" */ = {
+		E1D7A4D42F8D877800D8C934 /* Build configuration list for PBXNativeTarget "StoryWidget" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E1D7A4D52F8D877800D8C934 /* Debug configuration for PBXNativeTarget "HomeWidget" */,
-				E1D7A4D62F8D877800D8C934 /* Release configuration for PBXNativeTarget "HomeWidget" */,
+				E1D7A4D52F8D877800D8C934 /* Debug configuration for PBXNativeTarget "StoryWidget" */,
+				E1D7A4D62F8D877800D8C934 /* Release configuration for PBXNativeTarget "StoryWidget" */,
 			);
 			defaultConfigurationName = Release;
 		};
@@ -966,6 +971,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E10D834B2F8D97BD00E0CBC5 /* HackerNewsKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HackerNewsKit;
+		};
 		E1D7A4D92F8D887100D8C934 /* HackerNewsKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = HackerNewsKit;

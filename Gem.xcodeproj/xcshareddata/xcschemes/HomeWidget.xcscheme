@@ -17,8 +17,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E1D7A4BD2F8D877800D8C934"
-               BuildableName = "HomeWidget.appex"
-               BlueprintName = "HomeWidget"
+               BuildableName = "StoryWidget.appex"
+               BlueprintName = "StoryWidget"
                ReferencedContainer = "container:Gem.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -64,8 +64,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E1D7A4BD2F8D877800D8C934"
-            BuildableName = "HomeWidget.appex"
-            BlueprintName = "HomeWidget"
+            BuildableName = "StoryWidget.appex"
+            BlueprintName = "StoryWidget"
             ReferencedContainer = "container:Gem.xcodeproj">
          </BuildableReference>
       </RemoteRunnable>
