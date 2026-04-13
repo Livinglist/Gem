@@ -1,0 +1,60 @@
+name: Publish (iOS)
+
+on:
+  # Allow manual builds of this workflow.
+  workflow_dispatch: {}
+  push:
+    branches:
+      - master
+    # Only build when any of these directories has been modified.
+    paths:
+      - lib/**
+      - pubspec.lock
+      - pubspec.yaml
+      - submodules/**
+      - ios/**
+      - .github/workflows/publish_ios.yml
+
+jobs:
+  build_and_publish:
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    env:
+      # Point the `ruby/setup-ruby` action at this Gemfile, so it
+      # caches dependencies for us.
+      BUNDLE_GEMFILE: ${{ github.workspace }}/ios/Gemfile
+
+    steps:
+      - name: Set XCode version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "latest-stable"
+
+      - name: Check out from git
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      # Configure ruby according to our .ruby-version
+      - name: Setup ruby & Bundler
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      # Start an ssh-agent that will provide the SSH key from the
+      # SSH_PRIVATE_KEY secret to `fastlane match`
+      - name: Setup SSH key
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+
+      - name: Build & Publish to TestFlight with Fastlane
+        env:
+          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: cd ios && bundle exec fastlane beta
