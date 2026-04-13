@@ -45,7 +45,7 @@ latest_testflight_build_number
     # Figure out the build number (and optionally build name)
     new_build_number = ( + 1)
 
-    version = get_version_number(xcodeproj: "Gem.xcodeproj", target: 'Gem')
+    version = get_info_plist_value(path: "Gem/Info.plist", key: "CFBundleShortVersionString")
 
     increment_version_number(
       version_number: version
