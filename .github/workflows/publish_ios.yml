@@ -5,14 +5,13 @@ on:
   workflow_dispatch: {}
   push:
     branches:
-      - master
+      - main
     # Only build when any of these directories has been modified.
     paths:
-      - lib/**
-      - pubspec.lock
-      - pubspec.yaml
-      - submodules/**
-      - ios/**
+      - Gem/**
+      - HomeWidget/**
+      - ActionExtension/**
+      - ShareExtension/**
       - .github/workflows/publish_ios.yml
 
 jobs:
