@@ -1,4 +1,6 @@
+import Combine
 import SwiftUI
+import HackerNewsKit
 
 struct Profile: View {
     @Environment(\.dismiss) private var dismiss

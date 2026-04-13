@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 100;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -41,6 +41,9 @@
 		E1D7A4C02F8D877800D8C934 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1D7A4BF2F8D877800D8C934 /* WidgetKit.framework */; };
 		E1D7A4C22F8D877800D8C934 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1D7A4C12F8D877800D8C934 /* SwiftUI.framework */; };
 		E1D7A4D32F8D877800D8C934 /* HomeWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E1D7A4BE2F8D877800D8C934 /* HomeWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E1D7A4DA2F8D887100D8C934 /* HackerNewsKit in Frameworks */ = {isa = PBXBuildFile; productRef = E1D7A4D92F8D887100D8C934 /* HackerNewsKit */; };
+		E1D7A4DD2F8D88CA00D8C934 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = E1D7A4DC2F8D88CA00D8C934 /* AlertToast */; };
+		E1D7A4E02F8D890700D8C934 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E1D7A4DF2F8D890700D8C934 /* Alamofire */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,16 +73,14 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		E1D7A3CC2F8D852E00D8C934 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolderSpec = 13;
+			dstSubfolder = PlugIns;
 			files = (
 				E1D7A3E02F8D86B500D8C934 /* ActionExtension.appex in Embed Foundation Extensions */,
 				E1D7A4D32F8D877800D8C934 /* HomeWidget.appex in Embed Foundation Extensions */,
 				E1D7A3C72F8D852E00D8C934 /* ShareExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -195,34 +196,29 @@
 /* Begin PBXFrameworksBuildPhase section */
 		E1D7A3A82F8D850600D8C934 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
+				E1D7A4E02F8D890700D8C934 /* Alamofire in Frameworks */,
+				E1D7A4DA2F8D887100D8C934 /* HackerNewsKit in Frameworks */,
+				E1D7A4DD2F8D88CA00D8C934 /* AlertToast in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E1D7A3BA2F8D852E00D8C934 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E1D7A3CE2F8D86B500D8C934 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				E1D7A3D42F8D86B500D8C934 /* UniformTypeIdentifiers.framework in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E1D7A4BB2F8D877800D8C934 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				E1D7A4C22F8D877800D8C934 /* SwiftUI.framework in Frameworks */,
 				E1D7A4C02F8D877800D8C934 /* WidgetKit.framework in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -330,6 +326,10 @@
 			);
 			name = Gem;
 			packageProductDependencies = (
+				E1D7A4D92F8D887100D8C934 /* HackerNewsKit */,
+				E1D7A4DC2F8D88CA00D8C934 /* AlertToast */,
+				E1D7A4DF2F8D890700D8C934 /* Alamofire */,
+				E1D7A4E12F8D890700D8C934 /* AlamofireDynamic */,
 			);
 			productName = Gem;
 			productReference = E1D7A3AB2F8D850600D8C934 /* Gem.app */;
@@ -345,14 +345,10 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			fileSystemSynchronizedGroups = (
 				E1D7A3BE2F8D852E00D8C934 /* ShareExtension */,
 			);
 			name = ShareExtension;
-			packageProductDependencies = (
-			);
 			productName = ShareExtension;
 			productReference = E1D7A3BD2F8D852E00D8C934 /* ShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -367,14 +363,10 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			fileSystemSynchronizedGroups = (
 				E1D7A3D52F8D86B500D8C934 /* ActionExtension */,
 			);
 			name = ActionExtension;
-			packageProductDependencies = (
-			);
 			productName = ActionExtension;
 			productReference = E1D7A3D12F8D86B500D8C934 /* ActionExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -389,14 +381,10 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			fileSystemSynchronizedGroups = (
 				E1D7A4C32F8D877800D8C934 /* HomeWidget */,
 			);
 			name = HomeWidget;
-			packageProductDependencies = (
-			);
 			productName = HomeWidgetExtension;
 			productReference = E1D7A4BE2F8D877800D8C934 /* HomeWidget.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -434,7 +422,12 @@
 			);
 			mainGroup = E1D7A3A22F8D850600D8C934;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
+			packageReferences = (
+				E1D7A4D82F8D887100D8C934 /* XCLocalSwiftPackageReference "Packages/HackerNewsKit" */,
+				E1D7A4DB2F8D88CA00D8C934 /* XCRemoteSwiftPackageReference "AlertToast" */,
+				E1D7A4DE2F8D890700D8C934 /* XCRemoteSwiftPackageReference "alamofire" */,
+			);
+			preferredProjectObjectVersion = 100;
 			productRefGroup = E1D7A3AC2F8D850600D8C934 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -450,7 +443,6 @@
 /* Begin PBXResourcesBuildPhase section */
 		E1D7A3A92F8D850600D8C934 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				E1D7A4082F8D871800D8C934 /* extra-1.png in Resources */,
 				E1D7A4092F8D871800D8C934 /* extra2-1.png in Resources */,
@@ -481,59 +473,44 @@
 				E1D7A4212F8D871800D8C934 /* zcombinator-github.png in Resources */,
 				E1D7A4222F8D871800D8C934 /* ipad-4.png in Resources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E1D7A3BB2F8D852E00D8C934 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E1D7A3CF2F8D86B500D8C934 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E1D7A4BC2F8D877800D8C934 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E1D7A3A72F8D850600D8C934 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E1D7A3B92F8D852E00D8C934 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E1D7A3CD2F8D86B500D8C934 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E1D7A4BA2F8D877800D8C934 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
@@ -556,7 +533,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		E1D7A3B42F8D850800D8C934 /* Debug */ = {
+		E1D7A3B42F8D850800D8C934 /* Debug configuration for PBXProject "Gem" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -620,7 +597,7 @@
 			};
 			name = Debug;
 		};
-		E1D7A3B52F8D850800D8C934 /* Release */ = {
+		E1D7A3B52F8D850800D8C934 /* Release configuration for PBXProject "Gem" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -677,7 +654,7 @@
 			};
 			name = Release;
 		};
-		E1D7A3B72F8D850800D8C934 /* Debug */ = {
+		E1D7A3B72F8D850800D8C934 /* Debug configuration for PBXNativeTarget "Gem" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -687,11 +664,13 @@
 				DEVELOPMENT_TEAM = QMWX3X2NF7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Gem;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.magazines-and-newspapers";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -709,7 +688,7 @@
 			};
 			name = Debug;
 		};
-		E1D7A3B82F8D850800D8C934 /* Release */ = {
+		E1D7A3B82F8D850800D8C934 /* Release configuration for PBXNativeTarget "Gem" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -719,11 +698,13 @@
 				DEVELOPMENT_TEAM = QMWX3X2NF7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Gem;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.magazines-and-newspapers";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -741,7 +722,7 @@
 			};
 			name = Release;
 		};
-		E1D7A3CA2F8D852E00D8C934 /* Debug */ = {
+		E1D7A3CA2F8D852E00D8C934 /* Debug configuration for PBXNativeTarget "ShareExtension" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -769,7 +750,7 @@
 			};
 			name = Debug;
 		};
-		E1D7A3CB2F8D852E00D8C934 /* Release */ = {
+		E1D7A3CB2F8D852E00D8C934 /* Release configuration for PBXNativeTarget "ShareExtension" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -797,7 +778,7 @@
 			};
 			name = Release;
 		};
-		E1D7A3E32F8D86B500D8C934 /* Debug */ = {
+		E1D7A3E32F8D86B500D8C934 /* Debug configuration for PBXNativeTarget "ActionExtension" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -825,7 +806,7 @@
 			};
 			name = Debug;
 		};
-		E1D7A3E42F8D86B500D8C934 /* Release */ = {
+		E1D7A3E42F8D86B500D8C934 /* Release configuration for PBXNativeTarget "ActionExtension" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -853,7 +834,7 @@
 			};
 			name = Release;
 		};
-		E1D7A4D52F8D877800D8C934 /* Debug */ = {
+		E1D7A4D52F8D877800D8C934 /* Debug configuration for PBXNativeTarget "HomeWidget" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -883,7 +864,7 @@
 			};
 			name = Debug;
 		};
-		E1D7A4D62F8D877800D8C934 /* Release */ = {
+		E1D7A4D62F8D877800D8C934 /* Release configuration for PBXNativeTarget "HomeWidget" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -919,49 +900,92 @@
 		E1D7A3A62F8D850600D8C934 /* Build configuration list for PBXProject "Gem" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E1D7A3B42F8D850800D8C934 /* Debug */,
-				E1D7A3B52F8D850800D8C934 /* Release */,
+				E1D7A3B42F8D850800D8C934 /* Debug configuration for PBXProject "Gem" */,
+				E1D7A3B52F8D850800D8C934 /* Release configuration for PBXProject "Gem" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		E1D7A3B62F8D850800D8C934 /* Build configuration list for PBXNativeTarget "Gem" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E1D7A3B72F8D850800D8C934 /* Debug */,
-				E1D7A3B82F8D850800D8C934 /* Release */,
+				E1D7A3B72F8D850800D8C934 /* Debug configuration for PBXNativeTarget "Gem" */,
+				E1D7A3B82F8D850800D8C934 /* Release configuration for PBXNativeTarget "Gem" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		E1D7A3C92F8D852E00D8C934 /* Build configuration list for PBXNativeTarget "ShareExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E1D7A3CA2F8D852E00D8C934 /* Debug */,
-				E1D7A3CB2F8D852E00D8C934 /* Release */,
+				E1D7A3CA2F8D852E00D8C934 /* Debug configuration for PBXNativeTarget "ShareExtension" */,
+				E1D7A3CB2F8D852E00D8C934 /* Release configuration for PBXNativeTarget "ShareExtension" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		E1D7A3E22F8D86B500D8C934 /* Build configuration list for PBXNativeTarget "ActionExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E1D7A3E32F8D86B500D8C934 /* Debug */,
-				E1D7A3E42F8D86B500D8C934 /* Release */,
+				E1D7A3E32F8D86B500D8C934 /* Debug configuration for PBXNativeTarget "ActionExtension" */,
+				E1D7A3E42F8D86B500D8C934 /* Release configuration for PBXNativeTarget "ActionExtension" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		E1D7A4D42F8D877800D8C934 /* Build configuration list for PBXNativeTarget "HomeWidget" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E1D7A4D52F8D877800D8C934 /* Debug */,
-				E1D7A4D62F8D877800D8C934 /* Release */,
+				E1D7A4D52F8D877800D8C934 /* Debug configuration for PBXNativeTarget "HomeWidget" */,
+				E1D7A4D62F8D877800D8C934 /* Release configuration for PBXNativeTarget "HomeWidget" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		E1D7A4D82F8D887100D8C934 /* XCLocalSwiftPackageReference "Packages/HackerNewsKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/HackerNewsKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E1D7A4DB2F8D88CA00D8C934 /* XCRemoteSwiftPackageReference "AlertToast" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/elai950/AlertToast";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.9;
+			};
+		};
+		E1D7A4DE2F8D890700D8C934 /* XCRemoteSwiftPackageReference "alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/alamofire/alamofire";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.11.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E1D7A4D92F8D887100D8C934 /* HackerNewsKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HackerNewsKit;
+		};
+		E1D7A4DC2F8D88CA00D8C934 /* AlertToast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E1D7A4DB2F8D88CA00D8C934 /* XCRemoteSwiftPackageReference "AlertToast" */;
+			productName = AlertToast;
+		};
+		E1D7A4DF2F8D890700D8C934 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E1D7A4DE2F8D890700D8C934 /* XCRemoteSwiftPackageReference "alamofire" */;
+			productName = Alamofire;
+		};
+		E1D7A4E12F8D890700D8C934 /* AlamofireDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E1D7A4DE2F8D890700D8C934 /* XCRemoteSwiftPackageReference "alamofire" */;
+			productName = AlamofireDynamic;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E1D7A3A32F8D850600D8C934 /* Project object */;
 }

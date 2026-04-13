@@ -1,4 +1,5 @@
 import Foundation
+import HackerNewsKit
 
 extension String {
     var isNotEmpty: Bool {

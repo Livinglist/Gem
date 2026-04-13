@@ -1,5 +1,6 @@
 import SwiftUI
 import HackerNewsKit
+import Combine
 
 extension Search {
     @MainActor

@@ -1,5 +1,6 @@
 import Foundation
 import HackerNewsKit
+import Combine
 
 fileprivate extension String {
     static let favListKey = "favList"
