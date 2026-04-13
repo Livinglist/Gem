@@ -36,6 +36,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.3"
+          bundler: "latest"
           bundler-cache: true
 
       # Start an ssh-agent that will provide the SSH key from the
