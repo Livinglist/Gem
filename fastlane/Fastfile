@@ -1,0 +1,71 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+## Update these lines to match your project!
+# Bundle Identifier used for the iOS App on the App Store Connect portal
+APP_IDENTIFIER = 'com.jiaqi.gem'
+# Issuer ID from the Keys section of https://appstoreconnect.apple.com/access/users
+APPSTORECONNECT_ISSUER_ID = '0b588ac9-5b3e-4420-867a-a33decce7b91'
+# Key ID from the key matching the `APP_STORE_CONNECT_API_KEY_KEY` secret, found under the Keys section of https://appstoreconnect.apple.com/access/users
+APPSTORECONNECT_KEY_ID = 'DPNP8R66QS'
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+
+  lane :beta do |options|
+    setup_ci if ENV['CI']
+
+    # Download code signing certificates using `match` (and the `MATCH_PASSWORD` secret)
+    sync_code_signing(
+      type: "appstore",
+      app_identifier: [APP_IDENTIFIER, "#{APP_IDENTIFIER}.share-extension", "#{APP_IDENTIFIER}.action-extension", "#{APP_IDENTIFIER}.home-widget"],
+      readonly: true
+    )
+
+    # We expose the key data using `APP_STORE_CONNECT_API_KEY_KEY` secret on GH
+    app_store_connect_api_key(
+      key_id: APPSTORECONNECT_KEY_ID,
+      issuer_id: APPSTORECONNECT_ISSUER_ID
+    )
+latest_testflight_build_number
+    # Figure out the build number (and optionally build name)
+    new_build_number = ( + 1)
+
+    version = get_version_number(xcodeproj: "Gem.xcodeproj", target: 'Gem')
+
+    increment_version_number(
+      version_number: version
+    )
+
+    increment_build_number({
+      build_number: latest_testflight_build_number + 1
+    })
+  
+    # Build & sign using Runner.xcworkspace
+    build_app(
+      workspace: "Gem.xcworkspace",
+      scheme: "Gem",
+      output_directory: "../build/ios/archive"
+    )
+
+    upload_to_testflight(
+      # This takes a long time, so don't waste GH runner minutes (but it means manually needing to
+      # set the build live for external testers).
+      skip_waiting_for_build_processing: true,
+    )
+  end
+end

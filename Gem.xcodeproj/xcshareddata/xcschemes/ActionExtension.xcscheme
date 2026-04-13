@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "2640"
+   wasCreatedForAppExtension = "YES"
    version = "2.0">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -57,8 +58,12 @@
       allowLocationSimulation = "YES"
       launchAutomaticallySubstyle = "2"
       queueDebuggingEnableBacktraceRecording = "Yes">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <RemoteRunnable
+         runnableDebuggingMode = "1"
+         BundleIdentifier = "com.jiaqi.gem"
+         RemotePath = "/Users/jiaqifung/Library/Developer/CoreSimulator/Devices/8F721BAF-E58F-4E64-82E5-F79F9BECC748/data/Containers/Bundle/Application/EA4660B6-FEA0-4630-91D8-2B7BEDD078FB/Gem.app">
+      </RemoteRunnable>
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E1D7A3AA2F8D850600D8C934"
@@ -66,7 +71,7 @@
             BlueprintName = "Gem"
             ReferencedContainer = "container:Gem.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
