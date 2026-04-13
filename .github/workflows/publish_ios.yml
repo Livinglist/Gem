@@ -19,11 +19,6 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 30
 
-    env:
-      # Point the `ruby/setup-ruby` action at this Gemfile, so it
-      # caches dependencies for us.
-      BUNDLE_GEMFILE: ${{ github.workspace }}/ios/Gemfile
-
     steps:
       - name: Set XCode version
         uses: maxim-lobanov/setup-xcode@v1
@@ -40,6 +35,8 @@ jobs:
       - name: Setup ruby & Bundler
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: "3.3"
+          working-directory: ios
           bundler-cache: true
 
       # Start an ssh-agent that will provide the SSH key from the
