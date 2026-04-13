@@ -36,7 +36,6 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.3"
-          working-directory: ios
           bundler-cache: true
 
       # Start an ssh-agent that will provide the SSH key from the
