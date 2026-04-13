@@ -3,7 +3,7 @@ import MobileCoreServices
 import UniformTypeIdentifiers
 
 class ActionViewController: UIViewController {
-    let hostAppBundleIdentifier = "com.jiaqi.ZCombinator"
+    let hostAppBundleIdentifier = "com.jiaqi.gem"
     let urlContentType = UTType.url.identifier
     @IBOutlet weak var imageView: UIImageView!
     

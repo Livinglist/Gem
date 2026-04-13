@@ -4,7 +4,7 @@ import MobileCoreServices
 import Photos
 
 class ShareViewController: SLComposeServiceViewController {
-    let hostAppBundleIdentifier = "com.jiaqi.ZCombinator"
+    let hostAppBundleIdentifier = "com.jiaqi.gem"
     var sharedText: [String] = []
     let urlContentType = UTType.url.identifier
 
