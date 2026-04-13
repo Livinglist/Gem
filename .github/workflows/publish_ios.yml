@@ -43,6 +43,7 @@ jobs:
       - name: Setup SSH key
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          SSH_PASSPHRASE: ${{ secrets.MATCH_SSH_PASSPHRASE }}
         run: |
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
@@ -52,4 +53,4 @@ jobs:
           APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: cd ios && bundle exec fastlane beta
+        run: bundle exec fastlane beta
