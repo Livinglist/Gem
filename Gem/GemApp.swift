@@ -6,7 +6,7 @@ import HackerNewsKit
 import UserNotifications
 
 @main
-struct ZCombinatorApp: App {
+struct GemApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.scenePhase) private var phase
     @ObservedObject var offlineRepository: OfflineRepository = .shared
