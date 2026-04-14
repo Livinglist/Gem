@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 100;
+	objectVersion = 90;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -716,7 +716,7 @@
 				E1D7A4DB2F8D88CA00D8C934 /* XCRemoteSwiftPackageReference "AlertToast" */,
 				E131BDBA2F8DBF3800F7E034 /* XCRemoteSwiftPackageReference "alamofire" */,
 			);
-			preferredProjectObjectVersion = 100;
+			preferredProjectObjectVersion = 90;
 			productRefGroup = E1D7A3AC2F8D850600D8C934 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
