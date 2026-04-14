@@ -109,7 +109,7 @@ struct Thread: View {
             }
         } label: {
             Image(systemName: "ellipsis")
-                .foregroundColor(.orange)
+                .foregroundColor(.purple)
         }
     }
     
@@ -207,7 +207,7 @@ struct Thread: View {
                         }
                     } label: {
                         Image(systemName: itemStore.isRecursivelyFetching ? Action.lazyFetching.icon : Action.eagerFetching.icon)
-                            .foregroundColor(itemStore.status.isLoading ? .gray : .orange)
+                            .foregroundColor(itemStore.status.isLoading ? .gray : .purple)
                     }
                 }
             }

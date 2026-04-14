@@ -47,7 +47,7 @@ struct ItemRow: View {
             Label(String(), systemImage: "ellipsis")
                 .padding(.leading)
                 .padding(.bottom, 12)
-                .foregroundColor(.orange)
+                .foregroundColor(.purple)
         }
     }
 
@@ -75,7 +75,7 @@ struct ItemRow: View {
                                 if let url = item.readableUrl {
                                     Text(url)
                                         .font(.footnote)
-                                        .foregroundColor(.orange)
+                                        .foregroundColor(.purple)
                                 } else if let text = item.text {
                                     Text(text.replacingOccurrences(of: "\n", with: " "))
                                         .font(.footnote)

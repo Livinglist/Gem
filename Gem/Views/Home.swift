@@ -2,6 +2,80 @@ import SwiftUI
 import CoreData
 import HackerNewsKit
 
+struct MenuRow: View {
+    let icon: String
+    let title: String
+    
+    var body: some View {
+        HStack(spacing: 15) {
+            Image(systemName: icon)
+                .font(.system(size: 18))
+                .foregroundColor(.secondary)
+                .frame(width: 24)
+            
+            Text(title)
+                .font(.body)
+            
+            Spacer()
+        }
+        .contentShape(Rectangle()) // Makes the whole row tappable
+    }
+}
+
+struct SideMenuView: View {
+    let menuWidth: CGFloat
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // 1. Header / Logo Area
+            Text("Claude")
+                .font(.system(size: 24, weight: .semibold, design: .serif))
+                .padding(.horizontal)
+                .padding(.top, 60)
+            
+            // 2. Menu Items
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    MenuRow(icon: "bubble.left.and.bubble.right", title: "Chat History")
+                    MenuRow(icon: "star", title: "Starred")
+                    MenuRow(icon: "plus.circle", title: "New Chat")
+                    
+                    Divider()
+                        .padding(.vertical, 10)
+                    
+                    MenuRow(icon: "gearshape", title: "Settings")
+                    MenuRow(icon: "questionmark.circle", title: "Help & Support")
+                }
+                .padding()
+            }
+            
+            Spacer()
+            
+            // 3. User Profile Section (Bottom)
+            Divider()
+            HStack {
+                Circle()
+                    .fill(Color.orange.opacity(0.8))
+                    .frame(width: 32, height: 32)
+                    .overlay(Text("JD").font(.caption).bold().foregroundColor(.white))
+                
+                Text("John Doe")
+                    .font(.body)
+                
+                Spacer()
+                
+                Image(systemName: "ellipsis")
+                    .foregroundColor(.secondary)
+            }
+            .padding()
+            .background(Color(.secondarySystemBackground))
+        }
+        .frame(width: menuWidth, alignment: .leading)
+        .background(Color(.secondarySystemBackground))
+        .edgesIgnoringSafeArea(.vertical)
+    }
+}
+
 struct Home: View {
     @EnvironmentObject private var auth: Authentication
     @StateObject private var storyStore: StoryStore = .init()
@@ -14,17 +88,74 @@ struct Home: View {
     @State private var isAboutSheetPresented: Bool = .init()
     @State private var isUrlSheetPresented: Bool = .init()
     @State private var isAbortDownloadAlertPresented: Bool = .init()
-
+    
     @State private var username: String = .init()
     @State private var password: String = .init()
-
+    
     @State private var actionPerformed: Action = .none
     @State private var columnVisibility: NavigationSplitViewVisibility = .doubleColumn
+    @State private var showSlideOutMenu: Bool = false
+    @State private var dragOffset: Double = 0
+    private let menuWidth: CGFloat = 300
     private static var handledUrl: URL? = nil
     
     var body: some View {
         if UIDevice.current.userInterfaceIdiom == .phone {
-            mainView
+            ZStack(alignment: .leading) {
+                ZStack(alignment: .leading) {
+                    Color(.secondarySystemBackground)
+                    mainView
+                        .background(
+                            RoundedRectangle(cornerRadius: 47, style: .continuous)
+                                // Shadow on the right side (x: 5) to simulate depth from the menu
+                                .shadow(color: .black.opacity(0.3), radius: 30, x: -12, y: 0)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 47, style: .continuous))
+//                    // Ambient shadow
+//                        .shadow(color: Color.black.opacity(0.05), radius: 2, x: -1, y: 0)
+//                    // Depth shadow
+//                        .shadow(color: Color.black.opacity(0.1), radius: 10, x: -10, y: 0)
+                    // Dimmed Overlay
+//                    if showSlideOutMenu {
+//                        Color.black.opacity(0.3)
+//                            .ignoresSafeArea()
+//                            .clipShape(RoundedRectangle(cornerRadius: 47, style: .continuous))
+//                            .onTapGesture { withAnimation { showSlideOutMenu = false } }
+//                    }
+                }
+                .offset(x: dragOffset == 0 ? (showSlideOutMenu ? menuWidth : 0) : (dragOffset > 0 ? dragOffset : menuWidth + dragOffset))
+
+                // Side Menu
+                SideMenuView(menuWidth: menuWidth)
+                    .offset(x: dragOffset == 0 ? (showSlideOutMenu ? 0 : -menuWidth) : (dragOffset > 0 ? (-menuWidth + dragOffset) : dragOffset))
+
+            }
+            .animation(.spring(), value: showSlideOutMenu)
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        let translation = value.translation.width
+                        
+                        // If menu is closed, only allow dragging from the left edge (positive)
+                        // If menu is open, only allow dragging to the left (negative)
+                        if !showSlideOutMenu && translation > 0 {
+                            dragOffset = translation
+                        } else if showSlideOutMenu && translation < 0 {
+                            dragOffset = translation
+                        }
+                    }
+                    .onEnded { value in
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            
+                            // Threshold: if dragged more than 1/3 of the width, toggle state
+                            if abs(value.translation.width) > menuWidth / 3 {
+                                showSlideOutMenu = value.translation.width > 0
+                                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                            }
+                            dragOffset = 0 // Always reset temporary offset
+                        }
+                    }
+            )
         } else {
             NavigationSplitView(columnVisibility: $columnVisibility) {
                 mainView
@@ -43,19 +174,19 @@ struct Home: View {
                 }
             }
             .navigationSplitViewStyle(.balanced)
-            .tint(.orange)
+            .tint(.purple)
         }
     }
     
     @ViewBuilder
     var storyList: some View {
         List {
-            Button {
-                Router.shared.to(.pin)
-            } label: {
-                Label("Pins", systemImage: "pin")
-            }
-            .listRowSeparator(.hidden)
+            //            Button {
+            //                Router.shared.to(.pin)
+            //            } label: {
+            //                Label("Pins", systemImage: "pin")
+            //            }
+            //            .listRowSeparator(.hidden)
             
             if storyStore.status.isLoading {
                 HStack {
@@ -73,7 +204,7 @@ struct Home: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 36, height: 36)
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(.purple)
                             .padding(.bottom, 24)
                         Text("Not connected to network, you can try entering offline mode from the top right menu.")
                             .font(.subheadline)
@@ -100,95 +231,106 @@ struct Home: View {
         .refreshable {
             await storyStore.refresh()
         }
-        .toolbar {
-            ToolbarItem {
-                Button {
-                    router.to(Destination.search)
-                } label: {
-                    Image(systemName: "magnifyingglass")
-                }
-            }
-            ToolbarItem {
-                Button {
-                    router.to(Destination.fav)
-                } label: {
-                    Image(systemName: "heart")
-                }
-            }
-            ToolbarItem {
-                Menu {
-                    ForEach(StoryType.allCases, id: \.self) { storyType in
-                        Button {
-                            storyStore.storyType = storyType
-                            
-                            Task {
-                                await storyStore.fetchStories()
-                            }
-                        } label: {
-                            Label("\(storyType.label.capitalized)", systemImage: storyType.icon)
-                        }
-                        .disabled(offlineRepository.isOfflineReading && !storyType.isDownloadable)
-                    }
-                    Divider()
-                    Button {
-                        Task {
-                            HapticFeedbackService.shared.light()
-                            await offlineRepository.downloadAllStories(isTriggerdByUser: true)
-                        }
-                    } label: {
-                        if offlineRepository.isDownloading {
-                            Text("Download in progress")
-                            Text("\(offlineRepository.completionCount) completed")
-                        } else {
-                            Label("Download all stories", systemImage: "square.and.arrow.down")
-                            if offlineRepository.lastFetchedAt.isNotEmpty {
-                                Text("last downloaded at \(offlineRepository.lastFetchedAt)")
-                            }
-                        }
-                    }
-                    .disabled(offlineRepository.isDownloading || !storyStore.isConnectedToNetwork)
-                    if offlineRepository.isDownloading {
-                        Button {
-                            isAbortDownloadAlertPresented = true
-                        } label: {
-                            Text("Abort")
-                        }
-                    } else if offlineRepository.isOfflineReading {
-                        Button {
-                            offlineRepository.isOfflineReading = false
-                        } label: {
-                            Text("Exit Offline Mode")
-                        }
-                    } else {
-                        Button {
-                            offlineRepository.isOfflineReading = true
-                        } label: {
-                            Text("Enter Offline Mode")
-                        }
-                    }
-                    Divider()
-                    AuthButton(isLoginDialogPresented: $isLoginDialogPresented)
-                    NavigationLink {
-                        Settings()
-                    } label: {
-                        Text("Settings")
-                    }
-                    Button {
-                        isAboutSheetPresented = true
-                    } label: {
-                        Text("About")
-                    }
-                } label: {
-                    if offlineRepository.isDownloading {
-                        ProgressView()
-                            .progressViewStyle(.circular)
-                    } else {
-                        Image(systemName: "list.bullet")
-                    }
-                }
-            }
-        }
-        .navigationTitle(storyStore.storyType.label.uppercased())
+        //        .toolbar {
+        //            ToolbarItem {
+        //                Button {
+        //                    router.to(Destination.search)
+        //                } label: {
+        //                    Image(systemName: "magnifyingglass")
+        //                }
+        //            }
+        //            ToolbarItem {
+        //                Button {
+        //                    router.to(Destination.fav)
+        //                } label: {
+        //                    Image(systemName: "heart")
+        //                }
+        //            }
+        //            ToolbarItem {
+        //                Menu {
+        //                    ForEach(StoryType.allCases, id: \.self) { storyType in
+        //                        Button {
+        //                            storyStore.storyType = storyType
+        //
+        //                            Task {
+        //                                await storyStore.fetchStories()
+        //                            }
+        //                        } label: {
+        //                            Label("\(storyType.label.capitalized)", systemImage: storyType.icon)
+        //                        }
+        //                        .disabled(offlineRepository.isOfflineReading && !storyType.isDownloadable)
+        //                    }
+        //                    Divider()
+        //                    Button {
+        //                        Task {
+        //                            HapticFeedbackService.shared.light()
+        //                            await offlineRepository.downloadAllStories(isTriggerdByUser: true)
+        //                        }
+        //                    } label: {
+        //                        if offlineRepository.isDownloading {
+        //                            Text("Download in progress")
+        //                            Text("\(offlineRepository.completionCount) completed")
+        //                        } else {
+        //                            Label("Download all stories", systemImage: "square.and.arrow.down")
+        //                            if offlineRepository.lastFetchedAt.isNotEmpty {
+        //                                Text("last downloaded at \(offlineRepository.lastFetchedAt)")
+        //                            }
+        //                        }
+        //                    }
+        //                    .disabled(offlineRepository.isDownloading || !storyStore.isConnectedToNetwork)
+        //                    if offlineRepository.isDownloading {
+        //                        Button {
+        //                            isAbortDownloadAlertPresented = true
+        //                        } label: {
+        //                            Text("Abort")
+        //                        }
+        //                    } else if offlineRepository.isOfflineReading {
+        //                        Button {
+        //                            offlineRepository.isOfflineReading = false
+        //                        } label: {
+        //                            Text("Exit Offline Mode")
+        //                        }
+        //                    } else {
+        //                        Button {
+        //                            offlineRepository.isOfflineReading = true
+        //                        } label: {
+        //                            Text("Enter Offline Mode")
+        //                        }
+        //                    }
+        //                    Divider()
+        //                    AuthButton(isLoginDialogPresented: $isLoginDialogPresented)
+        //                    NavigationLink {
+        //                        Settings()
+        //                    } label: {
+        //                        Text("Settings")
+        //                    }
+        //                    Button {
+        //                        isAboutSheetPresented = true
+        //                    } label: {
+        //                        Text("About")
+        //                    }
+        //                } label: {
+        //                    if offlineRepository.isDownloading {
+        //                        ProgressView()
+        //                            .progressViewStyle(.circular)
+        //                    } else {
+        //                        Image(systemName: "list.bullet")
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        .toolbar {
+        //            ToolbarItem(placement: .principal) {
+        //                Menu {
+        //                    Button("Settings") { /* action */ }
+        //                    Button("Profile") { /* action */ }
+        //                } label: {
+        //                    Text(storyStore.storyType.label.capitalized)
+        //                        .font(.headline)
+        //                }
+        //            }
+        //        }
+        //.navigationTitle(storyStore.storyType.label.uppercased())
         .alert("Abort Download", isPresented: $isAbortDownloadAlertPresented) {
             Button {
                 offlineRepository.abortDownload()
@@ -206,6 +348,47 @@ struct Home: View {
     @ViewBuilder
     var mainView: some View {
         storyList
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        showSlideOutMenu = !showSlideOutMenu
+                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                    } label: {
+                        Image(systemName: "book.pages")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 24)
+                    }
+                    .glassEffect(.clear, in: Circle())
+                }
+                ToolbarItem(placement: .principal) {
+                    Menu {
+                        ForEach(StoryType.allCases, id: \.self) { storyType in
+                            Button {
+                                storyStore.storyType = storyType
+                                
+                                Task {
+                                    await storyStore.fetchStories()
+                                }
+                            } label: {
+                                Label("\(storyType.label.capitalized)", systemImage: storyType.icon)
+                            }
+                            .disabled(offlineRepository.isOfflineReading && !storyType.isDownloadable)
+                        }
+                    } label: {
+                        HStack {
+                            Text(storyStore.storyType.label.capitalized)
+                                .font(.headline)
+                                .foregroundStyle(.foreground)
+                            Image(systemName: "chevron.down")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 8)
+                        }
+                    }
+                }
+            }
+            .toolbarTitleDisplayMode(.inline)
             .if(UIDevice.current.userInterfaceIdiom == .phone) { view in
                 view
                     .navigationDestination(for: Comment.self) { cmt in
@@ -222,7 +405,6 @@ struct Home: View {
                 }
             }
             .withToast(actionPerformed: $actionPerformed)
-            .tint(.orange)
             .sheet(isPresented: $isAboutSheetPresented, content: {
                 SafariView(url: Constants.githubUrl)
             })
@@ -239,8 +421,8 @@ struct Home: View {
                         self.isEulaDialogPresented = true
                     }
                 })
-                .foregroundStyle(.orange)
-                Button("Cancel", role: .cancel, action: {}).foregroundStyle(.orange)
+                .foregroundStyle(.purple)
+                Button("Cancel", role: .cancel, action: {}).foregroundStyle(.purple)
             }, message: {
                 Text("Please enter your username and password.")
             })
@@ -250,7 +432,7 @@ struct Home: View {
                         WebView(url: url)
                             .ignoresSafeArea()
                     }
-
+                    
                     VStack {
                         Text("By signing in, you are agreeing to the Hacker News Guidelines.")
                             .multilineTextAlignment(.center)
@@ -270,21 +452,21 @@ struct Home: View {
                             .buttonStyle(BorderedButtonStyle())
                             .frame(maxWidth: .infinity)
                             .padding(.bottom)
-
+                            
                             Spacer()
-
+                            
                             Button {
                                 HapticFeedbackService.shared.ultralight()
                                 self.isEulaDialogPresented = false
-
+                                
                                 guard username.isNotEmpty && password.isNotEmpty else {
                                     HapticFeedbackService.shared.error()
                                     return
                                 }
-
+                                
                                 Task {
                                     let res = await auth.logIn(username: username, password: password, shouldRememberMe: true)
-
+                                    
                                     if res {
                                         actionPerformed = .login
                                     } else {
@@ -295,7 +477,7 @@ struct Home: View {
                                 Text("Accept")
                                     .padding(.horizontal, 24)
                                     .padding(.vertical, 12)
-                                    .foregroundStyle(.orange)
+                                    .foregroundStyle(.purple)
                                     .fontWeight(.bold)
                             }
                             .buttonStyle(BorderedButtonStyle())

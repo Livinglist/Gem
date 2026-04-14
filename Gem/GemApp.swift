@@ -18,11 +18,12 @@ struct GemApp: App {
         WindowGroup {
             ZStack {
                 Home()
+                    .ignoresSafeArea()
                 if offlineRepository.isOfflineReading {
                     VStack {
                         Spacer()
                         Rectangle()
-                            .fill(.orange.gradient.opacity(0.4))
+                            .fill(.purple.gradient.opacity(0.4))
                             .frame(height: 40)
                             .overlay {
                                 Text("Offline Mode")

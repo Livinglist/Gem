@@ -2,6 +2,7 @@ import SwiftUI
 
 extension View {
     func getColor(level: Int = 0) -> Color {
+        if level == 0 { return .purple }
         var level = level
         let initialLevel = level
         

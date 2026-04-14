@@ -46,7 +46,7 @@ struct StoryWidgetView : View {
                         if let url = story.readableUrl {
                             Text(url)
                                 .font(family == .systemSmall ? .system(size: 8) : .footnote)
-                                .foregroundColor(.orange)
+                                .foregroundColor(.purple)
                         }
                         Spacer()
                     }
