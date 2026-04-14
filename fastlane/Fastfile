@@ -56,9 +56,7 @@ latest_testflight_build_number
     })
   
     # Build & sign using Runner.xcworkspace
-    build_app(
-      scheme: "Gem"
-    )
+    build_app()
 
     upload_to_testflight(
       # This takes a long time, so don't waste GH runner minutes (but it means manually needing to
