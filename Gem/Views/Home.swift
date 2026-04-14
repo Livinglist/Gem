@@ -18,7 +18,7 @@ struct MenuRow: View {
             
             Spacer()
         }
-        .contentShape(Rectangle()) // Makes the whole row tappable
+        .contentShape(Rectangle())
     }
 }
 
