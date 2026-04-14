@@ -1,4 +1,5 @@
 import SwiftUI
+import HackerNewsKit
 
 struct Favorites: View {
     @StateObject var favStore: FavStore = .init()
