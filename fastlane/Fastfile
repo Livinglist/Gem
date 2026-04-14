@@ -57,9 +57,7 @@ latest_testflight_build_number
   
     # Build & sign using Runner.xcworkspace
     build_app(
-      workspace: "Gem.xcworkspace",
-      scheme: "Gem",
-      output_directory: "../build/ios/archive"
+      scheme: "Gem"
     )
 
     upload_to_testflight(
