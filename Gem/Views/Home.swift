@@ -24,51 +24,198 @@ struct MenuRow: View {
 
 struct SideMenuView: View {
     let menuWidth: CGFloat
+    let onDismiss: () -> Void
+    
+    @State var selectedMenuItem: MenuItem?
+
+    enum MenuItem { case pinned, favorites, replies}
+    
+    @Namespace private var namespace
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // 1. Header / Logo Area
-            Text("Claude")
-                .font(.system(size: 24, weight: .semibold, design: .serif))
-                .padding(.horizontal)
-                .padding(.top, 60)
+        ZStack(alignment: .bottomLeading) {
             
-            // 2. Menu Items
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    MenuRow(icon: "bubble.left.and.bubble.right", title: "Chat History")
-                    MenuRow(icon: "star", title: "Starred")
-                    MenuRow(icon: "plus.circle", title: "New Chat")
+
+            
+            VStack(alignment: .leading, spacing: 0) {
+                ScrollView {
+                    GlassEffectContainer {
+                        VStack(alignment: .leading, spacing: 20) {
+                            Button {
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                withAnimation {
+                                    selectedMenuItem = .pinned
+                                }
+                                onDismiss()
+                            } label: {
+                                MenuRow(icon: "pin", title: "Pinned")
+                                    .if(selectedMenuItem == .pinned) { view in
+                                        view
+                                            .padding()
+                                            .background {
+                                                Color(.quaternarySystemFill)
+                                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                            }
+                                    }
+                            }
+                            .buttonStyle(.plain)
+                            
+                            Button {
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                withAnimation {
+                                    selectedMenuItem = .favorites
+                                }
+                                onDismiss()
+                            } label: {
+                                MenuRow(icon: "heart.rectangle", title: "Favorites")
+                                    .if(selectedMenuItem == .favorites) { view in
+                                        view
+                                            .padding()
+                                            .background {
+                                                Color(.quaternarySystemFill)
+                                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                            }
+                                    }
+                            }
+                            .buttonStyle(.plain)
+                            
+                            Button {
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                withAnimation {
+                                    selectedMenuItem = .replies
+                                }
+                                onDismiss()
+                            } label: {
+                                MenuRow(icon: "bell.badge", title: "Replies")
+                                    .if(selectedMenuItem == .replies) { view in
+                                        view
+                                            .padding()
+                                            .background {
+                                                Color(.quaternarySystemFill)
+                                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                            }
+                                    }
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        .padding()
+                        .padding(.top, 100)
+                    }
                     
-                    Divider()
-                        .padding(.vertical, 10)
-                    
-                    MenuRow(icon: "gearshape", title: "Settings")
-                    MenuRow(icon: "questionmark.circle", title: "Help & Support")
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack(spacing: 0) {
+                            Text("Recents")
+                                .font(.headline)
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                        }
+                        
+                        Text("Ask HN this is a place holder")
+                            .font(.headline)
+                        Text("Tell HN this one is a very long place holder that will wrap and continue")
+                            .font(.headline)
+                        Text("Ask HN this is a place holder")
+                            .font(.headline)
+                        Text("Ask HN this is a place holder")
+                            .font(.headline)
+                        Text("Ask HN this is a place holder")
+                            .font(.headline)
+                        Text("Ask HN this is a place holder")
+                            .font(.headline)
+                        Text("Ask HN this is a place holder")
+                            .font(.headline)
+                        Text("Ask HN this is a place holder")
+                            .font(.headline)
+                        Text("Ask HN this is a place holder")
+                            .font(.headline)
+                        Text("Ask HN this is a place holder testing testing")
+                            .font(.headline)
+                        Text("Ask HN this is a place holder")
+                            .font(.headline)
+                        Text("Ask HN this is a place holder....")
+                            .font(.headline)
+                        Text("Tell HN this one is a very long place holder that will wrap and continue")
+                            .font(.headline)
+                        Text("Ask HN this is a place holder")
+                            .font(.headline)
+                        Text("Ask HN this is a place holder")
+                            .font(.headline)
+                        Text("Ask HN this is a place holder")
+                            .font(.headline)
+                        Text("Ask HN this is a place holder")
+                            .font(.headline)
+                        Text("Ask HN this is a place holder")
+                            .font(.headline)
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding()
+                
+                Spacer()
             }
             
-            Spacer()
-            
-            // 3. User Profile Section (Bottom)
-            Divider()
             HStack {
-                Circle()
-                    .fill(Color.orange.opacity(0.8))
-                    .frame(width: 32, height: 32)
-                    .overlay(Text("JD").font(.caption).bold().foregroundColor(.white))
-                
-                Text("John Doe")
-                    .font(.body)
+                Button {
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                } label: {
+                    HStack {
+                        Image(systemName: "person.crop.circle")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 24)
+                        
+                        Text("Login")
+                            .font(.callout)
+                    }
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 6)
+                }
+                .tint(.accent.opacity(0.2))
+                .buttonStyle(.glassProminent)
+                .padding(.leading, 12)
                 
                 Spacer()
                 
-                Image(systemName: "ellipsis")
-                    .foregroundColor(.secondary)
+                Button {
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                } label: {
+                    Image(systemName: "gearshape")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundStyle(.foreground)
+                        .frame(height: 18)
+                        .padding()
+                        .glassEffect(.regular.tint(.accent.opacity(0.6)), in: Circle())
+                }
             }
             .padding()
-            .background(Color(.secondarySystemBackground))
+            .padding(.bottom, 12)
+            
+            VStack(alignment: .leading, spacing: 0) {
+                Color(.secondarySystemBackground)
+                    .opacity(0.9)
+                    .frame(width: menuWidth, height: 100)
+                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                    .blur(radius: 16)
+                Spacer()
+            }
+            
+            VStack(alignment: .leading, spacing: 0) {
+                Text("GEM")
+                    .font(.system(size: 24, weight: .semibold, design: .serif))
+                    .padding(.horizontal)
+                    .padding(.top, 60)
+                Spacer()
+            }
+            .blur(radius: 2)
+            
+            VStack(alignment: .leading, spacing: 0) {
+                Text("GEM")
+                    .font(.system(size: 24, weight: .semibold, design: .serif))
+                    .padding(.horizontal)
+                    .padding(.top, 60)
+                Spacer()
+            }
         }
         .frame(width: menuWidth, alignment: .leading)
         .background(Color(.secondarySystemBackground))
@@ -99,6 +246,42 @@ struct Home: View {
     private let menuWidth: CGFloat = 300
     private static var handledUrl: URL? = nil
     
+    var sideMenuScale: CGFloat {
+        let baseScaleFactor = 0.9
+        let maxScaleFactor = 1.0
+        if dragOffset == 0 {
+            return showSlideOutMenu ? maxScaleFactor : baseScaleFactor
+        }
+        let scaleFactor = baseScaleFactor + (0.1 * progress)
+        return scaleFactor.clamped(to: baseScaleFactor...maxScaleFactor)
+    }
+    
+    var progress: Double {
+        if dragOffset == 0 {
+            return showSlideOutMenu ? 1 : 0
+        } else if dragOffset > 0 {
+            return abs(dragOffset) / menuWidth
+        } else {
+            return (menuWidth + dragOffset) / menuWidth
+        }
+    }
+    
+    var mainContentDimOpacity: CGFloat {
+        let maxOpacity = 0.3
+        if dragOffset == 0 {
+            return showSlideOutMenu ? maxOpacity : 0
+        }
+        let opacity = maxOpacity * progress
+        return opacity
+    }
+    
+    var mainContentDimOverlay: some View {
+        Color.black.opacity(mainContentDimOpacity)
+            .ignoresSafeArea()
+            .clipShape(RoundedRectangle(cornerRadius: 47, style: .continuous))
+            .onTapGesture { withAnimation { showSlideOutMenu = false } }
+    }
+    
     var body: some View {
         if UIDevice.current.userInterfaceIdiom == .phone {
             ZStack(alignment: .leading) {
@@ -107,28 +290,35 @@ struct Home: View {
                     mainView
                         .background(
                             RoundedRectangle(cornerRadius: 47, style: .continuous)
-                                // Shadow on the right side (x: 5) to simulate depth from the menu
+                            // Shadow on the right side (x: 5) to simulate depth from the menu
                                 .shadow(color: .black.opacity(0.3), radius: 30, x: -12, y: 0)
                         )
+                        .overlay {
+                            mainContentDimOverlay
+                        }
                         .clipShape(RoundedRectangle(cornerRadius: 47, style: .continuous))
-//                    // Ambient shadow
-//                        .shadow(color: Color.black.opacity(0.05), radius: 2, x: -1, y: 0)
-//                    // Depth shadow
-//                        .shadow(color: Color.black.opacity(0.1), radius: 10, x: -10, y: 0)
+                    //                    // Ambient shadow
+                    //                        .shadow(color: Color.black.opacity(0.05), radius: 2, x: -1, y: 0)
+                    //                    // Depth shadow
+                    //                        .shadow(color: Color.black.opacity(0.1), radius: 10, x: -10, y: 0)
                     // Dimmed Overlay
-//                    if showSlideOutMenu {
-//                        Color.black.opacity(0.3)
-//                            .ignoresSafeArea()
-//                            .clipShape(RoundedRectangle(cornerRadius: 47, style: .continuous))
-//                            .onTapGesture { withAnimation { showSlideOutMenu = false } }
-//                    }
                 }
                 .offset(x: dragOffset == 0 ? (showSlideOutMenu ? menuWidth : 0) : (dragOffset > 0 ? dragOffset : menuWidth + dragOffset))
-
+                
                 // Side Menu
-                SideMenuView(menuWidth: menuWidth)
-                    .offset(x: dragOffset == 0 ? (showSlideOutMenu ? 0 : -menuWidth) : (dragOffset > 0 ? (-menuWidth + dragOffset) : dragOffset))
-
+                ZStack {
+                    SideMenuView(menuWidth: menuWidth, onDismiss: {
+                        withAnimation {
+                            showSlideOutMenu = false
+                        }
+                    })
+                        .scaleEffect(sideMenuScale, anchor: .leading)
+                }
+                .frame(width: menuWidth, alignment: .leading)
+                .background(Color(.secondarySystemBackground))
+                .edgesIgnoringSafeArea(.vertical)
+                .offset(x: dragOffset == 0 ? (showSlideOutMenu ? 0 : -menuWidth) : (dragOffset > 0 ? (-menuWidth + dragOffset) : dragOffset))
+                
             }
             .animation(.spring(), value: showSlideOutMenu)
             .gesture(
