@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		E10D834C2F8D97BD00E0CBC5 /* HackerNewsKit in Frameworks */ = {isa = PBXBuildFile; productRef = E10D834B2F8D97BD00E0CBC5 /* HackerNewsKit */; };
-		E131BC412F8DB51B00F7E034 /* AlamofireDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = E1D7A4E12F8D890700D8C934 /* AlamofireDynamic */; };
 		E131BD022F8DB98200F7E034 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E131BCFE2F8DB98200F7E034 /* MainInterface.storyboard */; };
 		E131BD032F8DB98200F7E034 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E131BCFF2F8DB98200F7E034 /* Media.xcassets */; };
 		E131BD042F8DB98200F7E034 /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E131BCFB2F8DB98200F7E034 /* ActionViewController.swift */; };
@@ -296,7 +295,6 @@
 		E1D7A3A82F8D850600D8C934 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
-				E131BC412F8DB51B00F7E034 /* AlamofireDynamic in Frameworks */,
 				E1D7A4E02F8D890700D8C934 /* Alamofire in Frameworks */,
 				E1D7A4DA2F8D887100D8C934 /* HackerNewsKit in Frameworks */,
 				E1D7A4DD2F8D88CA00D8C934 /* AlertToast in Frameworks */,
