@@ -57,7 +57,7 @@ latest_testflight_build_number
   
     # Build & sign using Runner.xcworkspace
     build_app(
-      scheme: "Release"
+      scheme: "Gem"
     )
 
     upload_to_testflight(
