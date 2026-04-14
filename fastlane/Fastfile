@@ -59,7 +59,20 @@ latest_testflight_build_number
     build_app(
       scheme: "Gem",
       configuration: "Release",
-      export_method: "app-store"
+      export_method: "app-store",
+      xcargs: {
+        "CODE_SIGN_STYLE" => "Manual",
+        "PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" => "match AppStore com.jiaqi.gem"
+      },
+      export_options: {
+        method: "app-store",
+        provisioningProfiles: {
+          "com.jiaqi.gem" => "match AppStore com.jiaqi.gem",
+          "com.jiaqi.gem.share-extension" => "match AppStore com.jiaqi.gem.share-extension",
+          "com.jiaqi.gem.action-extension" => "match AppStore com.jiaqi.gem.action-extension",
+          "com.jiaqi.gem.home-widget" => "match AppStore com.jiaqi.gem.home-widget"
+        }
+      }
     )
 
     upload_to_testflight(
