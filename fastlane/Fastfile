@@ -60,10 +60,6 @@ latest_testflight_build_number
       scheme: "Gem",
       configuration: "Release",
       export_method: "app-store",
-      xcargs: {
-        "CODE_SIGN_STYLE" => "Manual",
-        "PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" => "match AppStore com.jiaqi.gem"
-      },
       export_options: {
         method: "app-store",
         provisioningProfiles: {
