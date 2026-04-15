@@ -2,227 +2,6 @@ import SwiftUI
 import CoreData
 import HackerNewsKit
 
-struct MenuRow: View {
-    let icon: String
-    let title: String
-    
-    var body: some View {
-        HStack(spacing: 15) {
-            Image(systemName: icon)
-                .font(.system(size: 18))
-                .foregroundColor(.secondary)
-                .frame(width: 24)
-            
-            Text(title)
-                .font(.body)
-            
-            Spacer()
-        }
-        .contentShape(Rectangle())
-    }
-}
-
-struct SideMenuView: View {
-    let menuWidth: CGFloat
-    let onDismiss: () -> Void
-    
-    @State var selectedMenuItem: MenuItem?
-
-    enum MenuItem { case pinned, favorites, replies}
-    
-    @Namespace private var namespace
-    
-    var body: some View {
-        ZStack(alignment: .bottomLeading) {
-            
-
-            
-            VStack(alignment: .leading, spacing: 0) {
-                ScrollView {
-                    GlassEffectContainer {
-                        VStack(alignment: .leading, spacing: 20) {
-                            Button {
-                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                                withAnimation {
-                                    selectedMenuItem = .pinned
-                                }
-                                onDismiss()
-                            } label: {
-                                MenuRow(icon: "pin", title: "Pinned")
-                                    .if(selectedMenuItem == .pinned) { view in
-                                        view
-                                            .padding()
-                                            .background {
-                                                Color(.quaternarySystemFill)
-                                                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                                            }
-                                    }
-                            }
-                            .buttonStyle(.plain)
-                            
-                            Button {
-                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                                withAnimation {
-                                    selectedMenuItem = .favorites
-                                }
-                                onDismiss()
-                            } label: {
-                                MenuRow(icon: "heart.rectangle", title: "Favorites")
-                                    .if(selectedMenuItem == .favorites) { view in
-                                        view
-                                            .padding()
-                                            .background {
-                                                Color(.quaternarySystemFill)
-                                                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                                            }
-                                    }
-                            }
-                            .buttonStyle(.plain)
-                            
-                            Button {
-                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                                withAnimation {
-                                    selectedMenuItem = .replies
-                                }
-                                onDismiss()
-                            } label: {
-                                MenuRow(icon: "bell.badge", title: "Replies")
-                                    .if(selectedMenuItem == .replies) { view in
-                                        view
-                                            .padding()
-                                            .background {
-                                                Color(.quaternarySystemFill)
-                                                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                                            }
-                                    }
-                            }
-                            .buttonStyle(.plain)
-                        }
-                        .padding()
-                        .padding(.top, 100)
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack(spacing: 0) {
-                            Text("Recents")
-                                .font(.headline)
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                        }
-                        
-                        Text("Ask HN this is a place holder")
-                            .font(.headline)
-                        Text("Tell HN this one is a very long place holder that will wrap and continue")
-                            .font(.headline)
-                        Text("Ask HN this is a place holder")
-                            .font(.headline)
-                        Text("Ask HN this is a place holder")
-                            .font(.headline)
-                        Text("Ask HN this is a place holder")
-                            .font(.headline)
-                        Text("Ask HN this is a place holder")
-                            .font(.headline)
-                        Text("Ask HN this is a place holder")
-                            .font(.headline)
-                        Text("Ask HN this is a place holder")
-                            .font(.headline)
-                        Text("Ask HN this is a place holder")
-                            .font(.headline)
-                        Text("Ask HN this is a place holder testing testing")
-                            .font(.headline)
-                        Text("Ask HN this is a place holder")
-                            .font(.headline)
-                        Text("Ask HN this is a place holder....")
-                            .font(.headline)
-                        Text("Tell HN this one is a very long place holder that will wrap and continue")
-                            .font(.headline)
-                        Text("Ask HN this is a place holder")
-                            .font(.headline)
-                        Text("Ask HN this is a place holder")
-                            .font(.headline)
-                        Text("Ask HN this is a place holder")
-                            .font(.headline)
-                        Text("Ask HN this is a place holder")
-                            .font(.headline)
-                        Text("Ask HN this is a place holder")
-                            .font(.headline)
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                
-                Spacer()
-            }
-            
-            HStack {
-                Button {
-                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                } label: {
-                    HStack {
-                        Image(systemName: "person.crop.circle")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 24)
-                        
-                        Text("Login")
-                            .font(.callout)
-                    }
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 6)
-                }
-                .tint(.accent.opacity(0.2))
-                .buttonStyle(.glassProminent)
-                .padding(.leading, 12)
-                
-                Spacer()
-                
-                Button {
-                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                } label: {
-                    Image(systemName: "gearshape")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundStyle(.foreground)
-                        .frame(height: 18)
-                        .padding()
-                        .glassEffect(.regular.tint(.accent.opacity(0.6)), in: Circle())
-                }
-            }
-            .padding()
-            .padding(.bottom, 12)
-            
-            VStack(alignment: .leading, spacing: 0) {
-                Color(.secondarySystemBackground)
-                    .opacity(0.9)
-                    .frame(width: menuWidth, height: 100)
-                    .clipShape(RoundedRectangle(cornerRadius: 15))
-                    .blur(radius: 16)
-                Spacer()
-            }
-            
-            VStack(alignment: .leading, spacing: 0) {
-                Text("GEM")
-                    .font(.system(size: 24, weight: .semibold, design: .serif))
-                    .padding(.horizontal)
-                    .padding(.top, 60)
-                Spacer()
-            }
-            .blur(radius: 2)
-            
-            VStack(alignment: .leading, spacing: 0) {
-                Text("GEM")
-                    .font(.system(size: 24, weight: .semibold, design: .serif))
-                    .padding(.horizontal)
-                    .padding(.top, 60)
-                Spacer()
-            }
-        }
-        .frame(width: menuWidth, alignment: .leading)
-        .background(Color(.secondarySystemBackground))
-        .edgesIgnoringSafeArea(.vertical)
-    }
-}
-
 struct Home: View {
     @EnvironmentObject private var auth: Authentication
     @StateObject private var storyStore: StoryStore = .init()
@@ -243,11 +22,12 @@ struct Home: View {
     @State private var columnVisibility: NavigationSplitViewVisibility = .doubleColumn
     @State private var showSlideOutMenu: Bool = false
     @State private var dragOffset: Double = 0
+    @State private var selectedMenuItem: MenuItem = .home
     private let menuWidth: CGFloat = 300
     private static var handledUrl: URL? = nil
     
     var sideMenuScale: CGFloat {
-        let baseScaleFactor = 0.9
+        let baseScaleFactor = 0.95
         let maxScaleFactor = 1.0
         if dragOffset == 0 {
             return showSlideOutMenu ? maxScaleFactor : baseScaleFactor
@@ -267,7 +47,7 @@ struct Home: View {
     }
     
     var mainContentDimOpacity: CGFloat {
-        let maxOpacity = 0.3
+        let maxOpacity = 0.1
         if dragOffset == 0 {
             return showSlideOutMenu ? maxOpacity : 0
         }
@@ -282,43 +62,57 @@ struct Home: View {
             .onTapGesture { withAnimation { showSlideOutMenu = false } }
     }
     
+    var sideMenuDimOpacity: CGFloat {
+        let maxOpacity = 0.3
+        if dragOffset == 0 {
+            return showSlideOutMenu ? 0 : maxOpacity
+        }
+        let opacity = maxOpacity * (1.0 - progress)
+        return opacity
+    }
+    
+    var sideMenuDimOverlay: some View {
+        Color.black.opacity(sideMenuDimOpacity)
+            .ignoresSafeArea()
+    }
+    
     var body: some View {
         if UIDevice.current.userInterfaceIdiom == .phone {
             ZStack(alignment: .leading) {
-                ZStack(alignment: .leading) {
-                    Color(.secondarySystemBackground)
-                    mainView
-                        .background(
-                            RoundedRectangle(cornerRadius: 47, style: .continuous)
-                            // Shadow on the right side (x: 5) to simulate depth from the menu
-                                .shadow(color: .black.opacity(0.3), radius: 30, x: -12, y: 0)
-                        )
-                        .overlay {
-                            mainContentDimOverlay
-                        }
-                        .clipShape(RoundedRectangle(cornerRadius: 47, style: .continuous))
-                    //                    // Ambient shadow
-                    //                        .shadow(color: Color.black.opacity(0.05), radius: 2, x: -1, y: 0)
-                    //                    // Depth shadow
-                    //                        .shadow(color: Color.black.opacity(0.1), radius: 10, x: -10, y: 0)
-                    // Dimmed Overlay
-                }
-                .offset(x: dragOffset == 0 ? (showSlideOutMenu ? menuWidth : 0) : (dragOffset > 0 ? dragOffset : menuWidth + dragOffset))
-                
                 // Side Menu
                 ZStack {
-                    SideMenuView(menuWidth: menuWidth, onDismiss: {
+                    SideMenuView(menuWidth: menuWidth, onDismiss: { selectedItem in
                         withAnimation {
                             showSlideOutMenu = false
                         }
+                        
+                        if let selectedItem {
+                            withAnimation {
+                                selectedMenuItem = selectedItem
+                            }
+                        }
                     })
-                        .scaleEffect(sideMenuScale, anchor: .leading)
+                    .scaleEffect(sideMenuScale, anchor: .center)
+                    .overlay {
+                        sideMenuDimOverlay
+                    }
                 }
-                .frame(width: menuWidth, alignment: .leading)
+                .frame(width: menuWidth + 60, alignment: .leading)
                 .background(Color(.secondarySystemBackground))
                 .edgesIgnoringSafeArea(.vertical)
-                .offset(x: dragOffset == 0 ? (showSlideOutMenu ? 0 : -menuWidth) : (dragOffset > 0 ? (-menuWidth + dragOffset) : dragOffset))
                 
+                ZStack(alignment: .leading) {
+                    mainView
+                        .background(
+                            RoundedRectangle(cornerRadius: 47, style: .continuous)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 47, style: .continuous))
+                        .overlay {
+                            mainContentDimOverlay
+                        }
+                }
+                .offset(x: dragOffset == 0 ? (showSlideOutMenu ? menuWidth : 0) : (dragOffset > 0 ? dragOffset : menuWidth + dragOffset))
+                .shadow(radius: 5)
             }
             .animation(.spring(), value: showSlideOutMenu)
             .gesture(
@@ -537,185 +331,78 @@ struct Home: View {
     
     @ViewBuilder
     var mainView: some View {
-        storyList
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        showSlideOutMenu = !showSlideOutMenu
-                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    } label: {
-                        Image(systemName: "book.pages")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 24)
-                    }
-                    .glassEffect(.clear, in: Circle())
-                }
-                ToolbarItem(placement: .principal) {
-                    Menu {
-                        ForEach(StoryType.allCases, id: \.self) { storyType in
-                            Button {
-                                storyStore.storyType = storyType
-                                
-                                Task {
-                                    await storyStore.fetchStories()
-                                }
-                            } label: {
-                                Label("\(storyType.label.capitalized)", systemImage: storyType.icon)
-                            }
-                            .disabled(offlineRepository.isOfflineReading && !storyType.isDownloadable)
-                        }
-                    } label: {
-                        HStack {
-                            Text(storyStore.storyType.label.capitalized)
-                                .font(.headline)
-                                .foregroundStyle(.foreground)
-                            Image(systemName: "chevron.down")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 8)
-                        }
-                    }
+        ZStack {
+            switch selectedMenuItem {
+            case .home: Stories()
+            case .pinned: Pins()
+            case .favorites: Favorites()
+            case .replies: Replies()
+            case .search: Search()
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                    showSlideOutMenu = !showSlideOutMenu
+                } label: {
+                    Label("Side menu", systemImage: "book.pages")
+                        .labelStyle(.iconOnly)
+                        .foregroundStyle(.foreground)
+                        .glassEffect()
                 }
             }
-            .toolbarTitleDisplayMode(.inline)
-            .if(UIDevice.current.userInterfaceIdiom == .phone) { view in
+        }
+        .toolbarTitleDisplayMode(.inline)
+        .if(UIDevice.current.userInterfaceIdiom == .phone) { view in
+            view
+                .navigationDestination(for: Comment.self) { cmt in
+                    Thread(item: cmt, level: 0)
+                }
+                .navigationDestination(for: Story.self) { story in
+                    Thread(item: story, level: 0)
+                }
+                .navigationDestination(for: Destination.self) { val in val.toView() }
+        }
+        .if(UIDevice.current.userInterfaceIdiom == .phone) { view in
+            NavigationStack(path: $router.path) {
                 view
-                    .navigationDestination(for: Comment.self) { cmt in
-                        Thread(item: cmt, level: 0)
-                    }
-                    .navigationDestination(for: Story.self) { story in
-                        Thread(item: story, level: 0)
-                    }
-                    .navigationDestination(for: Destination.self) { val in val.toView() }
             }
-            .if(UIDevice.current.userInterfaceIdiom == .phone) { view in
-                NavigationStack(path: $router.path) {
-                    view
+        }
+        .withToast(actionPerformed: $actionPerformed)
+        .sheet(isPresented: $isAboutSheetPresented, content: {
+            SafariView(url: Constants.githubUrl)
+        })
+        .sheet(isPresented: $isUrlSheetPresented, content: {
+            SafariView(url: Self.handledUrl!)
+        })
+        .onOpenURL(perform: { url in
+            if let id = url.absoluteString.itemId {
+                Task {
+                    let story = await StoryRepository.shared.fetchStory(id)
+                    guard let story = story else { return }
+                    router.to(story)
                 }
             }
-            .withToast(actionPerformed: $actionPerformed)
-            .sheet(isPresented: $isAboutSheetPresented, content: {
-                SafariView(url: Constants.githubUrl)
-            })
-            .sheet(isPresented: $isUrlSheetPresented, content: {
-                SafariView(url: Self.handledUrl!)
-            })
-            .alert("Login", isPresented: $isLoginDialogPresented, actions: {
-                TextField("Username", text: $username)
-                    .autocorrectionDisabled(true)
-                    .textInputAutocapitalization(.never)
-                SecureField("Password", text: $password)
-                Button(Action.login.label, action: {
-                    if username.isNotEmpty && password.isNotEmpty {
-                        self.isEulaDialogPresented = true
-                    }
-                })
-                .foregroundStyle(.purple)
-                Button("Cancel", role: .cancel, action: {}).foregroundStyle(.purple)
-            }, message: {
-                Text("Please enter your username and password.")
-            })
-            .sheet(isPresented: $isEulaDialogPresented) {
-                ZStack(alignment: .bottom) {
-                    if let url = URL(string: "https://news.ycombinator.com/newsguidelines.html") {
-                        WebView(url: url)
-                            .ignoresSafeArea()
+        })
+        .environment(\.openURL, OpenURLAction { url in
+            if let id = url.absoluteString.itemId {
+                Task {
+                    let item = await StoryRepository.shared.fetchItem(id)
+                    guard let item = item else {
+                        Self.handledUrl = url
+                        isUrlSheetPresented = true
+                        return
                     }
                     
-                    VStack {
-                        Text("By signing in, you are agreeing to the Hacker News Guidelines.")
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 24)
-                            .padding(.top, 12)
-                            .font(.callout)
-                        HStack {
-                            Button {
-                                HapticFeedbackService.shared.ultralight()
-                                self.isEulaDialogPresented = false
-                            } label: {
-                                Text("Reject")
-                                    .padding(.horizontal, 24)
-                                    .padding(.vertical, 12)
-                                    .foregroundStyle(.red)
-                            }
-                            .buttonStyle(BorderedButtonStyle())
-                            .frame(maxWidth: .infinity)
-                            .padding(.bottom)
-                            
-                            Spacer()
-                            
-                            Button {
-                                HapticFeedbackService.shared.ultralight()
-                                self.isEulaDialogPresented = false
-                                
-                                guard username.isNotEmpty && password.isNotEmpty else {
-                                    HapticFeedbackService.shared.error()
-                                    return
-                                }
-                                
-                                Task {
-                                    let res = await auth.logIn(username: username, password: password, shouldRememberMe: true)
-                                    
-                                    if res {
-                                        actionPerformed = .login
-                                    } else {
-                                        actionPerformed = .failure
-                                    }
-                                }
-                            } label: {
-                                Text("Accept")
-                                    .padding(.horizontal, 24)
-                                    .padding(.vertical, 12)
-                                    .foregroundStyle(.purple)
-                                    .fontWeight(.bold)
-                            }
-                            .buttonStyle(BorderedButtonStyle())
-                            .frame(maxWidth: .infinity)
-                            .padding(.bottom)
-                        }
-                    }
-                    .padding()
-                    .background {
-                        Rectangle()
-                            .fill(.background)
-                            .cornerRadius(16)
-                            .padding()
-                            .shadow(radius: 4.0)
-                    }
+                    router.to(item)
                 }
-                .presentationDetents([.large])
+                return .handled
+            } else {
+                Self.handledUrl = url
+                isUrlSheetPresented = true
+                return .handled
             }
-            .task {
-                await storyStore.fetchStories()
-            }
-            .onOpenURL(perform: { url in
-                if let id = url.absoluteString.itemId {
-                    Task {
-                        let story = await StoryRepository.shared.fetchStory(id)
-                        guard let story = story else { return }
-                        router.to(story)
-                    }
-                }
-            })
-            .environment(\.openURL, OpenURLAction { url in
-                if let id = url.absoluteString.itemId {
-                    Task {
-                        let item = await StoryRepository.shared.fetchItem(id)
-                        guard let item = item else {
-                            Self.handledUrl = url
-                            isUrlSheetPresented = true
-                            return
-                        }
-                        
-                        router.to(item)
-                    }
-                    return .handled
-                } else {
-                    Self.handledUrl = url
-                    isUrlSheetPresented = true
-                    return .handled
-                }
-            })
+        })
     }
 }

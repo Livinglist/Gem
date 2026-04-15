@@ -38,6 +38,7 @@ struct GemApp: App {
                     .ignoresSafeArea()
                 }
             }
+            .preferredColorScheme(.dark)
             .environmentObject(auth)
             .onAppear {
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
