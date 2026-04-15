@@ -121,38 +121,45 @@ struct Thread: View {
                 .padding(.top, 6)
             if item is Story {
                 if let url = URL(string: item.url.orEmpty) {
-                    ZStack {
-                        LinkView(url: url, title: item.title.orEmpty)
-                            .padding(.horizontal)
-                            .allowsHitTesting(false)
-                        Color.clear
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                Self.handledUrl = url
-                                isSafariSheetPresented = true
-                            }
+                    VStack(spacing: 0) {
+                        ZStack {
+                            LinkPreview(url: url,
+                                        title: item.title.orEmpty)
+                                .onTapGesture {
+                                    Self.handledUrl = url
+                                    isSafariSheetPresented = true
+                                }
+                        }
+                        if item.text.orEmpty.isNotEmpty {
+                            Text(item.text.orEmpty.markdowned)
+                                .font(.body)
+                                .padding(.top, 6)
+                        }
                     }
                 } else {
                     VStack(spacing: 0) {
                         Text(item.title.orEmpty)
+                            .font(.system(.title3, design: .serif))
                             .multilineTextAlignment(.center)
-                            .fontWeight(.semibold)
-                            .padding(.leading, 12)
-                            .padding(.bottom, 4)
+                            .padding(.horizontal, 12)
                         Text(item.text.orEmpty.markdowned)
-                            .font(.callout)
-                            .padding(.leading, 8)
+                            .font(.body)
+                            .padding(.horizontal, 10)
+                            .padding(.top, 6)
                     }
+                    .frame(maxWidth: .infinity)
                 }
             } else if item is Comment {
                 HStack {
                     Text(item.text.orEmpty.markdowned)
-                        .font(.callout)
-                        .padding(.leading, 8)
-                    Spacer()
+                        .font(.body)
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal, 10)
                 }
+                .frame(maxWidth: .infinity)
             }
+            Divider()
+                .padding(.horizontal)
             if itemStore.status == .inProgress {
                 LoadingIndicator().padding(.top, 100)
             }
@@ -172,6 +179,7 @@ struct Thread: View {
                         isFlagDialogPresented = true
                     }
                     .padding(.trailing, 4)
+                    .id(comment.id)
                 }
             }
             Spacer().frame(height: 60)
@@ -257,6 +265,7 @@ struct Thread: View {
             if let descendants = item.descendants {
                 Text("\(descendants) cmt\(descendants <= 1 ? "" : "s")")
                     .borderedFootnote()
+                    .foregroundColor(getColor())
             }
             Spacer()
             Text(itemStore.timeDisplay == .timeAgo ? item.shortTimeAgo : item.formattedTime)

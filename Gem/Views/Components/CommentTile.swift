@@ -81,7 +81,7 @@ extension Thread {
                     .padding(.top, 6)
             } else if comment.text.isNotNullOrEmpty {
                 Text(comment.text.orEmpty.markdowned)
-                    .font(.callout)
+                    .font(.body)
                     .textSelection(.enabled)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -105,11 +105,12 @@ extension Thread {
                         if isCollapsed {
                             Text(comment.text.orEmpty.prefix(100))
                                 .lineLimit(1)
-                                .font(.callout)
+                                .font(.body)
                                 .foregroundStyle(.foreground.opacity(0.4))
                                 .textSelection(.enabled)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.horizontal, 8)
+                                .padding(.horizontal, 4)
+                                .padding(.bottom, 8)
                             Text("Collapsed")
                                 .font(.footnote.weight(.bold))
                                 .foregroundColor(getColor(level: level))

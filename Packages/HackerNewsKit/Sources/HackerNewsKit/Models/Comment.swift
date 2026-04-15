@@ -1,4 +1,4 @@
-public struct Comment: Item {
+public struct Comment: Item, Equatable {
     public let id: Int
     public let parent: Int?
     public let text: String?

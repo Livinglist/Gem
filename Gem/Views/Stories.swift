@@ -57,8 +57,8 @@ struct Stories: View {
                 Menu {
                     ForEach(StoryType.allCases, id: \.self) { storyType in
                         Button {
+                            if storyStore.storyType == storyType { return }
                             storyStore.storyType = storyType
-                            
                             Task {
                                 await storyStore.fetchStories()
                             }

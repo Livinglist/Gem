@@ -22,6 +22,23 @@ extension StoryRepository {
     fileprivate static let commentAgeSelector = "td > table > tbody > tr > td.default > div > span > span.age";
     fileprivate static let commentIndentSelector = "td > table > tbody > tr > td.ind";
     
+    public func fetchCommentsRecursively(from item: any Item) async -> [Comment] {
+        var comments: [Comment] = []
+        
+        await withCheckedContinuation { continuation in
+            Task {
+                await fetchCommentsRecursively(from: item) { comment in
+                    if let comment {
+                        comments.append(comment)
+                    }
+                }
+                continuation.resume(returning: ())
+            }
+        }
+        
+        return comments
+    }
+    
     public func fetchCommentsRecursively(from item: any Item, completion: @escaping (Comment?) -> Void) async {
         let itemId = item.id;
         let descendants = item is Story ? item.descendants : nil;
