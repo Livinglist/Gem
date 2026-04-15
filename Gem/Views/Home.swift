@@ -60,11 +60,12 @@ struct Home: View {
             .ignoresSafeArea()
             .clipShape(RoundedRectangle(cornerRadius: 47, style: .continuous))
             .onTapGesture {
-                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                UIImpactFeedbackGenerator(style: .soft).impactOccurred()
                 withAnimation(.bouncy.speed(300)) {
                     showSlideOutMenu = false
                 }
             }
+            .allowsHitTesting(showSlideOutMenu)
     }
     
     var sideMenuDimOpacity: CGFloat {
@@ -79,6 +80,7 @@ struct Home: View {
     var sideMenuDimOverlay: some View {
         Color.black.opacity(sideMenuDimOpacity)
             .ignoresSafeArea()
+            .allowsHitTesting(!showSlideOutMenu)
     }
     
     var body: some View {
@@ -136,7 +138,7 @@ struct Home: View {
                             // Threshold: if dragged more than 1/3 of the width, toggle state
                             if abs(value.translation.width) > menuWidth / 3 {
                                 showSlideOutMenu = value.translation.width > 0
-                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                UIImpactFeedbackGenerator(style: .soft).impactOccurred()
                             }
                             dragOffset = 0 // Always reset temporary offset
                         }
@@ -338,7 +340,6 @@ struct Home: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
-                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
                     withAnimation(.bouncy.speed(300)) {
                         showSlideOutMenu = !showSlideOutMenu
                     }
@@ -348,6 +349,7 @@ struct Home: View {
                         .foregroundStyle(.foreground)
                         .glassEffect()
                 }
+                .sensoryFeedback(.impact(flexibility: .soft), trigger: showSlideOutMenu)
             }
         }
         .toolbarTitleDisplayMode(.inline)

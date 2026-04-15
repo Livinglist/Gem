@@ -59,9 +59,9 @@
       launchAutomaticallySubstyle = "2"
       queueDebuggingEnableBacktraceRecording = "Yes">
       <RemoteRunnable
-         runnableDebuggingMode = "1"
-         BundleIdentifier = "com.jiaqi.gem"
-         RemotePath = "/Users/jiaqifung/Library/Developer/CoreSimulator/Devices/8F721BAF-E58F-4E64-82E5-F79F9BECC748/data/Containers/Bundle/Application/EA4660B6-FEA0-4630-91D8-2B7BEDD078FB/Gem.app">
+         runnableDebuggingMode = "2"
+         BundleIdentifier = "com.apple.springboard"
+         RemotePath = "/Today">
       </RemoteRunnable>
       <MacroExpansion>
          <BuildableReference

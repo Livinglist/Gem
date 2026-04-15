@@ -158,26 +158,27 @@ extension Thread {
         }
         
         func uncollapse(cmt: Comment) {
-            if isRecursivelyFetching {
-                collapsed.remove(cmt.id)
-                guard var index = comments.firstIndex(of: cmt),
-                      let level = cmt.level
-                else { return }
-                
-                index = min(index + 1, comments.count - 1)
-                for c in comments[index..<comments.count] {
-                    if let cLevel = c.level, cLevel > level {
-                        collapsed.remove(c.id)
-                        hidden.remove(c.id)
-                    } else {
-                        return
-                    }
-                }
-            } else {
-                collapsed.remove(cmt.id)
-                
-                unhide(kidsOf: cmt)
-            }
+            guard status.isCompleted else { return }
+            var updatedCommentsSlice = [Comment]()
+            let updatedComment = cmt.copyWith(isCollapsed: false)
+            let parentIndex = comments.firstIndex { $0.id == cmt.id }
+            let parentLevel = cmt.level
+            updatedCommentsSlice.append(updatedComment)
+            guard let parentIndex, let parentLevel else { return }
+            comments.replaceSubrange(parentIndex..<parentIndex + 1, with: [updatedComment])
+            var index = parentIndex + 1
+            guard index < comments.count else { return }
+            var nextComment = comments[index]
+            var nextCommentLevel: Int = nextComment.level ?? 0
+            guard nextCommentLevel > parentLevel else { return }
+            repeat {
+                let updatedComment = nextComment.copyWith(isHidden: false)
+                comments.replaceSubrange(index..<index + 1, with: [updatedComment])
+                index = index + 1
+                guard index < comments.count else { return }
+                nextComment = comments[index]
+                nextCommentLevel = nextComment.level ?? 0
+            } while (nextCommentLevel > parentLevel)
         }
         
         private func hide(kidsOf parent: Comment) {

@@ -57,7 +57,6 @@ struct SideMenuView: View {
         
         var body: some View {
             Button {
-                UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 withAnimation {
                     selectedMenuItem = menuItem
                 }
@@ -67,6 +66,7 @@ struct SideMenuView: View {
                     .padding()
             }
             .buttonStyle(.plain)
+            .sensoryFeedback(.impact(flexibility: .soft), trigger: selectedMenuItem)
             .if(selectedMenuItem == menuItem) { view in
                 view
                     .glassEffect()
@@ -166,7 +166,6 @@ struct SideMenuView: View {
                 Spacer()
                 
                 Button {
-                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
                     isSettingsPresented = true
                 } label: {
                     Label("Settings", systemImage: "gearshape")
@@ -176,6 +175,7 @@ struct SideMenuView: View {
                         .padding(.vertical, 6)
                         .frame(width: 48, height: 48)
                 }
+                .sensoryFeedback(.impact(flexibility: .soft), trigger: isSettingsPresented)
                 .tint(.accent.opacity(0.6))
                 .buttonBorderShape(.circle)
                 .glassEffect(.regular.tint(.accent.opacity(0.4)).interactive())

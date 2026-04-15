@@ -109,7 +109,6 @@ struct Thread: View {
             }
         } label: {
             Image(systemName: "ellipsis")
-                .foregroundColor(.purple)
         }
     }
     
@@ -157,9 +156,7 @@ struct Thread: View {
             if itemStore.status == .inProgress {
                 LoadingIndicator().padding(.top, 100)
             }
-            // In iOS 17, LazyVStack flitters whenever its contnet is updated.
-            // Here we work around this by switching to VStack once all comments are fetched.
-            LazyVStack(spacing: 0) {
+            VStack(spacing: 0) {
                 ForEach(itemStore.comments.indices, id: \.self) { index in
                     let comment = itemStore.comments[index]
                     CommentTile(index: index, comment: comment, itemStore: itemStore, onShowHNSheet: {
@@ -260,12 +257,10 @@ struct Thread: View {
             if let descendants = item.descendants {
                 Text("\(descendants) cmt\(descendants <= 1 ? "" : "s")")
                     .borderedFootnote()
-                    .foregroundColor(getColor())
             }
             Spacer()
             Text(itemStore.timeDisplay == .timeAgo ? item.shortTimeAgo : item.formattedTime)
                 .borderedFootnote()
-                .foregroundColor(getColor())
                 .padding(.trailing, 2)
                 .onTapGesture {
                     withAnimation {

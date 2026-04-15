@@ -23,7 +23,7 @@ class ActionViewController: UIViewController {
     }
     
     private func handleUrl(content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
-        attachment.loadItem(forTypeIdentifier: urlContentType, options: nil) { [weak self] data, error in
+        attachment.loadItem(forTypeIdentifier: urlContentType) { [weak self] data, error in
             if error == nil, let item = data as? URL, let this = self {
                 this.redirectToHostApp(item)
             } else {
@@ -45,13 +45,13 @@ class ActionViewController: UIViewController {
     }
     
     private func redirectToHostApp(_ item: URL) {
-        let url = URL(string: "ZCShareMedia://\(item)")
+        let url = URL(string: "gem://\(item)")
         var responder = self as UIResponder?
-        let selectorOpenURL = sel_registerName("openURL:")
         
         while (responder != nil) {
-            if let application = responder as? UIApplication {
-                application.performSelector(inBackground: selectorOpenURL, with: url)
+            if let application = responder as? UIApplication,
+               let url {
+                application.open(url)
             }
             
             responder = responder!.next

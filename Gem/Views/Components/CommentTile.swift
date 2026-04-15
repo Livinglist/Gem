@@ -68,6 +68,7 @@ extension Thread {
                         
                         return AnyView(wrappedView)
                     }
+                    .id(comment.id)
             }
         }
         
@@ -84,7 +85,7 @@ extension Thread {
                     .textSelection(.enabled)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 4)
+                    .padding([.leading, .bottom], 4)
             } else {
                 Text("deleted")
                     .font(.footnote)
@@ -102,6 +103,13 @@ extension Thread {
                     VStack(spacing: 0) {
                         nameRow.padding(.bottom, 4)
                         if isCollapsed {
+                            Text(comment.text.orEmpty.prefix(100))
+                                .lineLimit(1)
+                                .font(.callout)
+                                .foregroundStyle(.foreground.opacity(0.4))
+                                .textSelection(.enabled)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 4)
                             Text("Collapsed")
                                 .font(.footnote.weight(.bold))
                                 .foregroundColor(getColor(level: level))
@@ -206,7 +214,6 @@ extension Thread {
                 Spacer()
                 Text(itemStore.timeDisplay == .timeAgo ? comment.shortTimeAgo : comment.formattedTime)
                     .borderedFootnote()
-                    .foregroundColor(getColor(level: level))
                     .padding(.trailing, 2)
                     .onTapGesture {
                         withAnimation {
@@ -215,7 +222,6 @@ extension Thread {
                     }
                 Text("#\(index + 1)")
                     .borderedFootnote()
-                    .foregroundColor(getColor(level: level))
                     .padding(.trailing, 2)
             }
         }
