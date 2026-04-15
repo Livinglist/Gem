@@ -59,7 +59,12 @@ struct Home: View {
         Color.black.opacity(mainContentDimOpacity)
             .ignoresSafeArea()
             .clipShape(RoundedRectangle(cornerRadius: 47, style: .continuous))
-            .onTapGesture { withAnimation { showSlideOutMenu = false } }
+            .onTapGesture {
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                withAnimation(.bouncy.speed(300)) {
+                    showSlideOutMenu = false
+                }
+            }
     }
     
     var sideMenuDimOpacity: CGFloat {
@@ -82,12 +87,12 @@ struct Home: View {
                 // Side Menu
                 ZStack {
                     SideMenuView(menuWidth: menuWidth, onDismiss: { selectedItem in
-                        withAnimation {
+                        withAnimation(.bouncy.speed(300))  {
                             showSlideOutMenu = false
                         }
                         
                         if let selectedItem {
-                            withAnimation {
+                            withAnimation(.snappy.speed(200)) {
                                 selectedMenuItem = selectedItem
                             }
                         }
@@ -103,18 +108,15 @@ struct Home: View {
                 
                 ZStack(alignment: .leading) {
                     mainView
-                        .background(
-                            RoundedRectangle(cornerRadius: 47, style: .continuous)
-                        )
                         .clipShape(RoundedRectangle(cornerRadius: 47, style: .continuous))
                         .overlay {
                             mainContentDimOverlay
                         }
                 }
+                .id("mainView")
                 .offset(x: dragOffset == 0 ? (showSlideOutMenu ? menuWidth : 0) : (dragOffset > 0 ? dragOffset : menuWidth + dragOffset))
                 .shadow(radius: 5)
             }
-            .animation(.spring(), value: showSlideOutMenu)
             .gesture(
                 DragGesture()
                     .onChanged { value in
@@ -134,7 +136,7 @@ struct Home: View {
                             // Threshold: if dragged more than 1/3 of the width, toggle state
                             if abs(value.translation.width) > menuWidth / 3 {
                                 showSlideOutMenu = value.translation.width > 0
-                                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
                             }
                             dragOffset = 0 // Always reset temporary offset
                         }
@@ -165,13 +167,6 @@ struct Home: View {
     @ViewBuilder
     var storyList: some View {
         List {
-            //            Button {
-            //                Router.shared.to(.pin)
-            //            } label: {
-            //                Label("Pins", systemImage: "pin")
-            //            }
-            //            .listRowSeparator(.hidden)
-            
             if storyStore.status.isLoading {
                 HStack {
                     Spacer()
@@ -343,8 +338,10 @@ struct Home: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
-                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    showSlideOutMenu = !showSlideOutMenu
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    withAnimation(.bouncy.speed(300)) {
+                        showSlideOutMenu = !showSlideOutMenu
+                    }
                 } label: {
                     Label("Side menu", systemImage: "book.pages")
                         .labelStyle(.iconOnly)

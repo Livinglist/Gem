@@ -9,6 +9,7 @@ extension Thread {
         @ObservedObject var settingsStore: SettingsStore = .shared
 
         let level: Int
+        let index: Int
         let comment: Comment
         let settings: SettingsStore = .shared
         let onLoadMore: () -> Void
@@ -16,13 +17,15 @@ extension Thread {
         let onShowReplySheet: () -> Void
         let onFlag: () -> Void
 
-        init(comment: Comment,
+        init(index: Int,
+             comment: Comment,
              itemStore: ItemStore,
              onShowHNSheet: @escaping () -> Void,
              onShowReplySheet: @escaping () -> Void,
              onLoadMore: @escaping () -> Void,
              onFlag: @escaping () -> Void) {
             self.level = comment.level ?? 0
+            self.index = index
             self.comment = comment
             self.onShowHNSheet = onShowHNSheet
             self.onShowReplySheet = onShowReplySheet
@@ -32,7 +35,11 @@ extension Thread {
         }
         
         var isCollapsed: Bool {
-            itemStore.collapsed.contains(comment.id)
+            comment.isCollapsed
+        }
+        
+        var isHidden: Bool {
+            comment.isHidden
         }
 
         var isBlocked: Bool {
@@ -89,82 +96,86 @@ extension Thread {
         @ViewBuilder
         var mainView: some View {
             VStack(alignment: .leading, spacing: 0) {
-                VStack(spacing: 0) {
-                    nameRow.padding(.bottom, 4)
-                    if isCollapsed {
-                        Text("Collapsed")
-                            .font(.footnote.weight(.bold))
-                            .foregroundColor(getColor(level: level))
-                    } else {
-                        textView
-                            .onTapGesture {
-                                if !isCollapsed {
-                                    HapticFeedbackService.shared.ultralight()
-                                    withAnimation {
-                                        itemStore.collapse(cmt: comment)
-                                    }
-                                }
-                            }
-                    }
-                    if itemStore.loadingItemId == comment.id {
-                        LoadingIndicator().padding(.top, 16).padding(.bottom, 8)
-                    } else if !itemStore.isRecursivelyFetching && itemStore.loadedCommentIds.contains(comment.id) == false && isCollapsed == false && comment.kids.isNotNullOrEmpty {
-                        Button {
-                            HapticFeedbackService.shared.light()
-                            
-                            onLoadMore()
-                        } label: {
-                            Text("\(comment.kids.countOrZero) \(comment.kids.isMoreThanOne ? "replies" : "reply")")
+                if isHidden {
+                    EmptyView()
+                } else {
+                    VStack(spacing: 0) {
+                        nameRow.padding(.bottom, 4)
+                        if isCollapsed {
+                            Text("Collapsed")
                                 .font(.footnote.weight(.bold))
                                 .foregroundColor(getColor(level: level))
-                                .frame(width: 140)
+                        } else {
+                            textView
+                                .onTapGesture {
+                                    if !isCollapsed {
+                                        HapticFeedbackService.shared.ultralight()
+                                        withAnimation {
+                                            itemStore.collapse(cmt: comment)
+                                        }
+                                    }
+                                }
                         }
-                        .buttonStyle(.bordered)
-                        .buttonBorderShape(.capsule)
-                        .padding(.top, 6)
-                    }
-                }
-                .padding(EdgeInsets(top: 6, leading: 0, bottom: 0, trailing: 0))
-                .background(Color(UIColor.systemBackground))
-                .contextMenu {
-                    // Wrap these in group cuz there's a limit of 10 items in func params.
-                    Group {
-                        UpvoteButton(id: comment.id, actionPerformed: $itemStore.actionPerformed)
-                        DownvoteButton(id: comment.id, actionPerformed: $itemStore.actionPerformed)
-                        FavButton(id: comment.id, actionPerformed: $itemStore.actionPerformed)
-                        PinButton(id: comment.id, actionPerformed: $itemStore.actionPerformed)
-                    }
-                    Button {
-                        onShowReplySheet()
-                    } label: {
-                        Label(Action.reply.label, systemImage: Action.reply.icon)
-                    }
-                    .disabled(!auth.loggedIn)
-                    Divider()
-                    Button {
-                        onFlag()
-                    } label: {
-                        Label(Action.flag.label, systemImage: Action.flag.icon)
-                    }
-                    .disabled(!auth.loggedIn)
-                    Divider()
-                    ShareMenu(item: comment)
-                    CopyButton(text: comment.text.orEmpty, actionPerformed: $itemStore.actionPerformed)
-                    Button {
-                        onShowHNSheet()
-                    } label: {
-                        Label("View on Hacker News", systemImage: "safari")
-                    }
-                }
-                .onTapGesture {
-                    if isCollapsed {
-                        HapticFeedbackService.shared.ultralight()
-                        withAnimation {
-                            itemStore.uncollapse(cmt: comment)
+                        if itemStore.loadingItemId == comment.id {
+                            LoadingIndicator().padding(.top, 16).padding(.bottom, 8)
+                        } else if !itemStore.isRecursivelyFetching && itemStore.loadedCommentIds.contains(comment.id) == false && isCollapsed == false && comment.kids.isNotNullOrEmpty {
+                            Button {
+                                HapticFeedbackService.shared.light()
+                                
+                                onLoadMore()
+                            } label: {
+                                Text("\(comment.kids.countOrZero) \(comment.kids.isMoreThanOne ? "replies" : "reply")")
+                                    .font(.footnote.weight(.bold))
+                                    .foregroundColor(getColor(level: level))
+                                    .frame(width: 140)
+                            }
+                            .buttonStyle(.bordered)
+                            .buttonBorderShape(.capsule)
+                            .padding(.top, 6)
                         }
                     }
+                    .padding(EdgeInsets(top: 6, leading: 0, bottom: 0, trailing: 0))
+                    .background(Color(UIColor.systemBackground))
+                    .contextMenu {
+                        // Wrap these in group cuz there's a limit of 10 items in func params.
+                        Group {
+                            UpvoteButton(id: comment.id, actionPerformed: $itemStore.actionPerformed)
+                            DownvoteButton(id: comment.id, actionPerformed: $itemStore.actionPerformed)
+                            FavButton(id: comment.id, actionPerformed: $itemStore.actionPerformed)
+                            PinButton(id: comment.id, actionPerformed: $itemStore.actionPerformed)
+                        }
+                        Button {
+                            onShowReplySheet()
+                        } label: {
+                            Label(Action.reply.label, systemImage: Action.reply.icon)
+                        }
+                        .disabled(!auth.loggedIn)
+                        Divider()
+                        Button {
+                            onFlag()
+                        } label: {
+                            Label(Action.flag.label, systemImage: Action.flag.icon)
+                        }
+                        .disabled(!auth.loggedIn)
+                        Divider()
+                        ShareMenu(item: comment)
+                        CopyButton(text: comment.text.orEmpty, actionPerformed: $itemStore.actionPerformed)
+                        Button {
+                            onShowHNSheet()
+                        } label: {
+                            Label("View on Hacker News", systemImage: "safari")
+                        }
+                    }
+                    .onTapGesture {
+                        if isCollapsed {
+                            HapticFeedbackService.shared.ultralight()
+                            withAnimation {
+                                itemStore.uncollapse(cmt: comment)
+                            }
+                        }
+                    }
+                    Spacer()
                 }
-                Spacer()
             }
             .frame(alignment: .leading)
             .padding(.leading, 6)
@@ -182,7 +193,6 @@ extension Thread {
                             .foregroundColor(getColor(level: level))
                     }
                 }
-
                 if let karma = comment.score {
                     Text("\(karma) karma")
                         .borderedFootnote()
@@ -194,7 +204,7 @@ extension Thread {
                         .foregroundColor(getColor(level: level))
                 }
                 Spacer()
-                Text(itemStore.timeDisplay == .timeAgo ? comment.timeAgo : comment.formattedTime)
+                Text(itemStore.timeDisplay == .timeAgo ? comment.shortTimeAgo : comment.formattedTime)
                     .borderedFootnote()
                     .foregroundColor(getColor(level: level))
                     .padding(.trailing, 2)
@@ -203,6 +213,10 @@ extension Thread {
                             itemStore.timeDisplay.toggle()
                         }
                     }
+                Text("#\(index + 1)")
+                    .borderedFootnote()
+                    .foregroundColor(getColor(level: level))
+                    .padding(.trailing, 2)
             }
         }
     }

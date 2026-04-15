@@ -32,6 +32,11 @@ public extension Item {
         let date = Date(timeIntervalSince1970: Double(time))
         return date.timeAgoString
     }
+    
+    var shortTimeAgo: String {
+        let date = Date(timeIntervalSince1970: Double(time))
+        return date.shortTimeAgoString
+    }
 
     var formattedTime: String {
         Date(timeIntervalSince1970: Double(time)).formatted()

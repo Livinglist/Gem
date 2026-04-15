@@ -160,8 +160,9 @@ struct Thread: View {
             // In iOS 17, LazyVStack flitters whenever its contnet is updated.
             // Here we work around this by switching to VStack once all comments are fetched.
             LazyVStack(spacing: 0) {
-                ForEach(itemStore.comments, id: \.id) { comment in
-                    CommentTile(comment: comment, itemStore: itemStore, onShowHNSheet: {
+                ForEach(itemStore.comments.indices, id: \.self) { index in
+                    let comment = itemStore.comments[index]
+                    CommentTile(index: index, comment: comment, itemStore: itemStore, onShowHNSheet: {
                         onViewOnHackerNewsTap(item: comment)
                     }, onShowReplySheet: {
                         onReplyTap(item: comment)
@@ -207,7 +208,9 @@ struct Thread: View {
                         }
                     } label: {
                         Image(systemName: itemStore.isRecursivelyFetching ? Action.lazyFetching.icon : Action.eagerFetching.icon)
-                            .foregroundColor(itemStore.status.isLoading ? .gray : .purple)
+                            .if(itemStore.status.isLoading) { view in
+                                view.foregroundStyle(.gray.opacity(0.8))
+                            }
                     }
                 }
             }
@@ -228,8 +231,6 @@ struct Thread: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .refreshable {
-            // Wrapped around in Task so that the default refresh indicator
-            // doesn't wait for refresh() to complete.
             Task {
                 await itemStore.refresh()
             }
@@ -262,7 +263,7 @@ struct Thread: View {
                     .foregroundColor(getColor())
             }
             Spacer()
-            Text(itemStore.timeDisplay == .timeAgo ? item.timeAgo : item.formattedTime)
+            Text(itemStore.timeDisplay == .timeAgo ? item.shortTimeAgo : item.formattedTime)
                 .borderedFootnote()
                 .foregroundColor(getColor())
                 .padding(.trailing, 2)

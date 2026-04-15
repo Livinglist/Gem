@@ -7,6 +7,15 @@ public struct Comment: Item {
     public let time: Int
     public let kids: [Int]?
     public let level: Int?
+    public let isCollapsed: Bool
+    public let isHidden: Bool
+    
+    /// Values below will always be nil for `Comment`.
+    public let title: String?
+    public let url: String?
+    public let descendants: Int?
+    public let score: Int?
+    
     public var metadata: String {
         if let count = kids?.count, count != 0 {
             return "\(count) cmt\(count > 1 ? "s":"") | \(timeAgo) by \(by.orEmpty)"
@@ -15,14 +24,7 @@ public struct Comment: Item {
         }
     }
     
-    /// Values below will always be nil for `Comment`.
-    public let title: String?
-    public let url: String?
-    public let descendants: Int?
-    public let score: Int?
-
-
-    init(id: Int, parent: Int?, text: String?, by: String?, time: Int, kids: [Int]? = [Int](), level: Int? = 0) {
+    init(id: Int, parent: Int?, text: String?, by: String?, time: Int, kids: [Int]? = [Int](), level: Int? = 0, isCollapsed: Bool = false, isHidden: Bool = false) {
         self.id = id
         self.parent = parent
         self.text = text
@@ -35,20 +37,24 @@ public struct Comment: Item {
         self.url = nil
         self.descendants = nil
         self.score = nil
+        self.isCollapsed = isCollapsed
+        self.isHidden = isHidden
     }
-
+    
     // Empty initializer
     init() {
         self.init(id: 0, parent: 0, text: "", by: "", time: 0)
     }
-
-    public func copyWith(text: String? = nil, level: Int? = nil) -> Comment {
-        Comment(id: id, 
+    
+    public func copyWith(text: String? = nil, level: Int? = nil, isCollapsed: Bool? = nil, isHidden: Bool? = nil) -> Comment {
+        Comment(id: id,
                 parent: parent,
                 text: text ?? self.text,
                 by: by,
                 time: time,
                 kids: kids ?? [Int](),
-                level: level ?? self.level)
+                level: level ?? self.level,
+                isCollapsed: isCollapsed ?? self.isCollapsed,
+                isHidden: isHidden ?? self.isHidden)
     }
 }
