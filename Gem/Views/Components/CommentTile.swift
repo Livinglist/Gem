@@ -109,7 +109,7 @@ extension Thread {
                                 .foregroundStyle(.foreground.opacity(0.4))
                                 .textSelection(.enabled)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.horizontal, 4)
+                                .padding(.horizontal, 8)
                             Text("Collapsed")
                                 .font(.footnote.weight(.bold))
                                 .foregroundColor(getColor(level: level))
