@@ -91,7 +91,7 @@ struct SideMenu: View {
                         .padding(.top, 80)
                     }
                     
-                    RecentsView()
+                    RecentsView(onDismiss: onDismiss)
                         .padding()
                         .padding(.bottom, 100)
                         .frame(maxWidth: .infinity, alignment: .leading)

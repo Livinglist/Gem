@@ -31,6 +31,7 @@ import Combine
 
 struct RecentsView: View {
     private var viewModel: RecentsViewViewModel = .shared
+    let onDismiss: (MenuItem?) -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -47,6 +48,11 @@ struct RecentsView: View {
                     .foregroundStyle(.foreground.opacity(0.9))
                     .lineLimit(1)
                     .padding(.bottom, 20)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        onDismiss(nil)
+                        Router.shared.to(model.story)
+                    }
             }
         }
     }
