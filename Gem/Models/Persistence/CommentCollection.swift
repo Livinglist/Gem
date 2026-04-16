@@ -4,8 +4,8 @@ import HackerNewsKit
 
 @Model
 class CommentCollection {
-    @Attribute(.unique) let parentId: Int
-    let comments: [Comment]
+    @Attribute(.unique) var parentId: Int
+    var comments: [Comment]
     
     init(_ comments: [Comment], parentId: Int) {
         self.parentId = parentId

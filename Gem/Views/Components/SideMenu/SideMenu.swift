@@ -34,7 +34,7 @@ enum MenuItem: String, Hashable, Sendable, CaseIterable {
     }
 }
 
-struct SideMenuView: View {
+struct SideMenu: View {
     let menuWidth: CGFloat
     let onDismiss: (MenuItem?) -> Void
     
@@ -91,68 +91,10 @@ struct SideMenuView: View {
                         .padding(.top, 80)
                     }
                     
-                    VStack(alignment: .leading, spacing: 0) {
-                        HStack(spacing: 0) {
-                            Text("Recents")
-                                .font(.headline)
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                        }
-                        .padding(.bottom)
-                        
-                        Text("Ask HN this is a place holder")
-                            .foregroundStyle(.foreground.opacity(0.9))
-                            .lineLimit(1)
-                            .padding(.bottom, 20)
-                        Text("Tell HN this one is a very long place holder that will wrap and continue")
-                            .foregroundStyle(.foreground.opacity(0.9))
-                            .lineLimit(1)
-                            .padding(.bottom, 20)
-                        Text("Tell HN this one is a very long place holder that will wrap and continue")
-                            .foregroundStyle(.foreground.opacity(0.9))
-                            .lineLimit(1)
-                            .padding(.bottom, 20)
-                        Text("Ask HN this is a place holder")
-                            .foregroundStyle(.foreground.opacity(0.9))
-                            .lineLimit(1)
-                            .padding(.bottom, 20)
-                        Text("Tell HN this one is a very long place holder that will wrap and continue")
-                            .foregroundStyle(.foreground.opacity(0.9))
-                            .lineLimit(1)
-                            .padding(.bottom, 20)
-                        Text("Tell HN this one is a very long place holder that will wrap and continue")
-                            .foregroundStyle(.foreground.opacity(0.9))
-                            .lineLimit(1)
-                            .padding(.bottom, 20)
-                        Text("Ask HN this is a place holder")
-                            .foregroundStyle(.foreground.opacity(0.9))
-                            .lineLimit(1)
-                            .padding(.bottom, 20)
-                        Text("Tell HN this one is a very long place holder that will wrap and continue")
-                            .foregroundStyle(.foreground.opacity(0.9))
-                            .lineLimit(1)
-                            .padding(.bottom, 20)
-                        Text("Tell HN this one is a very long place holder that will wrap and continue")
-                            .foregroundStyle(.foreground.opacity(0.9))
-                            .lineLimit(1)
-                            .padding(.bottom, 20)
-                        Text("Ask HN this is a place holder")
-                            .foregroundStyle(.foreground.opacity(0.9))
-                            .lineLimit(1)
-                            .padding(.bottom, 20)
-                        Text("Tell HN this one is a very long place holder that will wrap and continue")
-                            .foregroundStyle(.foreground.opacity(0.9))
-                            .lineLimit(1)
-                            .padding(.bottom, 20)
-                        Text("Tell HN this one is a very long place holder that will wrap and continue")
-                            .foregroundStyle(.foreground.opacity(0.9))
-                            .lineLimit(1)
-                            .padding(.bottom, 20)
-                        
-                    }
-                    .padding()
-                    .padding(.bottom, 100)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    RecentsView()
+                        .padding()
+                        .padding(.bottom, 100)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .scrollIndicators(.hidden)
                 

@@ -58,6 +58,9 @@ struct ItemRow: View {
                     if item.isJobWithUrl {
                         isSafariSheetPresented = true
                     } else {
+                        if let story = item as? Story {
+                            RecentsViewViewModel.shared.insert(story: story)
+                        }
                         Router.shared.to(item)
                     }
                 },

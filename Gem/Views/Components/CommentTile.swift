@@ -7,7 +7,7 @@ extension Thread {
         @EnvironmentObject var auth: Authentication
         @ObservedObject var itemStore: ItemStore
         @ObservedObject var settingsStore: SettingsStore = .shared
-
+        
         let level: Int
         let index: Int
         let comment: Comment
@@ -16,7 +16,7 @@ extension Thread {
         let onShowHNSheet: () -> Void
         let onShowReplySheet: () -> Void
         let onFlag: () -> Void
-
+        
         init(index: Int,
              comment: Comment,
              itemStore: ItemStore,
@@ -41,14 +41,14 @@ extension Thread {
         var isHidden: Bool {
             comment.isHidden
         }
-
+        
         var isBlocked: Bool {
             if let authorId = comment.by {
                 return SettingsStore.shared.blocklist.contains(authorId)
             }
             return false
         }
-
+        
         var body: some View {
             if itemStore.hidden.contains(comment.id) {
                 EmptyView()
@@ -173,6 +173,16 @@ extension Thread {
                             onShowHNSheet()
                         } label: {
                             Label("View on Hacker News", systemImage: "safari")
+                        }
+                    } preview: {
+                        VStack {
+                            nameRow.padding(.bottom, 4)
+                                .frame(minWidth: 500)
+                            HStack {
+                                Text(comment.text.orEmpty.prefix(300))
+                                    .font(.body)
+                                Spacer()
+                            }
                         }
                     }
                     .onTapGesture {

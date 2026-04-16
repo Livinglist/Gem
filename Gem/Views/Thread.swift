@@ -133,6 +133,7 @@ struct Thread: View {
                         if item.text.orEmpty.isNotEmpty {
                             Text(item.text.orEmpty.markdowned)
                                 .font(.body)
+                                .padding(.horizontal, 10)
                                 .padding(.top, 6)
                         }
                     }

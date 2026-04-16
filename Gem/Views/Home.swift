@@ -88,7 +88,7 @@ struct Home: View {
             ZStack(alignment: .leading) {
                 // Side Menu
                 ZStack {
-                    SideMenuView(menuWidth: menuWidth, onDismiss: { selectedItem in
+                    SideMenu(menuWidth: menuWidth, onDismiss: { selectedItem in
                         withAnimation(.bouncy.speed(300))  {
                             showSlideOutMenu = false
                         }

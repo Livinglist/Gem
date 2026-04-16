@@ -1,4 +1,5 @@
 import SwiftUI
+import HackerNewsKit
 
 struct Pins: View {
     @StateObject var pinStore: PinStore = .init()

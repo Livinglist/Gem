@@ -4,8 +4,8 @@ import HackerNewsKit
 
 @Model
 class StoryCollection {
-    let storyType: StoryType
-    let stories: [Story]
+    var storyType: StoryType
+    var stories: [Story]
     
     init(_ stories: [Story], storyType: StoryType) {
         self.storyType = storyType
