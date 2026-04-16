@@ -174,16 +174,6 @@ extension Thread {
                         } label: {
                             Label("View on Hacker News", systemImage: "safari")
                         }
-                    } preview: {
-                        VStack {
-                            nameRow.padding(.bottom, 4)
-                                .frame(minWidth: 500)
-                            HStack {
-                                Text(comment.text.orEmpty.prefix(300))
-                                    .font(.body)
-                                Spacer()
-                            }
-                        }
                     }
                     .onTapGesture {
                         if isCollapsed {
