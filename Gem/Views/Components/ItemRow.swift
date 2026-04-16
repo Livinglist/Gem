@@ -33,7 +33,7 @@ struct ItemRow: View {
             UpvoteButton(id: item.id, actionPerformed: $actionPerformed)
             DownvoteButton(id: item.id, actionPerformed: $actionPerformed)
             FavButton(id: item.id, actionPerformed: $actionPerformed)
-            PinButton(id: item.id, actionPerformed: $actionPerformed)
+            PinButton(item: item, actionPerformed: $actionPerformed)
             Divider()
             FlagButton(id: item.id, showFlagDialog: $isFlagDialogPresented)
             Divider()
@@ -45,9 +45,14 @@ struct ItemRow: View {
             }
         } label: {
             Label(String(), systemImage: "ellipsis")
-                .padding(.leading)
-                .padding(.bottom, 12)
+                .labelStyle(.iconOnly)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 12)
                 .foregroundColor(.purple)
+                .contentShape(Rectangle())
+                .glassEffect()
+                .padding(.trailing, 6)
+                .padding(.bottom, 6)
         }
     }
 
@@ -59,7 +64,7 @@ struct ItemRow: View {
                         isSafariSheetPresented = true
                     } else {
                         if let story = item as? Story {
-                            RecentsViewViewModel.shared.insert(story: story)
+                            RecentsViewModel.shared.insert(story: story)
                         }
                         Router.shared.to(item)
                     }
@@ -87,7 +92,6 @@ struct ItemRow: View {
                                 }
                                 Spacer()
                             }.padding(item is Comment ? [.horizontal, .top] : [.horizontal])
-                            Divider().frame(maxWidth: .infinity)
                             HStack(alignment: .center) {
                                 Text(item.metadata)
                                     .font(.caption)
@@ -97,9 +101,10 @@ struct ItemRow: View {
                                 Spacer()
                                 if isPinnedStory {
                                     Button {
-                                        onPin()
+                                        removePin()
                                     } label: {
                                         Label(String(), systemImage: "pin.fill")
+                                            .foregroundStyle(.accent)
                                             .rotationEffect(Angle(degrees: 45))
                                             .transformEffect(.init(translationX: 0, y: 5))
                                     }
@@ -150,8 +155,8 @@ struct ItemRow: View {
         }
     }
     
-    private func onPin() {
-        settings.onPinToggle(item.id)
+    private func removePin() {
+        PinsViewModel.shared.remove(item)
         HapticFeedbackService.shared.light()
     }
 

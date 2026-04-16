@@ -51,7 +51,7 @@ struct Search: View {
         .listStyle(.plain)
         .searchable(text: $debounceObject.text, placement: .toolbar, prompt: "Search Hacker News")
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Search")
+        .navigationTitle("Search on HN")
         .withToast(actionPerformed: $actionPerformed)
         .onChange(of: debounceObject.debouncedText) { _, text in
             if text.isEmpty { return }

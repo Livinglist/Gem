@@ -7,8 +7,8 @@ public struct Comment: Item, Equatable {
     public let time: Int
     public let kids: [Int]?
     public let level: Int?
-    public let isCollapsed: Bool
-    public let isHidden: Bool
+    public let isCollapsed: Bool?
+    public let isHidden: Bool?
     
     /// Values below will always be nil for `Comment`.
     public let title: String?
@@ -24,7 +24,7 @@ public struct Comment: Item, Equatable {
         }
     }
     
-    init(id: Int, parent: Int?, text: String?, by: String?, time: Int, kids: [Int]? = [Int](), level: Int? = 0, isCollapsed: Bool = false, isHidden: Bool = false) {
+    public init(id: Int, parent: Int?, text: String?, by: String?, time: Int, kids: [Int]? = [Int](), level: Int? = 0, isCollapsed: Bool = false, isHidden: Bool = false) {
         self.id = id
         self.parent = parent
         self.text = text
@@ -54,7 +54,7 @@ public struct Comment: Item, Equatable {
                 time: time,
                 kids: kids ?? [Int](),
                 level: level ?? self.level,
-                isCollapsed: isCollapsed ?? self.isCollapsed,
-                isHidden: isHidden ?? self.isHidden)
+                isCollapsed: isCollapsed ?? self.isCollapsed ?? false,
+                isHidden: isHidden ?? self.isHidden ?? false)
     }
 }

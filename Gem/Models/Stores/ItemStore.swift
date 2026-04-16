@@ -20,19 +20,21 @@ extension Thread {
 
 extension Thread {
     @MainActor
+    @Observable
     class ItemStore : ObservableObject {
-        @Published var comments: [Comment] = .init()
-        @Published var status: Status = .idle
-        @Published var item: (any Item)?
-        @Published var loadingItemId: Int?
-        @Published var actionPerformed: Action = .none
-        @Published var timeDisplay: TimeDisplay = .timeAgo
+        var comments: [Comment] = .init()
+        var searchResults: [Int] = .init()
+        var status: Status = .idle
+        var item: (any Item)?
+        var loadingItemId: Int?
+        var actionPerformed: Action = .none
+        var timeDisplay: TimeDisplay = .timeAgo
 
         /// Stores ids of loaded comments, including both root and child comments.
-        @Published var loadedCommentIds: Set<Int> = .init()
-        @Published var collapsed: Set<Int> = .init()
-        @Published var hidden: Set<Int> = .init()
-        @Published var isRecursivelyFetching: Bool = SettingsStore.shared.defaultFetchMode == .eager || OfflineRepository.shared.isOfflineReading {
+        var loadedCommentIds: Set<Int> = .init()
+        var collapsed: Set<Int> = .init()
+        var hidden: Set<Int> = .init()
+        var isRecursivelyFetching: Bool = SettingsStore.shared.defaultFetchMode == .eager || OfflineRepository.shared.isOfflineReading {
             didSet {
                 if OfflineRepository.shared.isOfflineReading {
                     return
@@ -195,33 +197,15 @@ extension Thread {
             } while (nextCommentLevel > parentLevel)
         }
         
-        private func hide(kidsOf parent: Comment) {
-            guard let kids = parent.kids else { return }
-            
-            for childId in kids {
-                let child = self.comments.first { $0.id == childId }
-                guard let child = child else {
-                    continue
-                }
-                hidden.insert(childId)
-                hide(kidsOf: child)
-            }
-        }
-        
-        private func unhide(kidsOf parent: Comment) {
-            guard let kids = parent.kids else { return }
-            
-            for childId in kids {
-                let child = self.comments.first { $0.id == childId }
-                guard let child = child else {
-                    continue
-                }
-                
-                hidden.remove(childId)
-                if collapsed.contains(childId) == false {
-                    unhide(kidsOf: child)
+        func searchInThread(_ text: String) {
+            var results = [Int]()
+            for index in 0..<comments.count {
+                let comment = comments[index]
+                if let commentText = comment.text, commentText.localizedCaseInsensitiveContains(text) {
+                    results.append(index)
                 }
             }
+            self.searchResults = results
         }
     }
 }

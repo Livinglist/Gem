@@ -121,15 +121,6 @@ class SettingsStore: ObservableObject {
         }
         UserDefaults.standard.set(Array(favList), forKey: .favListKey)
     }
-    
-    func onPinToggle(_ id: Int) -> Void {
-        if pinList.contains(id) {
-            pinList.removeAll { $0 == id }
-        } else {
-            pinList.append(id)
-        }
-        UserDefaults.standard.set(Array(pinList), forKey: .pinListKey)
-    }
 
     func block(_ id: String) -> Void {
         blocklist.insert(id)

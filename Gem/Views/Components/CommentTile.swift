@@ -35,11 +35,11 @@ extension Thread {
         }
         
         var isCollapsed: Bool {
-            comment.isCollapsed
+            comment.isCollapsed ?? false
         }
         
         var isHidden: Bool {
-            comment.isHidden
+            comment.isHidden ?? false
         }
         
         var isBlocked: Bool {
@@ -151,7 +151,7 @@ extension Thread {
                             UpvoteButton(id: comment.id, actionPerformed: $itemStore.actionPerformed)
                             DownvoteButton(id: comment.id, actionPerformed: $itemStore.actionPerformed)
                             FavButton(id: comment.id, actionPerformed: $itemStore.actionPerformed)
-                            PinButton(id: comment.id, actionPerformed: $itemStore.actionPerformed)
+                            PinButton(item: comment, actionPerformed: $itemStore.actionPerformed)
                         }
                         Button {
                             onShowReplySheet()

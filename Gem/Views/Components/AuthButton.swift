@@ -24,9 +24,8 @@ struct AuthButton: View {
             .sheet(isPresented: $isProfileSheetPresented) {
                 NavigationStack {
                     Profile(id: username)
-                        .toolbarRole(.navigationStack)
                         .toolbar {
-                            ToolbarItem(placement: .topBarLeading) {
+                            ToolbarItem {
                                 Button(role: .close) {
                                     isProfileSheetPresented = false
                                 }

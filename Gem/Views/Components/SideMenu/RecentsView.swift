@@ -3,34 +3,8 @@ import SwiftData
 import HackerNewsKit
 import Combine
 
-@Observable class RecentsViewViewModel {
-    var stories: [StoryModel] = []
-    @ObservationIgnored private let modelConfig = ModelConfiguration("RecentsViewViewModel")
-    @ObservationIgnored private let container: ModelContainer?
-    
-    static let shared = RecentsViewViewModel()
-    
-    init() {
-        container = try? ModelContainer(for: StoryModel.self, configurations: modelConfig)
-        guard let container else { return }
-        let context = container.mainContext
-        var recents = FetchDescriptor<StoryModel>()
-        recents.fetchLimit = 20
-        let results = try? context.fetch(recents)
-        stories = results?.reversed() ?? []
-    }
-    
-    func insert(story: Story) {
-        guard let container else { return }
-        let storyModel = StoryModel(story: story)
-        container.mainContext.insert(storyModel)
-        try? container.mainContext.save()
-        stories.insert(storyModel, at: 0)
-    }
-}
-
 struct RecentsView: View {
-    private var viewModel: RecentsViewViewModel = .shared
+    private var viewModel: RecentsViewModel = .shared
     let onDismiss: (MenuItem?) -> Void
     
     public init(onDismiss: @escaping (MenuItem?) -> Void) {

@@ -87,13 +87,12 @@ struct SideMenu: View {
                                 }
                             }
                         }
-                        .padding()
-                        .padding(.top, 80)
+                        .padding(.horizontal)
+                        .padding(.top, 120)
                     }
                     
                     RecentsView(onDismiss: onDismiss)
                         .padding()
-                        .padding(.bottom, 100)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .scrollIndicators(.hidden)
@@ -130,7 +129,7 @@ struct SideMenu: View {
                 Color(.secondarySystemBackground)
                     .opacity(0.9)
                     .frame(width: menuWidth, height: 100)
-                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
                     .blur(radius: 16)
                 Spacer()
             }
@@ -139,7 +138,7 @@ struct SideMenu: View {
                 Text("Gem")
                     .font(.system(size: 24, weight: .semibold, design: .serif))
                     .padding(.horizontal)
-                    .padding(.top, 60)
+                    .padding(.top, 70)
                     .foregroundStyle(.accent.opacity(0.3))
                 Spacer()
             }
@@ -149,17 +148,13 @@ struct SideMenu: View {
                 Text("Gem")
                     .font(.system(size: 24, weight: .semibold, design: .serif))
                     .padding(.horizontal)
-                    .padding(.top, 60)
+                    .padding(.top, 70)
                 Spacer()
             }
         }
         .frame(width: menuWidth, alignment: .leading)
         .background(Color(.secondarySystemBackground))
         .edgesIgnoringSafeArea(.vertical)
-        .sheet(isPresented: $isSettingsPresented) {
-            Settings()
-                .presentationDragIndicator(.visible)
-        }
         .alert("Login", isPresented: $isLoginDialogPresented, actions: {
             TextField("Username", text: $username)
                 .autocorrectionDisabled(true)
@@ -175,6 +170,19 @@ struct SideMenu: View {
         }, message: {
             Text("Please enter your Hacker News username and password.")
         })
+        .sheet(isPresented: $isSettingsPresented) {
+            NavigationStack {
+                Settings()
+                    .presentationDragIndicator(.visible)
+                    .toolbar {
+                        ToolbarItem {
+                            Button(role: .close) {
+                                isSettingsPresented = false
+                            }
+                        }
+                    }
+            }
+        }
         .sheet(isPresented: $isEulaDialogPresented) {
             ZStack(alignment: .bottom) {
                 if let url = URL(string: "https://news.ycombinator.com/newsguidelines.html") {

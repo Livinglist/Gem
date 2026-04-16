@@ -10,6 +10,8 @@
 		E10D834C2F8D97BD00E0CBC5 /* HackerNewsKit in Frameworks */ = {isa = PBXBuildFile; productRef = E10D834B2F8D97BD00E0CBC5 /* HackerNewsKit */; };
 		E11F308C2F907A1D00E1B1FB /* RecentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F308B2F907A1700E1B1FB /* RecentsView.swift */; };
 		E11F308E2F907D1000E1B1FB /* StoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F308D2F907D0E00E1B1FB /* StoryModel.swift */; };
+		E11F30912F90BE6E00E1B1FB /* PinsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F30902F90BE6B00E1B1FB /* PinsViewModel.swift */; };
+		E11F30932F90BEC100E1B1FB /* RecentsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F30922F90BEBB00E1B1FB /* RecentsViewModel.swift */; };
 		E131BD022F8DB98200F7E034 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E131BCFE2F8DB98200F7E034 /* MainInterface.storyboard */; };
 		E131BD032F8DB98200F7E034 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E131BCFF2F8DB98200F7E034 /* Media.xcassets */; };
 		E131BD042F8DB98200F7E034 /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E131BCFB2F8DB98200F7E034 /* ActionViewController.swift */; };
@@ -179,6 +181,8 @@
 /* Begin PBXFileReference section */
 		E11F308B2F907A1700E1B1FB /* RecentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentsView.swift; sourceTree = "<group>"; };
 		E11F308D2F907D0E00E1B1FB /* StoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryModel.swift; sourceTree = "<group>"; };
+		E11F30902F90BE6B00E1B1FB /* PinsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinsViewModel.swift; sourceTree = "<group>"; };
+		E11F30922F90BEBB00E1B1FB /* RecentsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentsViewModel.swift; sourceTree = "<group>"; };
 		E131BCFB2F8DB98200F7E034 /* ActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionViewController.swift; sourceTree = "<group>"; };
 		E131BCFC2F8DB98200F7E034 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E131BCFD2F8DB98200F7E034 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -365,6 +369,15 @@
 			path = SideMenu;
 			sourceTree = "<group>";
 		};
+		E11F308F2F90BE6200E1B1FB /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				E11F30922F90BEBB00E1B1FB /* RecentsViewModel.swift */,
+				E11F30902F90BE6B00E1B1FB /* PinsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
 		E131BD002F8DB98200F7E034 /* ActionExtension */ = {
 			isa = PBXGroup;
 			children = (
@@ -530,6 +543,7 @@
 		E131BD5C2F8DB98F00F7E034 /* Gem */ = {
 			isa = PBXGroup;
 			children = (
+				E11F308F2F90BE6200E1B1FB /* ViewModels */,
 				E11F30822F90772900E1B1FB /* Repositories */,
 				E1E93A382F8E0EB100172BD8 /* Info.plist */,
 				E131BD192F8DB98F00F7E034 /* Extensions */,
@@ -852,6 +866,7 @@
 				E5DAC2232F8F1A3000EB1354 /* Stories.swift in Sources */,
 				E131BD652F8DB98F00F7E034 /* View+ConditionalModifier.swift in Sources */,
 				E131BD662F8DB98F00F7E034 /* View+ContextMenu.swift in Sources */,
+				E11F30912F90BE6E00E1B1FB /* PinsViewModel.swift in Sources */,
 				E131BD672F8DB98F00F7E034 /* View+GetColor.swift in Sources */,
 				E131BD682F8DB98F00F7E034 /* View+ShareSheet.swift in Sources */,
 				E131BD692F8DB98F00F7E034 /* View+Toast.swift in Sources */,
@@ -904,6 +919,7 @@
 				E131BD962F8DB98F00F7E034 /* DateRangeChip.swift in Sources */,
 				E131BD972F8DB98F00F7E034 /* Search.swift in Sources */,
 				E131BD982F8DB98F00F7E034 /* Favorites.swift in Sources */,
+				E11F30932F90BEC100E1B1FB /* RecentsViewModel.swift in Sources */,
 				E131BD992F8DB98F00F7E034 /* Home.swift in Sources */,
 				E131BD9A2F8DB98F00F7E034 /* Pins.swift in Sources */,
 				E131BD9B2F8DB98F00F7E034 /* Profile.swift in Sources */,
