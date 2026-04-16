@@ -33,6 +33,10 @@ struct RecentsView: View {
     private var viewModel: RecentsViewViewModel = .shared
     let onDismiss: (MenuItem?) -> Void
     
+    public init(onDismiss: @escaping (MenuItem?) -> Void) {
+        self.onDismiss = onDismiss
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 0) {
