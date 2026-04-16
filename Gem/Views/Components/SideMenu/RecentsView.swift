@@ -24,6 +24,7 @@ import Combine
         guard let container else { return }
         let storyModel = StoryModel(story: story)
         container.mainContext.insert(storyModel)
+        try? container.mainContext.save()
         stories.insert(storyModel, at: 0)
     }
 }
