@@ -97,6 +97,7 @@
 		E131BDBC2F8DBF3800F7E034 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E131BDBB2F8DBF3800F7E034 /* Alamofire */; };
 		E1AB28A52F91AE1500A8B707 /* NameRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28A42F91AE1500A8B707 /* NameRowView.swift */; };
 		E1AB28A72F91AE3A00A8B707 /* TimeDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28A62F91AE3A00A8B707 /* TimeDisplay.swift */; };
+		E1AB28AB2F91F7F200A8B707 /* CommentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28AA2F91F7F200A8B707 /* CommentTextView.swift */; };
 		E1ACB6FA2F8F11EF00382813 /* Gem App Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */; };
 		E1ACB6FB2F8F128E00382813 /* Gem App Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */; };
 		E1ACB6FC2F8F128E00382813 /* Gem App Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */; };
@@ -273,6 +274,7 @@
 		E131BDB62F8DB9AC00F7E034 /* HackerNewsKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = HackerNewsKit; sourceTree = "<group>"; };
 		E1AB28A42F91AE1500A8B707 /* NameRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameRowView.swift; sourceTree = "<group>"; };
 		E1AB28A62F91AE3A00A8B707 /* TimeDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeDisplay.swift; sourceTree = "<group>"; };
+		E1AB28AA2F91F7F200A8B707 /* CommentTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTextView.swift; sourceTree = "<group>"; };
 		E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "Gem App Icon.icon"; sourceTree = "<group>"; };
 		E1D7A3AB2F8D850600D8C934 /* Gem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gem.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1D7A3BD2F8D852E00D8C934 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -488,6 +490,7 @@
 		E131BD4A2F8DB98F00F7E034 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				E1AB28AA2F91F7F200A8B707 /* CommentTextView.swift */,
 				E1AB28A42F91AE1500A8B707 /* NameRowView.swift */,
 				E11F308A2F9079E400E1B1FB /* SideMenu */,
 				E131BD3A2F8DB98F00F7E034 /* ActionMenu */,
@@ -926,6 +929,7 @@
 				E131BD952F8DB98F00F7E034 /* Chip.swift in Sources */,
 				E131BD962F8DB98F00F7E034 /* DateRangeChip.swift in Sources */,
 				E131BD972F8DB98F00F7E034 /* Search.swift in Sources */,
+				E1AB28AB2F91F7F200A8B707 /* CommentTextView.swift in Sources */,
 				E131BD982F8DB98F00F7E034 /* Favorites.swift in Sources */,
 				E11F30932F90BEC100E1B1FB /* RecentsViewModel.swift in Sources */,
 				E131BD992F8DB98F00F7E034 /* Home.swift in Sources */,
