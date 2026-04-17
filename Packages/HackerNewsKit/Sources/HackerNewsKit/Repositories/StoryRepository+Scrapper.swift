@@ -27,7 +27,7 @@ extension StoryRepository {
         
         await withCheckedContinuation { continuation in
             Task {
-                await fetchCommentsRecursively(from: item) { comment in
+                try await fetchCommentsRecursively(from: item) { comment in
                     if let comment {
                         comments.append(comment)
                     }
@@ -39,7 +39,7 @@ extension StoryRepository {
         return comments
     }
     
-    public func fetchCommentsRecursively(from item: any Item, completion: @escaping (Comment?) -> Void) async {
+    public func fetchCommentsRecursively(from item: any Item, completion: @escaping (Comment?) -> Void) async throws {
         let itemId = item.id;
         let descendants = item is Story ? item.descendants : nil;
         var parentTextCount = 0
@@ -54,6 +54,10 @@ extension StoryRepository {
                 let url = "\(Self.itemBaseUrl)\(itemId)&p=\(page)"
                 let response = await AF.request(url).serializingString().response
                 let html = try response.result.get()
+                
+                if html == "Sorry." {
+                    throw AFError.sessionInvalidated(error: .none)
+                }
                 
                 if page == 1 {
                     parentTextCount = html.components(separatedBy:"parent").count - 1
@@ -89,7 +93,7 @@ extension StoryRepository {
             elements = try await fetchElements(page: page);
         } catch {
             completion(nil)
-            return
+            throw error
         }
         
         var indentToParentId = Dictionary<Int, Int>();

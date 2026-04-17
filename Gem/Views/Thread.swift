@@ -10,30 +10,22 @@ extension Thread {
         let scrollViewProxy: ScrollViewProxy?
         
         @FocusState private var isSearchFocused: Bool
-
+        
         var body: some View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     ForEach(itemStore.searchResults, id: \.self) { index in
                         let comment = itemStore.comments[index]
-                        CommentTile(index: index, comment: comment, itemStore: itemStore) {
-                            
-                        } onShowReplySheet: {
-                            
-                        } onLoadMore: {
-                            
-                        } onFlag: {
-                            
-                        }
-                        .padding(4)
-                        .allowsHitTesting(false)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            isSearchPresented = false
-                            withAnimation {
-                                scrollViewProxy?.scrollTo(comment.id, anchor: .top)
+                        CommentTile(index: index, comment: comment, itemStore: itemStore, allowActions: false)
+                            .padding(4)
+                            .allowsHitTesting(false)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                isSearchPresented = false
+                                withAnimation {
+                                    scrollViewProxy?.scrollTo(comment.id, anchor: .top)
+                                }
                             }
-                        }
                         if index != itemStore.searchResults.last {
                             Divider()
                                 .padding(.horizontal, 0)
@@ -65,6 +57,100 @@ extension Thread {
     }
 }
 
+struct ItemMenu: View {
+    @ObservedObject var itemStore: ItemStore
+    @State private var isFlagDialogPresented: Bool = .init()
+    @State private var isHNSheetPresented: Bool = .init()
+    @State private var isSafariSheetPresented: Bool = .init()
+    @State private var isReplySheetPresented: Bool = .init()
+    @State private var flaggingItem: (any Item)?
+    static private var handledUrl: URL? = nil
+    static private var hnSheetTarget: (any Item)? = nil
+    static private var replySheetTarget: (any Item)? = nil
+    let auth = Authentication.shared
+    let item: any Item
+    
+    var body: some View {
+        VStack {
+            Group {
+                UpvoteButton(id: item.id, actionPerformed: $itemStore.actionPerformed)
+                DownvoteButton(id: item.id, actionPerformed: $itemStore.actionPerformed)
+                FavButton(id: item.id, actionPerformed: $itemStore.actionPerformed)
+                PinButton(item: item, actionPerformed: $itemStore.actionPerformed)
+            }
+            Button {
+                onReplyTap(item: item)
+            } label: {
+                Label(Action.reply.label, systemImage: Action.reply.icon)
+            }
+            .disabled(!auth.loggedIn || item.isJob)
+            Divider()
+            FlagButton(id: item.id, showFlagDialog: $isFlagDialogPresented)
+            Divider()
+            ShareMenu(item: item)
+            if let text = item.text, text.isNotEmpty {
+                CopyButton(text: text, actionPerformed: $itemStore.actionPerformed)
+            }
+            Button {
+                onViewOnHackerNewsTap(item: item)
+            } label: {
+                Label("View on Hacker News", systemImage: "safari")
+            }
+        }
+        .confirmationDialog("Are you sure?", isPresented: $isFlagDialogPresented) {
+            Button("Flag", role: .destructive) {
+                flag()
+            }
+        } message: {
+            Text("Flag the post by \(flaggingItem?.by.orEmpty ?? item.by.orEmpty)?")
+        }
+        .sheet(isPresented: $isSafariSheetPresented) {
+            if let url = Self.handledUrl {
+                SafariView(url: url, draggable: true)
+            }
+        }
+    }
+    
+    private func flag() {
+        let id = flaggingItem?.id ?? item.id
+        Task {
+            let res = await auth.flag(id)
+            
+            if res {
+                itemStore.actionPerformed = .flag
+            } else {
+                itemStore.actionPerformed = .failure
+            }
+        }
+    }
+    
+    /// Show the `item`  inside a web view sheet if there is no web view sheet being displayed,
+    /// otherwise, show the web view inside a new screen.
+    private func onViewOnHackerNewsTap(item: any Item) {
+        if isSafariSheetPresented, let url = URL(string: item.itemUrl) {
+            Router.shared.to(.url(url))
+        } else {
+            Self.hnSheetTarget = item
+            isHNSheetPresented = true
+        }
+    }
+    
+    /// Display reply view inside a sheet if there is no web view sheet being displayed,
+    /// otherwise, display the reply view in a new screen.
+    private func onReplyTap(item: any Item) {
+        if isSafariSheetPresented {
+            if let cmt = item as? Comment {
+                Router.shared.to(.replyComment(cmt))
+            } else if let story = item as? Story {
+                Router.shared.to(.replyStory(story))
+            }
+        } else {
+            Self.replySheetTarget = item
+            isReplySheetPresented = true
+        }
+    }
+}
+
 struct Thread: View {
     @EnvironmentObject private var auth: Authentication
     @StateObject private var itemStore: ItemStore = .init()
@@ -74,7 +160,6 @@ struct Thread: View {
     @State private var isHNSheetPresented: Bool = .init()
     @State private var isSafariSheetPresented: Bool = .init()
     @State private var isReplySheetPresented: Bool = .init()
-    @State private var isFlagDialogPresented: Bool = .init()
     @State private var isSearchPresented: Bool = .init()
     @State private var flaggingItem: (any Item)?
     static private var handledUrl: URL? = nil
@@ -141,13 +226,6 @@ struct Thread: View {
                     )
                 }
             }
-            .confirmationDialog("Are you sure?", isPresented: $isFlagDialogPresented) {
-                Button("Flag", role: .destructive) {
-                    flag()
-                }
-            } message: {
-                Text("Flag the post by \(flaggingItem?.by.orEmpty ?? item.by.orEmpty)?")
-            }
             .task {
                 if itemStore.item == nil {
                     itemStore.item = item
@@ -156,42 +234,11 @@ struct Thread: View {
             }
     }
     
-    var menu: some View {
-        Menu {
-            Group {
-                UpvoteButton(id: item.id, actionPerformed: $itemStore.actionPerformed)
-                DownvoteButton(id: item.id, actionPerformed: $itemStore.actionPerformed)
-                FavButton(id: item.id, actionPerformed: $itemStore.actionPerformed)
-                PinButton(item: item, actionPerformed: $itemStore.actionPerformed)
-            }
-            Button {
-                onReplyTap(item: item)
-            } label: {
-                Label(Action.reply.label, systemImage: Action.reply.icon)
-            }
-            .disabled(!auth.loggedIn || item.isJob)
-            Divider()
-            FlagButton(id: item.id, showFlagDialog: $isFlagDialogPresented)
-            Divider()
-            ShareMenu(item: item)
-            if let text = item.text, text.isNotEmpty {
-                CopyButton(text: text, actionPerformed: $itemStore.actionPerformed)
-            }
-            Button {
-                onViewOnHackerNewsTap(item: item)
-            } label: {
-                Label("View on Hacker News", systemImage: "safari")
-            }
-        } label: {
-            Image(systemName: "ellipsis")
-        }
-    }
-    
     @ViewBuilder
     var mainItemView: some View {
         ScrollViewReader { proxy in
             ScrollView {
-                nameRow
+                NameRowView(item: itemStore.item ?? item, isRoot: true, index: nil)
                     .padding(.leading, 6)
                     .padding(.trailing, 4)
                     .padding(.top, 6)
@@ -240,25 +287,34 @@ struct Thread: View {
                 if itemStore.status == .inProgress {
                     LoadingIndicator().padding(.top, 100)
                 }
-                VStack(spacing: 0) {
-                    ForEach(itemStore.comments.indices, id: \.self) { index in
-                        let comment = itemStore.comments[index]
-                        CommentTile(index: index, comment: comment, itemStore: itemStore, onShowHNSheet: {
-                            onViewOnHackerNewsTap(item: comment)
-                        }, onShowReplySheet: {
-                            onReplyTap(item: comment)
-                        }) {
-                            Task {
-                                await itemStore.loadKids(of: comment)
+                if itemStore.comments.count > 600 {
+                    LazyVStack(spacing: 0) {
+                        ForEach(itemStore.comments.indices, id: \.self) { index in
+                            let comment = itemStore.comments[index]
+                            if comment.isHidden ?? true {
+                                EmptyView()
+                            } else {
+                                CommentTile(index: index, comment: comment, itemStore: itemStore)
+                                    .padding(.trailing, 4)
+                                    .id(comment.id)
                             }
-                        } onFlag: {
-                            flaggingItem = comment
-                            isFlagDialogPresented = true
                         }
-                        .padding(.trailing, 4)
-                        .id(comment.id)
+                    }
+                } else {
+                    VStack(spacing: 0) {
+                        ForEach(itemStore.comments.indices, id: \.self) { index in
+                            let comment = itemStore.comments[index]
+                            if comment.isHidden ?? true {
+                                EmptyView()
+                            } else {
+                                CommentTile(index: index, comment: comment, itemStore: itemStore)
+                                    .padding(.trailing, 4)
+                                    .id(comment.id)
+                            }
+                        }
                     }
                 }
+                
                 Spacer().frame(height: 60)
                 if itemStore.status == Status.completed {
                     Text(Constants.happyFace)
@@ -311,7 +367,11 @@ struct Thread: View {
                     }
                 }
                 
-                menu
+                Menu {
+                    ItemMenu(itemStore: itemStore, item: item)
+                } label: {
+                    Image(systemName: "ellipsis")
+                }
             }
         }
         .overlay {
@@ -329,43 +389,6 @@ struct Thread: View {
             Task {
                 await itemStore.refresh()
             }
-        }
-    }
-    
-    @ViewBuilder
-    var nameRow: some View {
-        let item = itemStore.item ?? item
-        
-        HStack {
-            if let author = item.by {
-                Button {
-                    Router.shared.to(.profile(author))
-                } label: {
-                    Text(author)
-                        .borderedFootnote()
-                        .foregroundColor(getColor(level: level))
-                }
-            }
-            
-            if let karma = item.score {
-                Text("\(karma) karma")
-                    .borderedFootnote()
-                    .foregroundColor(getColor())
-            }
-            if let descendants = item.descendants {
-                Text("\(descendants) cmt\(descendants <= 1 ? "" : "s")")
-                    .borderedFootnote()
-                    .foregroundColor(getColor())
-            }
-            Spacer()
-            Text(itemStore.timeDisplay == .timeAgo ? item.shortTimeAgo : item.formattedTime)
-                .borderedFootnote()
-                .padding(.trailing, 2)
-                .onTapGesture {
-                    withAnimation {
-                        itemStore.timeDisplay.toggle()
-                    }
-                }
         }
     }
     

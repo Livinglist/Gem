@@ -95,6 +95,8 @@
 		E131BDB42F8DB99200F7E034 /* StoryWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E131BDAA2F8DB99200F7E034 /* StoryWidgetBundle.swift */; };
 		E131BDB52F8DB99200F7E034 /* Timeline+Placeholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E131BDAB2F8DB99200F7E034 /* Timeline+Placeholder.swift */; };
 		E131BDBC2F8DBF3800F7E034 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E131BDBB2F8DBF3800F7E034 /* Alamofire */; };
+		E1AB28A52F91AE1500A8B707 /* NameRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28A42F91AE1500A8B707 /* NameRowView.swift */; };
+		E1AB28A72F91AE3A00A8B707 /* TimeDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28A62F91AE3A00A8B707 /* TimeDisplay.swift */; };
 		E1ACB6FA2F8F11EF00382813 /* Gem App Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */; };
 		E1ACB6FB2F8F128E00382813 /* Gem App Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */; };
 		E1ACB6FC2F8F128E00382813 /* Gem App Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */; };
@@ -269,6 +271,8 @@
 		E131BDAA2F8DB99200F7E034 /* StoryWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryWidgetBundle.swift; sourceTree = "<group>"; };
 		E131BDAB2F8DB99200F7E034 /* Timeline+Placeholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Timeline+Placeholder.swift"; sourceTree = "<group>"; };
 		E131BDB62F8DB9AC00F7E034 /* HackerNewsKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = HackerNewsKit; sourceTree = "<group>"; };
+		E1AB28A42F91AE1500A8B707 /* NameRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameRowView.swift; sourceTree = "<group>"; };
+		E1AB28A62F91AE3A00A8B707 /* TimeDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeDisplay.swift; sourceTree = "<group>"; };
 		E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "Gem App Icon.icon"; sourceTree = "<group>"; };
 		E1D7A3AB2F8D850600D8C934 /* Gem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gem.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1D7A3BD2F8D852E00D8C934 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -436,6 +440,7 @@
 		E131BD282F8DB98F00F7E034 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				E1AB28A62F91AE3A00A8B707 /* TimeDisplay.swift */,
 				E11F30852F90776500E1B1FB /* Persistence */,
 				E131BD222F8DB98F00F7E034 /* Stores */,
 				E131BD232F8DB98F00F7E034 /* Action.swift */,
@@ -483,6 +488,7 @@
 		E131BD4A2F8DB98F00F7E034 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				E1AB28A42F91AE1500A8B707 /* NameRowView.swift */,
 				E11F308A2F9079E400E1B1FB /* SideMenu */,
 				E131BD3A2F8DB98F00F7E034 /* ActionMenu */,
 				E131BD3B2F8DB98F00F7E034 /* AuthButton.swift */,
@@ -866,6 +872,8 @@
 				E5DAC2232F8F1A3000EB1354 /* Stories.swift in Sources */,
 				E131BD652F8DB98F00F7E034 /* View+ConditionalModifier.swift in Sources */,
 				E131BD662F8DB98F00F7E034 /* View+ContextMenu.swift in Sources */,
+				E1AB28A52F91AE1500A8B707 /* NameRowView.swift in Sources */,
+				E1AB28A72F91AE3A00A8B707 /* TimeDisplay.swift in Sources */,
 				E11F30912F90BE6E00E1B1FB /* PinsViewModel.swift in Sources */,
 				E131BD672F8DB98F00F7E034 /* View+GetColor.swift in Sources */,
 				E131BD682F8DB98F00F7E034 /* View+ShareSheet.swift in Sources */,
