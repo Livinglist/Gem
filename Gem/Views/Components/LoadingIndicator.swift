@@ -5,7 +5,7 @@ struct LoadingIndicator: View {
     let size: CGFloat = 12
     let color: Color
     
-    init(color: Color = .orange) {
+    init(color: Color = .purple) {
         self.color = color
     }
     

@@ -16,7 +16,7 @@ extension Favorites {
         private var favIds: [Int] = [Int]() {
             didSet {
                 Task {
-                    await fetchStories()
+                    await fetchItems()
                 }
             }
         }
@@ -27,14 +27,10 @@ extension Favorites {
             })
         }
         
-        func fetchStories() async {
+        func fetchItems() async {
             self.currentPage = 0
-
-            var items = [any Item]()
             let range = 0..<min(pageSize, favIds.count)
-            await StoryRepository.shared.fetchItems(ids: Array(favIds[range])) { item in
-                items.append(item)
-            }
+            let items = await StoryRepository.shared.fetchItems(ids: Array(favIds[range]))
             
             DispatchQueue.main.async {
                 withAnimation {
@@ -45,7 +41,7 @@ extension Favorites {
         }
         
         func refresh() async -> Void {
-            await fetchStories()
+            await fetchItems()
         }
         
         func loadMore() async {
@@ -57,11 +53,7 @@ extension Favorites {
             
             let startIndex = min(currentPage * pageSize, favIds.count)
             let endIndex = min(startIndex + pageSize, favIds.count)
-            var items = [any Item]()
-            
-            await StoryRepository.shared.fetchItems(ids: Array(favIds[startIndex..<endIndex])) { item in
-                items.append(item)
-            }
+            let items = await StoryRepository.shared.fetchItems(ids: Array(favIds[startIndex..<endIndex]))
             
             DispatchQueue.main.async {
                 withAnimation {

@@ -41,6 +41,13 @@ enum FetchMode: Int, Equatable, CaseIterable {
         case .lazy: return "Lazy"
         }
     }
+    
+    var systemImage: String {
+        switch self {
+        case .eager: return "square.stack"
+        case .lazy: return "square.stack.3d.up"
+        }
+    }
 }
 
 class SettingsStore: ObservableObject {
@@ -120,15 +127,6 @@ class SettingsStore: ObservableObject {
             favList.append(id)
         }
         UserDefaults.standard.set(Array(favList), forKey: .favListKey)
-    }
-    
-    func onPinToggle(_ id: Int) -> Void {
-        if pinList.contains(id) {
-            pinList.removeAll { $0 == id }
-        } else {
-            pinList.append(id)
-        }
-        UserDefaults.standard.set(Array(pinList), forKey: .pinListKey)
     }
 
     func block(_ id: String) -> Void {

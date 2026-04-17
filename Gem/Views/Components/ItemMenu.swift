@@ -1,0 +1,82 @@
+import SwiftUI
+import HackerNewsKit
+
+struct ItemMenu: View {
+    let auth = Authentication.shared
+    let item: any Item
+    @Binding var actionPerformed: Action
+    @Binding var activeURL: IdentifiableURL?
+    @Binding var isFlagDialogPresented: Bool
+    @Binding var isReplySheetPresented: Bool
+    
+    var body: some View {
+        VStack {
+            ControlGroup {
+                DownvoteButton(id: item.id, actionPerformed: $actionPerformed)
+                UpvoteButton(id: item.id, actionPerformed: $actionPerformed)
+            }
+            
+            ControlGroup {
+                FavButton(id: item.id, actionPerformed: $actionPerformed)
+                PinButton(item: item, actionPerformed: $actionPerformed)
+                Button {
+                    onReplyTap(item: item)
+                } label: {
+                    Label(Action.reply.label, systemImage: Action.reply.icon)
+                }
+                .disabled(!auth.loggedIn || item.isJob)
+            }
+            Divider()
+            FlagButton(id: item.id, showFlagDialog: $isFlagDialogPresented)
+            Divider()
+            ShareMenu(item: item)
+            if let text = item.text, text.isNotEmpty {
+                CopyButton(text: text, actionPerformed: $actionPerformed)
+            }
+            Button {
+                onViewOnHackerNewsTap(item: item)
+            } label: {
+                Label("View in Safari", systemImage: "safari")
+            }
+        }
+    }
+    
+    private func flag() {
+        let id = item.id
+        Task {
+            let res = await auth.flag(id)
+            
+            if res {
+                actionPerformed = .flag
+            } else {
+                actionPerformed = .failure
+            }
+        }
+    }
+    
+    /// Show the `item`  inside a web view sheet if there is no web view sheet being displayed,
+    /// otherwise, show the web view inside a new screen.
+    private func onViewOnHackerNewsTap(item: any Item) {
+        if let url = URL(string: item.itemUrl) {
+            if activeURL != nil {
+                Router.shared.to(.url(url))
+            } else {
+                activeURL = IdentifiableURL(url: url)
+            }
+        }
+    }
+    
+    /// Display reply view inside a sheet if there is no web view sheet being displayed,
+    /// otherwise, display the reply view in a new screen.
+    private func onReplyTap(item: any Item) {
+        if activeURL != nil {
+            if let cmt = item as? Comment {
+                Router.shared.to(.replyComment(cmt))
+            } else if let story = item as? Story {
+                Router.shared.to(.replyStory(story))
+            }
+        } else {
+            isReplySheetPresented = true
+        }
+    }
+}

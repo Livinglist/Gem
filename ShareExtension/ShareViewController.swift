@@ -61,13 +61,13 @@ class ShareViewController: SLComposeServiceViewController {
     }
     
     private func redirectToHostApp(_ item: URL) {
-        let url = URL(string: "ZCShareMedia://\(item)")
+        let url = URL(string: "gem://\(item)")
         var responder = self as UIResponder?
-        let selectorOpenURL = sel_registerName("openURL:")
         
         while (responder != nil) {
-            if (responder?.responds(to: selectorOpenURL))! {
-                let _ = responder?.perform(selectorOpenURL, with: url)
+            if let application = responder as? UIApplication,
+               let url {
+                application.open(url)
             }
             responder = responder!.next
         }

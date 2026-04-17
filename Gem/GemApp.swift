@@ -10,19 +10,22 @@ struct GemApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.scenePhase) private var phase
     @ObservedObject var offlineRepository: OfflineRepository = .shared
-
+    
     let auth: Authentication = .shared
     let notification: AppNotification = .shared
-
+    
     var body: some Scene {
         WindowGroup {
             ZStack {
+                Color(.secondarySystemBackground)
+                    .ignoresSafeArea()
                 Home()
+                    .ignoresSafeArea()
                 if offlineRepository.isOfflineReading {
                     VStack {
                         Spacer()
                         Rectangle()
-                            .fill(.orange.gradient.opacity(0.4))
+                            .fill(.purple.gradient.opacity(0.4))
                             .frame(height: 40)
                             .overlay {
                                 Text("Offline Mode")
@@ -35,6 +38,7 @@ struct GemApp: App {
                     .ignoresSafeArea()
                 }
             }
+            .preferredColorScheme(.dark)
             .environmentObject(auth)
             .onAppear {
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }

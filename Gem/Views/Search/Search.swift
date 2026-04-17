@@ -12,6 +12,7 @@ struct Search: View {
     
     var body: some View {
         List {
+            
             HStack {
                 Chip(selected: searchStore.params.sorted, label: "sorted") {
                     searchStore.onSortTap()
@@ -48,9 +49,9 @@ struct Search: View {
             }
         }
         .listStyle(.plain)
-        .searchable(text: $debounceObject.text, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search Hacker News")
+        .searchable(text: $debounceObject.text, placement: .toolbar, prompt: "Search Hacker News")
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Search")
+        .navigationTitle("Search on HN")
         .withToast(actionPerformed: $actionPerformed)
         .onChange(of: debounceObject.debouncedText) { _, text in
             if text.isEmpty { return }

@@ -25,11 +25,7 @@ extension Pins {
         }
         
         func fetchPinnedStories() async {
-            var items = [any Item]()
-            
-            await StoryRepository.shared.fetchItems(ids: pinnedIds) { item in
-                items.append(item)
-            }
+            let items = await StoryRepository.shared.fetchItems(ids: pinnedIds)
             
             withAnimation {
                 self.status = .completed

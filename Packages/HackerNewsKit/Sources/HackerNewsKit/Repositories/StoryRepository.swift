@@ -57,13 +57,25 @@ public class StoryRepository {
     
     // MARK: - Comment related.
     
-    public func fetchComments(ids: [Int], onCommentFetched: @escaping (Comment) -> Void) async -> Void {
-        for id in ids {
-            let comment = await fetchComment(id)
-            if let comment = comment {
-                onCommentFetched(comment)
+    public func fetchComments(ids: [Int]) async -> [Comment] {
+        let comments = await withTaskGroup(of: (Int, Comment?).self) { group in
+            for (index, id) in ids.enumerated() {
+                group.addTask { [self] in
+                    guard let comment = await fetchComment(id) else { return (index, nil) }
+                    return (index, comment)
+                }
             }
+            
+            var comments: [(Int, Comment?)] = []
+            for await result in group {
+                comments.append(result)
+            }
+            return comments
+                .sorted { $0.0 < $1.0 }
+                .compactMap { $0.1 }
+                .compactMap { $0 }
         }
+        return comments
     }
     
     public func fetchComment(_ id: Int) async -> Comment? {
@@ -80,16 +92,31 @@ public class StoryRepository {
     
     // MARK: - Item related.
     
-    public func fetchItems(ids: [Int], filtered: Bool = true, onItemFetched: @escaping (any Item) -> Void) async -> Void {
-        for id in ids {
-            let item = await fetchItem(id)
-            guard let item = item else { continue }
-            if let story = item as? Story {
-                onItemFetched(story)
-            } else if let cmt = item as? Comment {
-                onItemFetched(cmt)
+    public func fetchItems(ids: [Int]) async -> [any Item] {
+        let items: [any Item] = await withTaskGroup(of: (Int, (any Item)?).self) { group in
+            for (index, id) in ids.enumerated() {
+                group.addTask { [self] in
+                    guard let comment = await fetchItem(id) else { return (index, nil) }
+                    return (index, comment)
+                }
             }
+            
+            var items: [(Int, (any Item)?)] = []
+            for await result in group {
+                items.append(result)
+            }
+            return items
+                .sorted { $0.0 < $1.0 }
+                .compactMap { $0.1 }
+                .compactMap { item in
+                    switch item {
+                    case let item as Story: return item as Story
+                    case let item as Comment: return item as Comment
+                    default: return item
+                    }
+                }
         }
+        return items
     }
     
     public func fetchItem(_ id: Int) async -> (any Item)? {

@@ -11,9 +11,42 @@ public enum FetchError: Error {
     case generic(Error)
 }
 
+extension StoryRepository {
+    public func fetchCommentsRecursively(of item: any Item, from source: CommentSource) async throws -> [Comment] {
+        switch source {
+        case .API: return await fetchCommentsRecursivelyFromAPI(of: item)
+        case .web: return try await fetchCommentsRecursivelyFromWeb(of: item)
+        }
+    }
+    
+    private func fetchCommentsRecursivelyFromAPI(of item: any Item) async -> [Comment] {
+        guard let kids = item.kids else { return [] }
+        var level = 0
+        if let comment = item as? Comment {
+            level = comment.level.orZero + 1
+        }
+        let comments = await withTaskGroup(of: (Int, [Comment]).self) { group in
+            for (index, kid) in kids.enumerated() {
+                group.addTask { [self] in
+                    guard var comment = await fetchComment(kid) else { return (index, []) }
+                    comment = comment.copyWith(level: level)
+                    let childComments = await fetchCommentsRecursivelyFromAPI(of: comment)
+                    return (index, [comment] + childComments)
+                }
+            }
+            
+            var comments: [(Int, [Comment])] = []
+            for await result in group {
+                comments.append(result)
+            }
+            return comments
+                .sorted { $0.0 < $1.0 }
+                .flatMap { $0.1 }
+        }
+        return comments
+    }
+}
 
-/// Instead of fetching comments one by one using API, we fetch directly from HN pages, and parse
-/// `Comment` using selectors.
 extension StoryRepository {
     fileprivate static let itemBaseUrl = "https://news.ycombinator.com/item?id=";
     fileprivate static let athingComtrSelector = "#hnmain > tbody > tr > td > table > tbody > .athing.comtr";
@@ -22,7 +55,24 @@ extension StoryRepository {
     fileprivate static let commentAgeSelector = "td > table > tbody > tr > td.default > div > span > span.age";
     fileprivate static let commentIndentSelector = "td > table > tbody > tr > td.ind";
     
-    public func fetchCommentsRecursively(from item: any Item, completion: @escaping (Comment?) -> Void) async {
+    private func fetchCommentsRecursivelyFromWeb(of item: any Item) async throws -> [Comment] {
+        var comments: [Comment] = []
+        
+        try await withCheckedThrowingContinuation { continuation in
+            Task {
+                try await fetchCommentsRecursivelyFromWeb(of: item) { comment in
+                    if let comment {
+                        comments.append(comment)
+                    }
+                }
+                continuation.resume(returning: ())
+            }
+        }
+        
+        return comments
+    }
+    
+    private func fetchCommentsRecursivelyFromWeb(of item: any Item, completion: @escaping (Comment?) -> Void) async throws {
         let itemId = item.id;
         let descendants = item is Story ? item.descendants : nil;
         var parentTextCount = 0
@@ -37,6 +87,10 @@ extension StoryRepository {
                 let url = "\(Self.itemBaseUrl)\(itemId)&p=\(page)"
                 let response = await AF.request(url).serializingString().response
                 let html = try response.result.get()
+                
+                if html == "Sorry." {
+                    throw AFError.sessionInvalidated(error: .none)
+                }
                 
                 if page == 1 {
                     parentTextCount = html.components(separatedBy:"parent").count - 1
@@ -72,7 +126,7 @@ extension StoryRepository {
             elements = try await fetchElements(page: page);
         } catch {
             completion(nil)
-            return
+            throw error
         }
         
         var indentToParentId = Dictionary<Int, Int>();

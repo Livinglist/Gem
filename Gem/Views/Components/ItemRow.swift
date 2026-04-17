@@ -8,11 +8,10 @@ struct ItemRow: View {
     let item: any Item
     let url: URL?
     let isPinnedStory: Bool
-
+    
     @EnvironmentObject var auth: Authentication
-
-    @State private var isSafariSheetPresented: Bool = .init()
-    @State private var isHNSheetPresented: Bool = .init()
+    
+    @State private var activeURL: IdentifiableURL?
     @State private var isReplySheetPresented: Bool = .init()
     @State private var isFlagDialogPresented: Bool = .init()
     @GestureState private var isDetectingPress: Bool = .init()
@@ -26,38 +25,17 @@ struct ItemRow: View {
         self.isPinnedStory = isPinnedStory
         self._actionPerformed = actionPerformed
     }
-
-    @ViewBuilder
-    var menu: some View {
-        Menu {
-            UpvoteButton(id: item.id, actionPerformed: $actionPerformed)
-            DownvoteButton(id: item.id, actionPerformed: $actionPerformed)
-            FavButton(id: item.id, actionPerformed: $actionPerformed)
-            PinButton(id: item.id, actionPerformed: $actionPerformed)
-            Divider()
-            FlagButton(id: item.id, showFlagDialog: $isFlagDialogPresented)
-            Divider()
-            ShareMenu(item: item)
-            Button {
-                isHNSheetPresented = true
-            } label: {
-                Label("View on Hacker News", systemImage: "safari")
-            }
-        } label: {
-            Label(String(), systemImage: "ellipsis")
-                .padding(.leading)
-                .padding(.bottom, 12)
-                .foregroundColor(.orange)
-        }
-    }
-
+    
     var body: some View {
         ZStack {
             Button(
                 action: {
-                    if item.isJobWithUrl {
-                        isSafariSheetPresented = true
+                    if item.isJobWithUrl, let urlStr = item.url, let url = URL(string: urlStr) {
+                        activeURL = IdentifiableURL(url: url)
                     } else {
+                        if let story = item as? Story {
+                            RecentsViewModel.shared.insert(story: story)
+                        }
                         Router.shared.to(item)
                     }
                 },
@@ -75,7 +53,7 @@ struct ItemRow: View {
                                 if let url = item.readableUrl {
                                     Text(url)
                                         .font(.footnote)
-                                        .foregroundColor(.orange)
+                                        .foregroundColor(.purple)
                                 } else if let text = item.text {
                                     Text(text.replacingOccurrences(of: "\n", with: " "))
                                         .font(.footnote)
@@ -84,7 +62,6 @@ struct ItemRow: View {
                                 }
                                 Spacer()
                             }.padding(item is Comment ? [.horizontal, .top] : [.horizontal])
-                            Divider().frame(maxWidth: .infinity)
                             HStack(alignment: .center) {
                                 Text(item.metadata)
                                     .font(.caption)
@@ -94,17 +71,34 @@ struct ItemRow: View {
                                 Spacer()
                                 if isPinnedStory {
                                     Button {
-                                        onPin()
+                                        removePin()
                                     } label: {
                                         Label(String(), systemImage: "pin.fill")
+                                            .foregroundStyle(.accent)
                                             .rotationEffect(Angle(degrees: 45))
                                             .transformEffect(.init(translationX: 0, y: 5))
                                     }
-
+                                    
                                 } else {
-                                    menu
+                                    Menu {
+                                        ItemMenu(item: item,
+                                                 actionPerformed: $actionPerformed,
+                                                 activeURL: $activeURL,
+                                                 isFlagDialogPresented: $isFlagDialogPresented,
+                                                 isReplySheetPresented: $isReplySheetPresented)
+                                    } label: {
+                                        Label(String(), systemImage: "ellipsis")
+                                            .labelStyle(.iconOnly)
+                                            .padding(.horizontal, 24)
+                                            .padding(.vertical, 12)
+                                            .foregroundColor(.purple)
+                                            .contentShape(Rectangle())
+                                            .glassEffect()
+                                            .padding(.trailing, 6)
+                                            .padding(.bottom, 6)
+                                    }
                                 }
-
+                                
                             }
                         }
                     }
@@ -112,50 +106,58 @@ struct ItemRow: View {
                     .cornerRadius(16)
                 }
             )
+            .confirmationDialog("Are you sure?", isPresented: $isFlagDialogPresented) {
+                Button("Flag", role: .destructive) {
+                    onFlagTap()
+                }
+            } message: {
+                if item is Comment {
+                    Text("Flag this comment by \(item.by.orEmpty)?")
+                } else {
+                    Text("Flag \"\(item.title.orEmpty)\" by \(item.by.orEmpty)?")
+                }
+            }
             .if(.iOS16 && url != nil) { view in
                 view
                     .contextMenu(
-                    menuItems: {
-                        Button {
-                            isSafariSheetPresented = true
-                        } label: {
-                            Label("View in browser", systemImage: "safari")
-                        }
-                    },
-                    preview: {
-                        SafariView(url: url!)
-                    })
+                        menuItems: {
+                            Button {
+                                let urlStr = item.url.ifNullOrEmpty(then: item.itemUrl)
+                                let url = URL(string: urlStr)
+                                if let url {
+                                    activeURL = IdentifiableURL(url: url)
+                                }
+                            } label: {
+                                Label("View in Safari", systemImage: "safari")
+                            }
+                        },
+                        preview: {
+                            SafariView(url: url!)
+                        })
             }
         }
-        .confirmationDialog("Are you sure?", isPresented: $isFlagDialogPresented) {
-            Button("Flag", role: .destructive) {
-                onFlagTap()
-            }
-        } message: {
-            Text("Flag \"\(item.title.orEmpty)\" by \(item.by.orEmpty)?")
+        .sheet(item: $activeURL) { url in
+            SafariView(url: url.url)
         }
-        .sheet(isPresented: $isHNSheetPresented) {
-            if let url = URL(string: item.itemUrl) {
-                SafariView(url: url)
-            }
-        }
-        .sheet(isPresented: $isSafariSheetPresented) {
-            let urlStr = item.url.ifNullOrEmpty(then: item.itemUrl)
-            if let url = URL(string: urlStr) {
-                SafariView(url: url)
+        .sheet(isPresented: $isReplySheetPresented) {
+            NavigationStack {
+                ReplyView(actionPerformed: $actionPerformed,
+                          replyingTo: item,
+                          draggable: true
+                )
             }
         }
     }
     
-    private func onPin() {
-        settings.onPinToggle(item.id)
+    private func removePin() {
+        PinsViewModel.shared.remove(item)
         HapticFeedbackService.shared.light()
     }
-
+    
     private func onFlagTap() {
         Task {
             let res = await auth.flag(item.id)
-
+            
             if res {
                 actionPerformed = .flag
             } else {

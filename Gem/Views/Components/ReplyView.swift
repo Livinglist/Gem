@@ -29,13 +29,32 @@ struct ReplyView: View {
     @ViewBuilder
     var mainView: some View {
         VStack(spacing: 0) {
-            HStack {
+            TextField("", text: $text,  axis: .vertical)
+                .lineLimit(10...100)
+                .padding()
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                        .glassEffect(.clear, in: .rect(cornerRadius: 12)) // New in iOS 26
+                }
+                .textFieldStyle(.plain)
+                .padding(.horizontal, 12)
+                .focused($focusState, equals: .field)
+                .task {
+                    focusState = .field
+                }
+                .padding(.top, 80)
+            Spacer()
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
                 Button("Cancel", role: .cancel) {
                     self.presentationMode.wrappedValue.dismiss()
                 }
-                .padding()
-                Spacer()
-                Button("Submit") {
+            }
+            
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    guard text.trimmingCharacters(in: .whitespaces).isNotEmpty else { return }
                     Task {
                         let res = await auth.reply(to: replyingTo.id, with: text)
                         
@@ -46,27 +65,19 @@ struct ReplyView: View {
                         }
                     }
                     self.presentationMode.wrappedValue.dismiss()
+                } label: {
+                    Label("Submit", systemImage: "")
+                        .labelStyle(.titleOnly)
+                        .foregroundStyle(.foreground.opacity(0.7))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 6)
+                        .disabled(text.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
-                .disabled(text.trimmingCharacters(in: .whitespaces).isEmpty)
-                .padding()
+                .tint(.accent.opacity(0.6))
+                .buttonStyle(.glassProminent)
             }
-            HStack {
-                Text("Replying to \(replyingTo.by.orEmpty)")
-                    .font(.footnote)
-                    .padding(.leading, 12)
-                    .padding(.bottom, 12)
-                Spacer()
-            }
-            TextField("", text: $text,  axis: .vertical)
-                .lineLimit(10...100)
-                .textFieldStyle(.roundedBorder)
-                .padding(.horizontal, 12)
-                .focused($focusState, equals: .field)
-                .task {
-                    focusState = .field
-                }
-            Spacer()
         }
+        .containerBackground(.clear, for: .navigation)
     }
     
     var body: some View {
@@ -82,8 +93,12 @@ struct ReplyView: View {
             .presentationDetents(heights, selection: $presentationDetent)
             .presentationBackgroundInteraction(.enabled)
             .interactiveDismissDisabled()
+            .navigationTitle("Replying to \(replyingTo.by ?? "")")
+            .navigationBarTitleDisplayMode(.inline)
         } else {
             mainView
+                .navigationTitle("Replying to \(replyingTo.by ?? "")")
+                .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

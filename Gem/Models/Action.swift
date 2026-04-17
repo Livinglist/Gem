@@ -108,9 +108,9 @@ enum Action: Equatable {
         case .failure:
             return .init()
         case .lazyFetching:
-            return "line.3.horizontal.circle"
+            return "square.stack.3d.up"
         case .eagerFetching:
-            return "line.3.horizontal.decrease.circle"
+            return "square.stack"
         case .none:
             return .init()
         }
@@ -147,9 +147,9 @@ enum Action: Equatable {
         case .failure:
             return "wrongwaysign"
         case .lazyFetching:
-            return "line.3.horizontal.circle.fill"
+            return "square.stack.3d.up.fill"
         case .eagerFetching:
-            return "line.3.horizontal.decrease.circle.fill"
+            return "square.stack.fill"
         case .none:
             return .init()
         }

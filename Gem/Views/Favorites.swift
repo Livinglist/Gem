@@ -1,4 +1,5 @@
 import SwiftUI
+import HackerNewsKit
 
 struct Favorites: View {
     @StateObject var favStore: FavStore = .init()
@@ -29,7 +30,7 @@ struct Favorites: View {
         .onAppear {
             if favStore.status == Status.idle {
                 Task {
-                    await favStore.fetchStories()
+                    await favStore.fetchItems()
                 }
             }
         }

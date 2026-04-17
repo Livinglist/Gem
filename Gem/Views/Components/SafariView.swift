@@ -50,7 +50,6 @@ extension SafariView {
         
         func makeUIViewController(context: UIViewControllerRepresentableContext<SafariBaseView>) -> SFSafariViewController {
             let controller = SFSafariViewController(url: url)
-            controller.preferredControlTintColor = .orange
             controller.dismissButtonStyle = .close
             return controller
         }

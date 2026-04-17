@@ -18,11 +18,7 @@ extension Submissions {
             
             let startIndex = min(currentPage * pageSize, ids.count)
             let endIndex = min(startIndex + pageSize, ids.count)
-            var items = [any Item]()
-            
-            await StoryRepository.shared.fetchItems(ids: Array(ids[startIndex..<endIndex])) { item in
-                items.append(item)
-            }
+            let items = await StoryRepository.shared.fetchItems(ids: Array(ids[startIndex..<endIndex]))
             
             withAnimation {
                 self.status = .completed
@@ -41,11 +37,7 @@ extension Submissions {
             
             let startIndex = min(currentPage * pageSize, ids.count)
             let endIndex = min(startIndex + pageSize, ids.count)
-            var items = [any Item]()
-            
-            await StoryRepository.shared.fetchItems(ids: Array(ids[startIndex..<endIndex])) { item in
-                items.append(item)
-            }
+            let items = await StoryRepository.shared.fetchItems(ids: Array(ids[startIndex..<endIndex]))
             
             withAnimation {
                 self.status = .completed
