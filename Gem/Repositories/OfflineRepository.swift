@@ -140,12 +140,7 @@ public class OfflineRepository: ObservableObject {
     
     private func downloadChildComments(of item: any Item, level: Int) async -> Void {
         let context = container.mainContext
-        var comments = [Comment]()
-        
-        await storyRepository.fetchComments(ids: item.kids ?? [Int](), onCommentFetched: { comment in
-            comments.append(comment.copyWith(level: level))
-        })
-        
+        let comments = await storyRepository.fetchComments(ids: item.kids ?? [Int]()).map { $0.copyWith(level: level) }
         context.insert(CommentCollection(comments, parentId: item.id))
         try? context.save()
         

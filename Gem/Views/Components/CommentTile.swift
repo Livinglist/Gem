@@ -6,22 +6,33 @@ struct CommentTile: View {
     @EnvironmentObject var auth: Authentication
     @ObservedObject var itemStore: ItemStore
     @ObservedObject var settingsStore: SettingsStore = .shared
+    @State private var activeURL: IdentifiableURL?
+    @State private var isSafariSheetPresented: Bool = .init()
+    @State private var isReplySheetPresented: Bool = .init()
+    @State private var isFlagDialogPresented: Bool = .init()
     let settings: SettingsStore = .shared
     
     let level: Int
-    let index: Int
     let comment: Comment
     let allowActions: Bool
+    let showLevelIndent: Bool
+    @Binding var actionPerformed: Action
     
-    init(index: Int,
-         comment: Comment,
+    var index: Int {
+        itemStore.comments.firstIndex(of: comment) ?? 0
+    }
+    
+    init(comment: Comment,
          itemStore: ItemStore,
-         allowActions: Bool = true) {
+         actionPerformed: Binding<Action>? = nil,
+         allowActions: Bool = true,
+         showLevelIndent: Bool = true) {
         self.level = comment.level ?? 0
-        self.index = index
         self.comment = comment
         self.itemStore = itemStore
+        self._actionPerformed = actionPerformed ?? Binding<Action>(projectedValue: .constant(.none))
         self.allowActions = allowActions
+        self.showLevelIndent = showLevelIndent
     }
     
     var isCollapsed: Bool {
@@ -33,26 +44,40 @@ struct CommentTile: View {
     }
 
     var body: some View {
-        if itemStore.hidden.contains(comment.id) {
-            EmptyView()
-        } else {
-            mainView
-                .if(level > 0) { view -> AnyView in
-                    var wrappedView = AnyView(view)
-                    for i in (1...level).reversed() {
-                        wrappedView = AnyView(
-                            wrappedView
-                                .overlay(Rectangle().frame(width: 1, height: nil, alignment: .leading)
-                                    .foregroundColor(getColor(level: i)), alignment: .leading)
-                                .padding(.leading, 6)
-                            
-                        )
-                    }
-                    
-                    return AnyView(wrappedView)
+        mainView
+            .if(showLevelIndent && level > 0) { view -> AnyView in
+                var wrappedView = AnyView(view)
+                for i in (1...level).reversed() {
+                    wrappedView = AnyView(
+                        wrappedView
+                            .overlay(Rectangle().frame(width: 1, height: nil, alignment: .leading)
+                                .foregroundColor(getColor(level: i)), alignment: .leading)
+                            .padding(.leading, 6)
+                        
+                    )
                 }
-                .id(comment.id)
-        }
+                
+                return AnyView(wrappedView)
+            }
+            .id(comment.id)
+            .sheet(item: $activeURL) { url in
+                SafariView(url: url.url)
+            }
+            .sheet(isPresented: $isReplySheetPresented) {
+                NavigationStack {
+                    ReplyView(actionPerformed: $actionPerformed,
+                              replyingTo: comment,
+                              draggable: true
+                    )
+                }
+            }
+            .confirmationDialog("Are you sure?", isPresented: $isFlagDialogPresented) {
+                Button("Flag", role: .destructive) {
+                    onFlagTap()
+                }
+            } message: {
+                Text("Flag this comment by \(comment.by.orEmpty)?")
+            }
     }
     
     @ViewBuilder
@@ -87,8 +112,10 @@ struct CommentTile: View {
                             }
                     }
                     if itemStore.loadingItemId == comment.id {
-                        LoadingIndicator().padding(.top, 16).padding(.bottom, 8)
-                    } else if !itemStore.isRecursivelyFetching && itemStore.loadedCommentIds.contains(comment.id) == false && isCollapsed == false && comment.kids.isNotNullOrEmpty {
+                        ASCIISpinner(size: 24)
+                            .padding(.top, 16)
+                            .padding(.bottom, 8)
+                    } else if !itemStore.isRecursivelyFetching && !itemStore.loadedCommentIds.contains(comment.id ) && !isCollapsed && comment.kids.isNotNullOrEmpty {
                         Button {
                             HapticFeedbackService.shared.light()
                             
@@ -109,7 +136,14 @@ struct CommentTile: View {
                 .padding(EdgeInsets(top: 6, leading: 0, bottom: 0, trailing: 0))
                 .background(Color(UIColor.systemBackground))
                 .contextMenu {
-                    ItemMenu(item: comment)
+                    ItemMenu(item: comment,
+                             actionPerformed: $actionPerformed,
+                             activeURL: $activeURL,
+                             isFlagDialogPresented: $isFlagDialogPresented,
+                             isReplySheetPresented: $isReplySheetPresented)
+                } preview: {
+                    CommentTile(comment: comment, itemStore: itemStore, showLevelIndent: false)
+                        .frame(width: 360, height: 150, alignment: .topLeading)
                 }
                 .onTapGesture {
                     if isCollapsed {
@@ -124,5 +158,17 @@ struct CommentTile: View {
         }
         .frame(alignment: .leading)
         .padding(.leading, 6)
+    }
+    
+    private func onFlagTap() {
+        Task {
+            let res = await auth.flag(comment.id)
+            
+            if res {
+                actionPerformed = .flag
+            } else {
+                actionPerformed = .failure
+            }
+        }
     }
 }

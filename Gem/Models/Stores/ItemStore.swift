@@ -12,19 +12,14 @@ class ItemStore : ObservableObject {
     var status: Status = .idle
     var item: (any Item)?
     var loadingItemId: Int?
-    var actionPerformed: Action = .none
-    var timeDisplay: TimeDisplay = .timeAgo
 
     /// Stores ids of loaded comments, including both root and child comments.
     var loadedCommentIds: Set<Int> = .init()
-    var collapsed: Set<Int> = .init()
-    var hidden: Set<Int> = .init()
     var isRecursivelyFetching: Bool = SettingsStore.shared.defaultFetchMode == .eager || OfflineRepository.shared.isOfflineReading {
         didSet {
             if OfflineRepository.shared.isOfflineReading {
                 return
             }
-            actionPerformed = isRecursivelyFetching ? .eagerFetching : .lazyFetching
         }
     }
     
@@ -41,9 +36,8 @@ class ItemStore : ObservableObject {
             var comments = [Comment]()
             
             if !OfflineRepository.shared.isOfflineReading {
-                await StoryRepository.shared.fetchComments(ids: kids) { comment in
-                    comments.append(comment.copyWith(level: level + 1))
-                }
+                let newComments = await StoryRepository.shared.fetchComments(ids: kids).map { $0.copyWith(level: level + 1)}
+                comments.append(contentsOf: newComments)
             } else if let id = loadingItemId {
                 comments = OfflineRepository.shared.fetchComments(of: id)
             }
@@ -60,14 +54,20 @@ class ItemStore : ObservableObject {
         guard let item = self.item, !status.isLoading else { return }
         let id = item.id
         
-        withAnimation {
-            self.comments.removeAll()
+        if item is Comment || item.descendants.orZero > 0 {
+            HapticsManager.shared.playLoadingHaptics()
         }
         
+        defer {
+            HapticsManager.shared.stop()
+            self.status = .completed
+        }
+        
+        withAnimation {
+            self.comments = []
+        }
         self.loadingItemId = nil
-        self.loadedCommentIds.removeAll()
-        self.collapsed.removeAll()
-        self.hidden.removeAll()
+        self.loadedCommentIds = []
         self.status = .inProgress
         var commentsBuffer = [Comment]()
         
@@ -82,37 +82,29 @@ class ItemStore : ObservableObject {
                let kids = item.kids {
                 self.item = item
                 if isRecursivelyFetching {
+                    let source: CommentSource = item is Comment ? .API : .web
                     do {
-                        try await StoryRepository.shared.fetchCommentsRecursively(from: item) { comment in
-                            DispatchQueue.main.async {
-                                if let comment = comment {
-                                    self.status = .backgroundLoading
-
-                                    commentsBuffer.append(comment)
-                                } else {
-                                    withAnimation {
-                                        self.comments = commentsBuffer
-                                        self.saveToCache()
-                                    }
-                                    self.status = .completed
+                        let comments = try await StoryRepository.shared.fetchCommentsRecursively(of: item, from: source)
+                        withAnimation {
+                            self.comments = comments
+                        }
+                    } catch {
+                        let hasCache = getFromCache()
+                        if !hasCache {
+                            if let comments = try? await StoryRepository.shared.fetchCommentsRecursively(of: item, from: source == .API ? .web : .API) {
+                                withAnimation {
+                                    self.comments = comments
                                 }
                             }
                         }
-                    } catch is FetchError {
-                        getFromCache()
-                    } catch {
-                        // fetch using API
                     }
                 } else {
-                    await StoryRepository.shared.fetchComments(ids: kids) { comment in
-                        DispatchQueue.main.async {
-                            self.status = .backgroundLoading
-                            self.comments.append(comment.copyWith(level: 0))
-                        }
+                    let comments = await StoryRepository.shared.fetchComments(ids: kids).map { $0.copyWith(level: 0) }
+                    withAnimation {
+                        self.comments = comments
                     }
                 }
             }
-            self.status = .completed
         }
     }
     
@@ -123,10 +115,15 @@ class ItemStore : ObservableObject {
         cache.setObject(commentCollection, forKey: key)
     }
     
-    private func getFromCache() {
-        guard let itemId = item?.id else { return }
+    private func getFromCache() -> Bool {
+        guard let itemId = item?.id else { return  false }
         let cachedComments = cache.object(forKey: .init(integerLiteral: itemId))
-        comments = cachedComments?.comments ?? []
+        if let cachedComments {
+            comments = cachedComments.comments
+            return true
+        } else {
+            return false
+        }
     }
     
     func fetchParent(of cmt: Comment) async {
@@ -170,14 +167,13 @@ class ItemStore : ObservableObject {
                 let updatedComment = nextComment.copyWith(isHidden: true)
                 commentsBuffer.replaceSubrange(index..<index + 1, with: [updatedComment])
                 index = index + 1
-                guard index < commentsBuffer.count else { return }
+                guard index < commentsBuffer.count else { break }
                 nextComment = commentsBuffer[index]
                 nextCommentLevel = nextComment.level ?? 0
             } while (nextCommentLevel > parentLevel)
 
             await sendUpdates()
         }
-
     }
     
     func uncollapse(cmt: Comment) {

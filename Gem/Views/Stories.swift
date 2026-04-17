@@ -11,7 +11,7 @@ struct Stories: View {
             if storyStore.status.isLoading {
                 HStack {
                     Spacer()
-                    LoadingIndicator().frame(height: 200)
+                    ASCIISpinner().frame(height: 200)
                     Spacer()
                 }
                 .listRowSeparator(.hidden)

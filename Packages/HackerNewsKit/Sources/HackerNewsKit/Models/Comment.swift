@@ -57,4 +57,8 @@ public struct Comment: Item, Equatable {
                 isCollapsed: isCollapsed ?? self.isCollapsed ?? false,
                 isHidden: isHidden ?? self.isHidden ?? false)
     }
+    
+    public static func == (lhs: Comment, rhs: Comment) -> Bool {
+        return lhs.id == rhs.id && lhs.isCollapsed == rhs.isCollapsed && lhs.isHidden == rhs.isHidden
+    }
 }

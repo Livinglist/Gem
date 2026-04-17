@@ -63,7 +63,7 @@
 		E131BD892F8DB98F00F7E034 /* ContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = E131BD3E2F8DB98F00F7E034 /* ContextMenu.swift */; };
 		E131BD8A2F8DB98F00F7E034 /* CustomText.swift in Sources */ = {isa = PBXBuildFile; fileRef = E131BD3F2F8DB98F00F7E034 /* CustomText.swift */; };
 		E131BD8B2F8DB98F00F7E034 /* ItemRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E131BD402F8DB98F00F7E034 /* ItemRow.swift */; };
-		E131BD8C2F8DB98F00F7E034 /* LinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E131BD412F8DB98F00F7E034 /* LinkView.swift */; };
+		E131BD8C2F8DB98F00F7E034 /* LinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = E131BD412F8DB98F00F7E034 /* LinkPreview.swift */; };
 		E131BD8D2F8DB98F00F7E034 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E131BD422F8DB98F00F7E034 /* LoadingIndicator.swift */; };
 		E131BD8E2F8DB98F00F7E034 /* ReplyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E131BD432F8DB98F00F7E034 /* ReplyView.swift */; };
 		E131BD8F2F8DB98F00F7E034 /* SafariView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E131BD442F8DB98F00F7E034 /* SafariView.swift */; };
@@ -99,6 +99,11 @@
 		E1AB28A72F91AE3A00A8B707 /* TimeDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28A62F91AE3A00A8B707 /* TimeDisplay.swift */; };
 		E1AB28AB2F91F7F200A8B707 /* CommentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28AA2F91F7F200A8B707 /* CommentTextView.swift */; };
 		E1AB28AD2F91FFE400A8B707 /* ItemMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28AC2F91FFE400A8B707 /* ItemMenu.swift */; };
+		E1AB28AF2F92046F00A8B707 /* ThreadSearchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28AE2F92046F00A8B707 /* ThreadSearchSheet.swift */; };
+		E1AB28B12F929CFA00A8B707 /* IdentifiableURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28B02F929CF500A8B707 /* IdentifiableURL.swift */; };
+		E1AB28B32F92AF8600A8B707 /* HapticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28B22F92AF8600A8B707 /* HapticsManager.swift */; };
+		E1AB28B92F92B76200A8B707 /* heartbeats.ahap in Resources */ = {isa = PBXBuildFile; fileRef = E1AB28B72F92B76200A8B707 /* heartbeats.ahap */; };
+		E1AB28BB2F92BD4400A8B707 /* ASCIISpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28BA2F92BD4400A8B707 /* ASCIISpinner.swift */; };
 		E1ACB6FA2F8F11EF00382813 /* Gem App Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */; };
 		E1ACB6FB2F8F128E00382813 /* Gem App Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */; };
 		E1ACB6FC2F8F128E00382813 /* Gem App Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */; };
@@ -240,7 +245,7 @@
 		E131BD3E2F8DB98F00F7E034 /* ContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenu.swift; sourceTree = "<group>"; };
 		E131BD3F2F8DB98F00F7E034 /* CustomText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomText.swift; sourceTree = "<group>"; };
 		E131BD402F8DB98F00F7E034 /* ItemRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemRow.swift; sourceTree = "<group>"; };
-		E131BD412F8DB98F00F7E034 /* LinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkView.swift; sourceTree = "<group>"; };
+		E131BD412F8DB98F00F7E034 /* LinkPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreview.swift; sourceTree = "<group>"; };
 		E131BD422F8DB98F00F7E034 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
 		E131BD432F8DB98F00F7E034 /* ReplyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyView.swift; sourceTree = "<group>"; };
 		E131BD442F8DB98F00F7E034 /* SafariView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariView.swift; sourceTree = "<group>"; };
@@ -277,6 +282,11 @@
 		E1AB28A62F91AE3A00A8B707 /* TimeDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeDisplay.swift; sourceTree = "<group>"; };
 		E1AB28AA2F91F7F200A8B707 /* CommentTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTextView.swift; sourceTree = "<group>"; };
 		E1AB28AC2F91FFE400A8B707 /* ItemMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemMenu.swift; sourceTree = "<group>"; };
+		E1AB28AE2F92046F00A8B707 /* ThreadSearchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSearchSheet.swift; sourceTree = "<group>"; };
+		E1AB28B02F929CF500A8B707 /* IdentifiableURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentifiableURL.swift; sourceTree = "<group>"; };
+		E1AB28B22F92AF8600A8B707 /* HapticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsManager.swift; sourceTree = "<group>"; };
+		E1AB28B72F92B76200A8B707 /* heartbeats.ahap */ = {isa = PBXFileReference; lastKnownFileType = text; path = heartbeats.ahap; sourceTree = "<group>"; };
+		E1AB28BA2F92BD4400A8B707 /* ASCIISpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASCIISpinner.swift; sourceTree = "<group>"; };
 		E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "Gem App Icon.icon"; sourceTree = "<group>"; };
 		E1D7A3AB2F8D850600D8C934 /* Gem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gem.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1D7A3BD2F8D852E00D8C934 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -444,6 +454,7 @@
 		E131BD282F8DB98F00F7E034 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				E1AB28B02F929CF500A8B707 /* IdentifiableURL.swift */,
 				E1AB28A62F91AE3A00A8B707 /* TimeDisplay.swift */,
 				E11F30852F90776500E1B1FB /* Persistence */,
 				E131BD222F8DB98F00F7E034 /* Stores */,
@@ -467,6 +478,7 @@
 		E131BD332F8DB98F00F7E034 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				E1AB28B22F92AF8600A8B707 /* HapticsManager.swift */,
 				E131BD2E2F8DB98F00F7E034 /* Constants.swift */,
 				E131BD2F2F8DB98F00F7E034 /* DebouncedObject.swift */,
 				E131BD302F8DB98F00F7E034 /* HapticFeedbackService.swift */,
@@ -492,6 +504,8 @@
 		E131BD4A2F8DB98F00F7E034 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				E1AB28BA2F92BD4400A8B707 /* ASCIISpinner.swift */,
+				E1AB28AE2F92046F00A8B707 /* ThreadSearchSheet.swift */,
 				E1AB28AC2F91FFE400A8B707 /* ItemMenu.swift */,
 				E1AB28AA2F91F7F200A8B707 /* CommentTextView.swift */,
 				E1AB28A42F91AE1500A8B707 /* NameRowView.swift */,
@@ -503,7 +517,7 @@
 				E131BD3E2F8DB98F00F7E034 /* ContextMenu.swift */,
 				E131BD3F2F8DB98F00F7E034 /* CustomText.swift */,
 				E131BD402F8DB98F00F7E034 /* ItemRow.swift */,
-				E131BD412F8DB98F00F7E034 /* LinkView.swift */,
+				E131BD412F8DB98F00F7E034 /* LinkPreview.swift */,
 				E131BD422F8DB98F00F7E034 /* LoadingIndicator.swift */,
 				E131BD432F8DB98F00F7E034 /* ReplyView.swift */,
 				E131BD442F8DB98F00F7E034 /* SafariView.swift */,
@@ -596,6 +610,14 @@
 			path = Packages;
 			sourceTree = "<group>";
 		};
+		E1AB28B82F92B76200A8B707 /* Haptics */ = {
+			isa = PBXGroup;
+			children = (
+				E1AB28B72F92B76200A8B707 /* heartbeats.ahap */,
+			);
+			path = Haptics;
+			sourceTree = "<group>";
+		};
 		E1D7A3A22F8D850600D8C934 = {
 			isa = PBXGroup;
 			children = (
@@ -665,6 +687,7 @@
 		E1D7A4072F8D871800D8C934 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				E1AB28B82F92B76200A8B707 /* Haptics */,
 				E1D7A4022F8D871800D8C934 /* Screenshots */,
 				E1D7A4032F8D871800D8C934 /* zcombinator.xcf */,
 				E1D7A4042F8D871800D8C934 /* zcombinator-github.png */,
@@ -834,6 +857,7 @@
 				E1D7A41F2F8D871800D8C934 /* iphone-2.png in Resources */,
 				E1D7A4202F8D871800D8C934 /* ipad-2.png in Resources */,
 				E131BDA22F8DB98F00F7E034 /* Assets.xcassets in Resources */,
+				E1AB28B92F92B76200A8B707 /* heartbeats.ahap in Resources */,
 				E1D7A4212F8D871800D8C934 /* zcombinator-github.png in Resources */,
 				E1D7A4222F8D871800D8C934 /* ipad-4.png in Resources */,
 			);
@@ -907,6 +931,7 @@
 				E131BD7D2F8DB98F00F7E034 /* HapticFeedbackService.swift in Sources */,
 				E131BD7E2F8DB98F00F7E034 /* NetworkMonitor.swift in Sources */,
 				E131BD7F2F8DB98F00F7E034 /* UserDefaultWrapper.swift in Sources */,
+				E1AB28AF2F92046F00A8B707 /* ThreadSearchSheet.swift in Sources */,
 				E131BD802F8DB98F00F7E034 /* CopyButton.swift in Sources */,
 				E131BD812F8DB98F00F7E034 /* DownvoteButton.swift in Sources */,
 				E131BD822F8DB98F00F7E034 /* FavButton.swift in Sources */,
@@ -919,7 +944,8 @@
 				E131BD892F8DB98F00F7E034 /* ContextMenu.swift in Sources */,
 				E131BD8A2F8DB98F00F7E034 /* CustomText.swift in Sources */,
 				E131BD8B2F8DB98F00F7E034 /* ItemRow.swift in Sources */,
-				E131BD8C2F8DB98F00F7E034 /* LinkView.swift in Sources */,
+				E131BD8C2F8DB98F00F7E034 /* LinkPreview.swift in Sources */,
+				E1AB28BB2F92BD4400A8B707 /* ASCIISpinner.swift in Sources */,
 				E5DAC2212F8F19F500EB1354 /* Replies.swift in Sources */,
 				E131BD8D2F8DB98F00F7E034 /* LoadingIndicator.swift in Sources */,
 				E11F308C2F907A1D00E1B1FB /* RecentsView.swift in Sources */,
@@ -941,9 +967,11 @@
 				E131BD9B2F8DB98F00F7E034 /* Profile.swift in Sources */,
 				E131BD9C2F8DB98F00F7E034 /* Settings.swift in Sources */,
 				E131BD9D2F8DB98F00F7E034 /* Submissions.swift in Sources */,
+				E1AB28B12F929CFA00A8B707 /* IdentifiableURL.swift in Sources */,
 				E131BD9E2F8DB98F00F7E034 /* Thread.swift in Sources */,
 				E131BD9F2F8DB98F00F7E034 /* AppDelegate.swift in Sources */,
 				E131BDA02F8DB98F00F7E034 /* Gem.xcdatamodeld in Sources */,
+				E1AB28B32F92AF8600A8B707 /* HapticsManager.swift in Sources */,
 				E131BDA12F8DB98F00F7E034 /* GemApp.swift in Sources */,
 			);
 		};
@@ -1070,6 +1098,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -1127,6 +1156,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};

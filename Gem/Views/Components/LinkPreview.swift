@@ -52,7 +52,7 @@ struct LinkPreview: View {
                 Button {
                     isSafariSheetPresented = true
                 } label: {
-                    Label("View in browser", systemImage: "safari")
+                    Label("View in Safari", systemImage: "safari")
                 }
             },
             preview: {

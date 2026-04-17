@@ -31,7 +31,6 @@ struct NameRowView: View {
             Spacer()
             Text(timeDisplay == .timeAgo ? item.shortTimeAgo : item.formattedTime)
                 .borderedFootnote()
-                .padding(.trailing, 2)
                 .onTapGesture {
                     withAnimation {
                         timeDisplay.toggle()
@@ -40,8 +39,8 @@ struct NameRowView: View {
             if let index {
                 Text("#\(index + 1)")
                     .borderedFootnote()
-                    .padding(.trailing, 2)
             }
         }
+        .padding(.trailing, 8)
     }
 }

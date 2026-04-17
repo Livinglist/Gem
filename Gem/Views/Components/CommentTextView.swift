@@ -18,13 +18,17 @@ struct CommentTextView: View {
                 .foregroundColor(.gray)
                 .padding(.top, 6)
         } else if comment.text.isNotNullOrEmpty {
-            Text(comment.text.orEmpty.markdowned)
-                .font(.body)
-                .textSelection(.enabled)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding([.leading, .bottom], 4)
-                .id(comment.id)
+            HStack {
+                Text(comment.text.orEmpty.markdowned)
+                    .font(.body)
+                    .textSelection(.enabled)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer()
+            }
+            .contentShape(Rectangle())
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding([.leading, .bottom], 4)
+            .id(comment.id)
         } else {
             Text("deleted")
                 .font(.footnote)

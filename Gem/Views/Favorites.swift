@@ -30,7 +30,7 @@ struct Favorites: View {
         .onAppear {
             if favStore.status == Status.idle {
                 Task {
-                    await favStore.fetchStories()
+                    await favStore.fetchItems()
                 }
             }
         }

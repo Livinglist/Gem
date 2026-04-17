@@ -41,6 +41,13 @@ enum FetchMode: Int, Equatable, CaseIterable {
         case .lazy: return "Lazy"
         }
     }
+    
+    var systemImage: String {
+        switch self {
+        case .eager: return "square.stack"
+        case .lazy: return "square.stack.3d.up"
+        }
+    }
 }
 
 class SettingsStore: ObservableObject {
