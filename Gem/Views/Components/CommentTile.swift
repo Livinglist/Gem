@@ -109,7 +109,7 @@ struct CommentTile: View {
                 .padding(EdgeInsets(top: 6, leading: 0, bottom: 0, trailing: 0))
                 .background(Color(UIColor.systemBackground))
                 .contextMenu {
-                    ItemMenu(itemStore: itemStore, item: comment)
+                    ItemMenu(item: comment)
                 }
                 .onTapGesture {
                     if isCollapsed {

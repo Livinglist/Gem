@@ -57,114 +57,14 @@ extension Thread {
     }
 }
 
-struct ItemMenu: View {
-    @ObservedObject var itemStore: ItemStore
-    @State private var isFlagDialogPresented: Bool = .init()
-    @State private var isHNSheetPresented: Bool = .init()
-    @State private var isSafariSheetPresented: Bool = .init()
-    @State private var isReplySheetPresented: Bool = .init()
-    @State private var flaggingItem: (any Item)?
-    static private var handledUrl: URL? = nil
-    static private var hnSheetTarget: (any Item)? = nil
-    static private var replySheetTarget: (any Item)? = nil
-    let auth = Authentication.shared
-    let item: any Item
-    
-    var body: some View {
-        VStack {
-            Group {
-                UpvoteButton(id: item.id, actionPerformed: $itemStore.actionPerformed)
-                DownvoteButton(id: item.id, actionPerformed: $itemStore.actionPerformed)
-                FavButton(id: item.id, actionPerformed: $itemStore.actionPerformed)
-                PinButton(item: item, actionPerformed: $itemStore.actionPerformed)
-            }
-            Button {
-                onReplyTap(item: item)
-            } label: {
-                Label(Action.reply.label, systemImage: Action.reply.icon)
-            }
-            .disabled(!auth.loggedIn || item.isJob)
-            Divider()
-            FlagButton(id: item.id, showFlagDialog: $isFlagDialogPresented)
-            Divider()
-            ShareMenu(item: item)
-            if let text = item.text, text.isNotEmpty {
-                CopyButton(text: text, actionPerformed: $itemStore.actionPerformed)
-            }
-            Button {
-                onViewOnHackerNewsTap(item: item)
-            } label: {
-                Label("View on Hacker News", systemImage: "safari")
-            }
-        }
-        .confirmationDialog("Are you sure?", isPresented: $isFlagDialogPresented) {
-            Button("Flag", role: .destructive) {
-                flag()
-            }
-        } message: {
-            Text("Flag the post by \(flaggingItem?.by.orEmpty ?? item.by.orEmpty)?")
-        }
-        .sheet(isPresented: $isSafariSheetPresented) {
-            if let url = Self.handledUrl {
-                SafariView(url: url, draggable: true)
-            }
-        }
-    }
-    
-    private func flag() {
-        let id = flaggingItem?.id ?? item.id
-        Task {
-            let res = await auth.flag(id)
-            
-            if res {
-                itemStore.actionPerformed = .flag
-            } else {
-                itemStore.actionPerformed = .failure
-            }
-        }
-    }
-    
-    /// Show the `item`  inside a web view sheet if there is no web view sheet being displayed,
-    /// otherwise, show the web view inside a new screen.
-    private func onViewOnHackerNewsTap(item: any Item) {
-        if isSafariSheetPresented, let url = URL(string: item.itemUrl) {
-            Router.shared.to(.url(url))
-        } else {
-            Self.hnSheetTarget = item
-            isHNSheetPresented = true
-        }
-    }
-    
-    /// Display reply view inside a sheet if there is no web view sheet being displayed,
-    /// otherwise, display the reply view in a new screen.
-    private func onReplyTap(item: any Item) {
-        if isSafariSheetPresented {
-            if let cmt = item as? Comment {
-                Router.shared.to(.replyComment(cmt))
-            } else if let story = item as? Story {
-                Router.shared.to(.replyStory(story))
-            }
-        } else {
-            Self.replySheetTarget = item
-            isReplySheetPresented = true
-        }
-    }
-}
-
 struct Thread: View {
     @EnvironmentObject private var auth: Authentication
     @StateObject private var itemStore: ItemStore = .init()
     @StateObject private var debounceObject: DebounceObject = .init()
     @State private var scrollViewProxy: ScrollViewProxy? = nil
-    @State private var searchText = ""
-    @State private var isHNSheetPresented: Bool = .init()
     @State private var isSafariSheetPresented: Bool = .init()
-    @State private var isReplySheetPresented: Bool = .init()
     @State private var isSearchPresented: Bool = .init()
-    @State private var flaggingItem: (any Item)?
     static private var handledUrl: URL? = nil
-    static private var hnSheetTarget: (any Item)? = nil
-    static private var replySheetTarget: (any Item)? = nil
     
     let settings: SettingsStore = .shared
     
@@ -185,11 +85,6 @@ struct Thread: View {
                                       isSearchPresented: $isSearchPresented,
                                       itemStore: itemStore,
                                       scrollViewProxy: scrollViewProxy)
-                }
-            }
-            .sheet(isPresented: $isHNSheetPresented) {
-                if let target = Self.hnSheetTarget, let url = URL(string: target.itemUrl) {
-                    SafariView(url: url)
                 }
             }
             .sheet(isPresented: $isSafariSheetPresented) {
@@ -218,14 +113,6 @@ struct Thread: View {
                 }
                 return .handled
             })
-            .sheet(isPresented: $isReplySheetPresented) {
-                if let target = Self.replySheetTarget {
-                    ReplyView(actionPerformed: $itemStore.actionPerformed,
-                              replyingTo: target,
-                              draggable: true
-                    )
-                }
-            }
             .task {
                 if itemStore.item == nil {
                     itemStore.item = item
@@ -368,7 +255,7 @@ struct Thread: View {
                 }
                 
                 Menu {
-                    ItemMenu(itemStore: itemStore, item: item)
+                    ItemMenu(item: item)
                 } label: {
                     Image(systemName: "ellipsis")
                 }
@@ -388,45 +275,6 @@ struct Thread: View {
         .refreshable {
             Task {
                 await itemStore.refresh()
-            }
-        }
-    }
-    
-    /// Show the `item`  inside a web view sheet if there is no web view sheet being displayed,
-    /// otherwise, show the web view inside a new screen.
-    private func onViewOnHackerNewsTap(item: any Item) {
-        if isSafariSheetPresented, let url = URL(string: item.itemUrl) {
-            Router.shared.to(.url(url))
-        } else {
-            Self.hnSheetTarget = item
-            isHNSheetPresented = true
-        }
-    }
-    
-    /// Display reply view inside a sheet if there is no web view sheet being displayed,
-    /// otherwise, display the reply view in a new screen.
-    private func onReplyTap(item: any Item) {
-        if isSafariSheetPresented {
-            if let cmt = item as? Comment {
-                Router.shared.to(.replyComment(cmt))
-            } else if let story = item as? Story {
-                Router.shared.to(.replyStory(story))
-            }
-        } else {
-            Self.replySheetTarget = item
-            isReplySheetPresented = true
-        }
-    }
-    
-    private func flag() {
-        let id = flaggingItem?.id ?? item.id
-        Task {
-            let res = await auth.flag(id)
-            
-            if res {
-                itemStore.actionPerformed = .flag
-            } else {
-                itemStore.actionPerformed = .failure
             }
         }
     }

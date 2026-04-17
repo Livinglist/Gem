@@ -98,6 +98,7 @@
 		E1AB28A52F91AE1500A8B707 /* NameRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28A42F91AE1500A8B707 /* NameRowView.swift */; };
 		E1AB28A72F91AE3A00A8B707 /* TimeDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28A62F91AE3A00A8B707 /* TimeDisplay.swift */; };
 		E1AB28AB2F91F7F200A8B707 /* CommentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28AA2F91F7F200A8B707 /* CommentTextView.swift */; };
+		E1AB28AD2F91FFE400A8B707 /* ItemMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28AC2F91FFE400A8B707 /* ItemMenu.swift */; };
 		E1ACB6FA2F8F11EF00382813 /* Gem App Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */; };
 		E1ACB6FB2F8F128E00382813 /* Gem App Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */; };
 		E1ACB6FC2F8F128E00382813 /* Gem App Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */; };
@@ -275,6 +276,7 @@
 		E1AB28A42F91AE1500A8B707 /* NameRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameRowView.swift; sourceTree = "<group>"; };
 		E1AB28A62F91AE3A00A8B707 /* TimeDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeDisplay.swift; sourceTree = "<group>"; };
 		E1AB28AA2F91F7F200A8B707 /* CommentTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTextView.swift; sourceTree = "<group>"; };
+		E1AB28AC2F91FFE400A8B707 /* ItemMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemMenu.swift; sourceTree = "<group>"; };
 		E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "Gem App Icon.icon"; sourceTree = "<group>"; };
 		E1D7A3AB2F8D850600D8C934 /* Gem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gem.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1D7A3BD2F8D852E00D8C934 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -490,6 +492,7 @@
 		E131BD4A2F8DB98F00F7E034 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				E1AB28AC2F91FFE400A8B707 /* ItemMenu.swift */,
 				E1AB28AA2F91F7F200A8B707 /* CommentTextView.swift */,
 				E1AB28A42F91AE1500A8B707 /* NameRowView.swift */,
 				E11F308A2F9079E400E1B1FB /* SideMenu */,
@@ -896,6 +899,7 @@
 				E131BD762F8DB98F00F7E034 /* StoryCollection.swift in Sources */,
 				E131BD772F8DB98F00F7E034 /* AppNotification.swift in Sources */,
 				E131BD782F8DB98F00F7E034 /* Authentication.swift in Sources */,
+				E1AB28AD2F91FFE400A8B707 /* ItemMenu.swift in Sources */,
 				E131BD792F8DB98F00F7E034 /* OfflineRepository.swift in Sources */,
 				E131BD7A2F8DB98F00F7E034 /* Router.swift in Sources */,
 				E131BD7B2F8DB98F00F7E034 /* Constants.swift in Sources */,

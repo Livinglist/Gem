@@ -27,35 +27,6 @@ struct ItemRow: View {
         self._actionPerformed = actionPerformed
     }
 
-    @ViewBuilder
-    var menu: some View {
-        Menu {
-            UpvoteButton(id: item.id, actionPerformed: $actionPerformed)
-            DownvoteButton(id: item.id, actionPerformed: $actionPerformed)
-            FavButton(id: item.id, actionPerformed: $actionPerformed)
-            PinButton(item: item, actionPerformed: $actionPerformed)
-            Divider()
-            FlagButton(id: item.id, showFlagDialog: $isFlagDialogPresented)
-            Divider()
-            ShareMenu(item: item)
-            Button {
-                isHNSheetPresented = true
-            } label: {
-                Label("View on Hacker News", systemImage: "safari")
-            }
-        } label: {
-            Label(String(), systemImage: "ellipsis")
-                .labelStyle(.iconOnly)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 12)
-                .foregroundColor(.purple)
-                .contentShape(Rectangle())
-                .glassEffect()
-                .padding(.trailing, 6)
-                .padding(.bottom, 6)
-        }
-    }
-
     var body: some View {
         ZStack {
             Button(
@@ -110,7 +81,7 @@ struct ItemRow: View {
                                     }
 
                                 } else {
-                                    menu
+                                    ItemMenu(item: item)
                                 }
 
                             }

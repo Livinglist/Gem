@@ -148,7 +148,7 @@ struct SideMenu: View {
                 HStack(spacing: 6) {
                     Text("Gem")
                         .font(.system(size: 24, weight: .semibold, design: .serif))
-                        .padding(.horizontal)
+                        .padding(.leading)
                         .padding(.top, 70)
                     Image("GemIcon")
                         .resizable()
