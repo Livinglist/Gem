@@ -7,7 +7,7 @@ struct ASCIISpinner: View {
     let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     let size: CGFloat
     
-    init(size: CGFloat = 48.0) {
+    init(size: CGFloat = 36.0) {
         self.size = size
     }
 
