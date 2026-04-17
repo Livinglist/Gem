@@ -287,7 +287,7 @@ struct Thread: View {
                 if itemStore.status == .inProgress {
                     LoadingIndicator().padding(.top, 100)
                 }
-                if itemStore.comments.count > 600 {
+                if itemStore.comments.count > 100 {
                     LazyVStack(spacing: 0) {
                         ForEach(itemStore.comments.indices, id: \.self) { index in
                             let comment = itemStore.comments[index]

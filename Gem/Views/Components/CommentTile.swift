@@ -97,7 +97,7 @@ extension Thread {
                     EmptyView()
                 } else {
                     VStack(spacing: 0) {
-                        NameRowView(item: comment, isRoot: false, index: level).padding(.bottom, 4)
+                        NameRowView(item: comment, isRoot: false, index: index).padding(.bottom, 4)
                         if allowActions && isCollapsed {
                             Text(comment.text.orEmpty.prefix(100))
                                 .lineLimit(1)
