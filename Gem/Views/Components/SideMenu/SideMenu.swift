@@ -145,10 +145,17 @@ struct SideMenu: View {
             .blur(radius: 2)
             
             VStack(alignment: .leading, spacing: 0) {
-                Text("Gem")
-                    .font(.system(size: 24, weight: .semibold, design: .serif))
-                    .padding(.horizontal)
-                    .padding(.top, 70)
+                HStack(spacing: 6) {
+                    Text("Gem")
+                        .font(.system(size: 24, weight: .semibold, design: .serif))
+                        .padding(.horizontal)
+                        .padding(.top, 70)
+                    Image("GemIcon")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .padding(.top, 70)
+                }
                 Spacer()
             }
         }
