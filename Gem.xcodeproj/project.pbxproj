@@ -104,6 +104,10 @@
 		E1AB28B32F92AF8600A8B707 /* HapticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28B22F92AF8600A8B707 /* HapticsManager.swift */; };
 		E1AB28B92F92B76200A8B707 /* heartbeats.ahap in Resources */ = {isa = PBXBuildFile; fileRef = E1AB28B72F92B76200A8B707 /* heartbeats.ahap */; };
 		E1AB28BB2F92BD4400A8B707 /* ASCIISpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB28BA2F92BD4400A8B707 /* ASCIISpinner.swift */; };
+		E1AB29A52F935EE000A8B707 /* DownloadMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB29A42F935EE000A8B707 /* DownloadMenu.swift */; };
+		E1AB29A72F93604F00A8B707 /* ItemModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB29A62F93604F00A8B707 /* ItemModel.swift */; };
+		E1AB29A92F9360F700A8B707 /* FavoritesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB29A82F9360F100A8B707 /* FavoritesViewModel.swift */; };
+		E1AB29AB2F93770D00A8B707 /* FavoritesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB29AA2F93770700A8B707 /* FavoritesModel.swift */; };
 		E1ACB6FA2F8F11EF00382813 /* Gem App Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */; };
 		E1ACB6FB2F8F128E00382813 /* Gem App Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */; };
 		E1ACB6FC2F8F128E00382813 /* Gem App Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */; };
@@ -287,6 +291,10 @@
 		E1AB28B22F92AF8600A8B707 /* HapticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsManager.swift; sourceTree = "<group>"; };
 		E1AB28B72F92B76200A8B707 /* heartbeats.ahap */ = {isa = PBXFileReference; lastKnownFileType = text; path = heartbeats.ahap; sourceTree = "<group>"; };
 		E1AB28BA2F92BD4400A8B707 /* ASCIISpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASCIISpinner.swift; sourceTree = "<group>"; };
+		E1AB29A42F935EE000A8B707 /* DownloadMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadMenu.swift; sourceTree = "<group>"; };
+		E1AB29A62F93604F00A8B707 /* ItemModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemModel.swift; sourceTree = "<group>"; };
+		E1AB29A82F9360F100A8B707 /* FavoritesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesViewModel.swift; sourceTree = "<group>"; };
+		E1AB29AA2F93770700A8B707 /* FavoritesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesModel.swift; sourceTree = "<group>"; };
 		E1ACB6F92F8F11EF00382813 /* Gem App Icon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "Gem App Icon.icon"; sourceTree = "<group>"; };
 		E1D7A3AB2F8D850600D8C934 /* Gem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gem.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1D7A3BD2F8D852E00D8C934 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -371,6 +379,8 @@
 		E11F30852F90776500E1B1FB /* Persistence */ = {
 			isa = PBXGroup;
 			children = (
+				E1AB29AA2F93770700A8B707 /* FavoritesModel.swift */,
+				E1AB29A62F93604F00A8B707 /* ItemModel.swift */,
 				E11F308D2F907D0E00E1B1FB /* StoryModel.swift */,
 				E131BD242F8DB98F00F7E034 /* CommentCollection.swift */,
 				E131BD272F8DB98F00F7E034 /* StoryCollection.swift */,
@@ -390,6 +400,7 @@
 		E11F308F2F90BE6200E1B1FB /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				E1AB29A82F9360F100A8B707 /* FavoritesViewModel.swift */,
 				E11F30922F90BEBB00E1B1FB /* RecentsViewModel.swift */,
 				E11F30902F90BE6B00E1B1FB /* PinsViewModel.swift */,
 			);
@@ -504,6 +515,7 @@
 		E131BD4A2F8DB98F00F7E034 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				E1AB29A42F935EE000A8B707 /* DownloadMenu.swift */,
 				E1AB28BA2F92BD4400A8B707 /* ASCIISpinner.swift */,
 				E1AB28AE2F92046F00A8B707 /* ThreadSearchSheet.swift */,
 				E1AB28AC2F91FFE400A8B707 /* ItemMenu.swift */,
@@ -890,6 +902,7 @@
 		E1D7A3A72F8D850600D8C934 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
+				E1AB29A72F93604F00A8B707 /* ItemModel.swift in Sources */,
 				E5DAC21F2F8F159B00EB1354 /* SideMenu.swift in Sources */,
 				E131BD5E2F8DB98F00F7E034 /* ArrayExtension.swift in Sources */,
 				E131BD5F2F8DB98F00F7E034 /* BoolExtension.swift in Sources */,
@@ -930,11 +943,13 @@
 				E131BD7C2F8DB98F00F7E034 /* DebouncedObject.swift in Sources */,
 				E131BD7D2F8DB98F00F7E034 /* HapticFeedbackService.swift in Sources */,
 				E131BD7E2F8DB98F00F7E034 /* NetworkMonitor.swift in Sources */,
+				E1AB29AB2F93770D00A8B707 /* FavoritesModel.swift in Sources */,
 				E131BD7F2F8DB98F00F7E034 /* UserDefaultWrapper.swift in Sources */,
 				E1AB28AF2F92046F00A8B707 /* ThreadSearchSheet.swift in Sources */,
 				E131BD802F8DB98F00F7E034 /* CopyButton.swift in Sources */,
 				E131BD812F8DB98F00F7E034 /* DownvoteButton.swift in Sources */,
 				E131BD822F8DB98F00F7E034 /* FavButton.swift in Sources */,
+				E1AB29A92F9360F700A8B707 /* FavoritesViewModel.swift in Sources */,
 				E131BD832F8DB98F00F7E034 /* FlagButton.swift in Sources */,
 				E131BD842F8DB98F00F7E034 /* PinButton.swift in Sources */,
 				E131BD852F8DB98F00F7E034 /* UpvoteButton.swift in Sources */,
@@ -944,6 +959,7 @@
 				E131BD892F8DB98F00F7E034 /* ContextMenu.swift in Sources */,
 				E131BD8A2F8DB98F00F7E034 /* CustomText.swift in Sources */,
 				E131BD8B2F8DB98F00F7E034 /* ItemRow.swift in Sources */,
+				E1AB29A52F935EE000A8B707 /* DownloadMenu.swift in Sources */,
 				E131BD8C2F8DB98F00F7E034 /* LinkPreview.swift in Sources */,
 				E1AB28BB2F92BD4400A8B707 /* ASCIISpinner.swift in Sources */,
 				E5DAC2212F8F19F500EB1354 /* Replies.swift in Sources */,

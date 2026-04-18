@@ -8,6 +8,7 @@ struct ItemRow: View {
     let item: any Item
     let url: URL?
     let isPinnedStory: Bool
+    let addToRecents: Bool
     
     @EnvironmentObject var auth: Authentication
     
@@ -19,10 +20,12 @@ struct ItemRow: View {
     
     init(item: any Item,
          isPinnedStory: Bool = false,
+         addToRecents: Bool = false,
          actionPerformed: Binding<Action>) {
         self.item = item
         self.url = URL(string: item.url ?? "https://news.ycombinator.com/item?id=\(item.id)")
         self.isPinnedStory = isPinnedStory
+        self.addToRecents = addToRecents
         self._actionPerformed = actionPerformed
     }
     
@@ -33,7 +36,7 @@ struct ItemRow: View {
                     if item.isJobWithUrl, let urlStr = item.url, let url = URL(string: urlStr) {
                         activeURL = IdentifiableURL(url: url)
                     } else {
-                        if let story = item as? Story {
+                        if addToRecents, let story = item as? Story {
                             RecentsViewModel.shared.insert(story: story)
                         }
                         Router.shared.to(item)

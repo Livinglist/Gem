@@ -312,18 +312,6 @@ struct Home: View {
         //            }
         //        }
         //.navigationTitle(storyStore.storyType.label.uppercased())
-        .alert("Abort Download", isPresented: $isAbortDownloadAlertPresented) {
-            Button {
-                offlineRepository.abortDownload()
-            } label: {
-                Text("Confirm")
-            }
-            Button(role: .cancel) {
-                offlineRepository.abortDownload()
-            } label: {
-                Text("Confirm")
-            }
-        }
     }
     
     @ViewBuilder
@@ -351,6 +339,13 @@ struct Home: View {
                 }
                 .sensoryFeedback(.impact(flexibility: .soft), trigger: showSlideOutMenu)
             }
+            if selectedMenuItem == .home {
+                ToolbarItem(placement: .topBarTrailing) {
+                    DownloadMenu(storyStore: storyStore,
+                                 offlineRepository: offlineRepository,
+                                 isAbortDownloadAlertPresented: $isAbortDownloadAlertPresented)
+                }
+            }
         }
         .toolbarTitleDisplayMode(.inline)
         .if(UIDevice.current.userInterfaceIdiom == .phone) { view in
@@ -369,6 +364,18 @@ struct Home: View {
             }
         }
         .withToast(actionPerformed: $actionPerformed)
+        .alert("Abort Download", isPresented: $isAbortDownloadAlertPresented) {
+            Button {
+                offlineRepository.abortDownload()
+            } label: {
+                Text("Confirm")
+            }
+            Button(role: .cancel) {
+                offlineRepository.abortDownload()
+            } label: {
+                Text("Confirm")
+            }
+        }
         .sheet(isPresented: $isAboutSheetPresented, content: {
             SafariView(url: Constants.githubUrl)
         })

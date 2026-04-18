@@ -1,37 +1,33 @@
 import SwiftUI
+import HackerNewsKit
 
 struct FavButton: View {
     @EnvironmentObject var auth: Authentication
-    @ObservedObject private var settings: SettingsStore = .shared
+    let vm = FavoritesViewModel.shared
     
-    let id: Int
+    let item: any Item
     let actionPerformed: Binding<Action>
     
     var body: some View {
         Button {
             onFavorite()
         } label: {
-            if settings.favList.contains(id) {
+            if vm.has(item) {
                 Label(Action.unfavorite.label, systemImage: Action.unfavorite.icon)
             } else {
                 Label(Action.favorite.label, systemImage: Action.favorite.icon)
             }
         }
+        .disabled(!auth.loggedIn)
     }
     
     private func onFavorite() {
-        let isFav = settings.favList.contains(id)
+        let isFav = vm.has(item)
         if isFav {
-            Task {
-                _ = await auth.unfavorite(id)
-                actionPerformed.wrappedValue = .unfavorite
-            }
+            actionPerformed.wrappedValue = .unfavorite
         } else {
-            Task {
-                _ = await auth.favorite(id)
-                actionPerformed.wrappedValue = .favorite
-            }
+            actionPerformed.wrappedValue = .favorite
         }
-        settings.onFavToggle(id)
+        vm.onFavButtonTapped(item)
     }
 }

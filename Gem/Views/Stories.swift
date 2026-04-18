@@ -38,6 +38,7 @@ struct Stories: View {
             } else {
                 ForEach(storyStore.stories) { story in
                     ItemRow(item: story,
+                            addToRecents: true,
                             actionPerformed: $actionPerformed)
                     .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
                     .listRowSeparator(.hidden)

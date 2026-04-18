@@ -19,8 +19,7 @@ struct RecentsView: View {
                     .foregroundStyle(.secondary)
                 Spacer()
             }
-            .padding(.bottom)
-            
+            .padding(.bottom, 12)
             ForEach(viewModel.stories) { model in
                 Text(model.story.title.orEmpty)
                     .foregroundStyle(.foreground.opacity(0.9))

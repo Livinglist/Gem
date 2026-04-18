@@ -2,7 +2,8 @@ import SwiftData
 import Foundation
 import HackerNewsKit
 
-@Observable class RecentsViewModel {
+@Observable
+class RecentsViewModel {
     var stories: [StoryModel] = []
     @ObservationIgnored private let modelConfig = ModelConfiguration("RecentsViewModel")
     @ObservationIgnored private let container: ModelContainer?

@@ -17,7 +17,7 @@ struct ItemMenu: View {
             }
             
             ControlGroup {
-                FavButton(id: item.id, actionPerformed: $actionPerformed)
+                FavButton(item: item, actionPerformed: $actionPerformed)
                 PinButton(item: item, actionPerformed: $actionPerformed)
                 Button {
                     onReplyTap(item: item)
