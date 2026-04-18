@@ -110,9 +110,13 @@ class FavoritesViewModel {
     
     private func remove(_ item: any Item) {
         if let _ = item as? Story {
-            stories.removeAll(where: { $0.id == item.id })
+            withAnimation {
+                stories.removeAll(where: { $0.id == item.id })
+            }
         } else {
-            comments.removeAll(where: { $0.id == item.id })
+            withAnimation {
+                comments.removeAll(where: { $0.id == item.id })
+            }
         }
     }
     
