@@ -1,7 +1,7 @@
 import SwiftData
+import SwiftUI
 import HackerNewsKit
 import Foundation
-
 
 @Observable
 class PinsViewModel {
@@ -27,7 +27,9 @@ class PinsViewModel {
         let id = item.id
         try? container.mainContext.delete(model: ItemModel.self, where: #Predicate { $0.itemId == id })
         try? container.mainContext.save()
-        items.removeAll(where: { $0.id == item.id })
+        withAnimation {
+            items.removeAll(where: { $0.id == item.id })
+        }
     }
     
     func add(_ item: any Item) {
@@ -35,7 +37,9 @@ class PinsViewModel {
         let itemModel = ItemModel(item: item)
         container.mainContext.insert(itemModel)
         try? container.mainContext.save()
-        items.insert(item, at: 0)
+        withAnimation {
+            items.insert(item, at: 0)
+        }
     }
     
     func onPinToggle(_ item: any Item) {

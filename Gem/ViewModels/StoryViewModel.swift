@@ -4,20 +4,19 @@ import Combine
 import HackerNewsKit
 
 @MainActor
-class StoryStore: ObservableObject {
-    @Published var storyType: StoryType = SettingsStore.shared.defaultStoryType
-    @Published var stories: [Story] = .init()
-    @Published var status: Status = .idle
-    @Published var isConnectedToNetwork: Bool = true
-
+@Observable class StoryViewModel {
+    var storyType: StoryType = SettingsStore.shared.defaultStoryType
+    var stories: [Story] = .init()
+    var status: Status = .idle
+    var isConnectedToNetwork: Bool = true
+    
     private let pageSize: Int = 10
     private var currentPage: Int = 0
     private var storyIds: [Int] = .init()
     private var networkStatusSubscription: AnyCancellable?
-    private var offlineStatusSubscription: AnyCancellable?
     
-    static let shared = StoryStore()
-
+    static let shared = StoryViewModel()
+    
     init() {
         networkStatusSubscription = NetworkMonitor.shared.networkStatus
             .receive(on: RunLoop.main)
@@ -25,20 +24,12 @@ class StoryStore: ObservableObject {
             .sink { isConnected in
                 self.isConnectedToNetwork = isConnected ?? false
             }
-
-        offlineStatusSubscription = OfflineRepository.shared.$isOfflineReading
-            .removeDuplicates()
-            .sink { [self] _ in
-                Task {
-                    await fetchStories()
-                }
-            }
         
         Task {
             await fetchStories()
         }
     }
-
+    
     func fetchStories(status: Status = .inProgress) async {
         self.status = status
         self.currentPage = 0
@@ -56,7 +47,7 @@ class StoryStore: ObservableObject {
             await StoryRepository.shared.fetchStories(ids: Array(storyIds[range])) { story in
                 stories.append(story)
             }
-
+            
             self.status = .completed
             withAnimation {
                 self.stories = stories
@@ -94,6 +85,7 @@ class StoryStore: ObservableObject {
     }
     
     func onStoryRowAppear(_ story: Story) {
+        if OfflineRepository.shared.isOfflineReading { return }
         if let last = stories.last, last.id == story.id {
             Task {
                 await loadMore()

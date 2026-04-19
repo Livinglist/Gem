@@ -4,13 +4,12 @@ import UniformTypeIdentifiers
 import HackerNewsKit
 
 struct ItemRow: View {
-    let settings: SettingsStore = .shared
     let item: any Item
     let url: URL?
     let isPinnedStory: Bool
     let addToRecents: Bool
     
-    @EnvironmentObject var auth: Authentication
+    @Environment(Authentication.self) var auth
     
     @State private var activeURL: IdentifiableURL?
     @State private var isReplySheetPresented: Bool = .init()
@@ -59,7 +58,6 @@ struct ItemRow: View {
                                         .foregroundColor(.purple)
                                 } else if let text = item.text {
                                     Text(text.replacingOccurrences(of: "\n", with: " "))
-                                        .font(.footnote)
                                         .lineLimit(2)
                                         .foregroundColor(.gray)
                                 }
@@ -85,6 +83,7 @@ struct ItemRow: View {
                                 } else {
                                     Menu {
                                         ItemMenu(item: item,
+                                                 showViewInSeperateThreadOption: false,
                                                  actionPerformed: $actionPerformed,
                                                  activeURL: $activeURL,
                                                  isFlagDialogPresented: $isFlagDialogPresented,

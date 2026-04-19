@@ -38,7 +38,7 @@ struct SideMenu: View {
     let menuWidth: CGFloat
     let onDismiss: (MenuItem?) -> Void
     
-    @EnvironmentObject private var auth: Authentication
+    @Environment(Authentication.self) var auth
     @State private var selectedMenuItem: MenuItem = .home
     @State private var username: String = .init()
     @State private var password: String = .init()

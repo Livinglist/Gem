@@ -2,20 +2,20 @@ import SwiftUI
 import HackerNewsKit
 
 struct Stories: View {
-    @ObservedObject private var storyStore: StoryStore = .shared
-    @ObservedObject private var offlineRepository: OfflineRepository = .shared
+    private var vm: StoryViewModel = .shared
+    private var offlineRepository: OfflineRepository = .shared
     @State private var actionPerformed: Action = .none
     
     var body: some View {
         List {
-            if storyStore.status.isLoading {
+            if vm.status.isLoading {
                 HStack {
                     Spacer()
                     ASCIISpinner().frame(height: 200)
                     Spacer()
                 }
                 .listRowSeparator(.hidden)
-            } else if !storyStore.isConnectedToNetwork && !offlineRepository.isOfflineReading && storyStore.stories.isEmpty {
+            } else if !vm.isConnectedToNetwork && !offlineRepository.isOfflineReading && vm.stories.isEmpty {
                 HStack {
                     Spacer()
                     VStack {
@@ -36,32 +36,33 @@ struct Stories: View {
                 .frame(height: 240)
                 .listRowSeparator(.hidden)
             } else {
-                ForEach(storyStore.stories) { story in
+                ForEach(vm.stories) { story in
                     ItemRow(item: story,
                             addToRecents: true,
                             actionPerformed: $actionPerformed)
                     .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
                     .listRowSeparator(.hidden)
                     .onAppear {
-                        storyStore.onStoryRowAppear(story)
+                        vm.onStoryRowAppear(story)
                     }
                 }
             }
         }
         .listStyle(.plain)
         .refreshable {
-            await storyStore.refresh()
+            await vm.refresh()
         }
+        .sensoryFeedback(.success, trigger: vm.status) { $1.isCompleted }
         .withToast(actionPerformed: $actionPerformed)
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Menu {
                     ForEach(StoryType.allCases, id: \.self) { storyType in
                         Button {
-                            if storyStore.storyType == storyType { return }
-                            storyStore.storyType = storyType
+                            if vm.storyType == storyType { return }
+                            vm.storyType = storyType
                             Task {
-                                await storyStore.fetchStories()
+                                await vm.fetchStories()
                             }
                         } label: {
                             Label("\(storyType.label.capitalized)", systemImage: storyType.icon)
@@ -70,7 +71,7 @@ struct Stories: View {
                     }
                 } label: {
                     HStack {
-                        Text(storyStore.storyType.label.capitalized)
+                        Text(vm.storyType.label.capitalized)
                             .font(.headline)
                             .foregroundStyle(.foreground)
                         Image(systemName: "chevron.down")

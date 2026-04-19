@@ -12,20 +12,20 @@ struct Chip: View {
             } label: {
                 Text(label)
             }
-            .tint(.purple)
-            .buttonStyle(.borderedProminent)
+            .tint(.accent)
+            .buttonStyle(.glassProminent)
             .buttonBorderShape(.capsule)
-            .controlSize(.mini)
+            .controlSize(.regular)
         } else {
             Button {
                 onTap()
             } label: {
                 Text(label)
             }
-            .tint(.purple)
-            .buttonStyle(.bordered)
+            .tint(.accent)
+            .buttonStyle(.glass)
             .buttonBorderShape(.capsule)
-            .controlSize(.mini)
+            .controlSize(.regular)
         }
     }
 }

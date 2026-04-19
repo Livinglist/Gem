@@ -3,14 +3,13 @@ import WebKit
 import HackerNewsKit
 
 struct CommentTile: View {
-    @EnvironmentObject var auth: Authentication
-    @ObservedObject var itemStore: ItemStore
-    @ObservedObject var settingsStore: SettingsStore = .shared
+    @Environment(Authentication.self) var auth
+    var vm: ThreadViewModel
     @State private var activeURL: IdentifiableURL?
     @State private var isSafariSheetPresented: Bool = .init()
     @State private var isReplySheetPresented: Bool = .init()
     @State private var isFlagDialogPresented: Bool = .init()
-    let settings: SettingsStore = .shared
+    var settings: SettingsStore = .shared
     
     let level: Int
     let comment: Comment
@@ -19,17 +18,17 @@ struct CommentTile: View {
     @Binding var actionPerformed: Action
     
     var index: Int {
-        itemStore.comments.firstIndex(of: comment) ?? 0
+        vm.comments.firstIndex(of: comment) ?? 0
     }
     
     init(comment: Comment,
-         itemStore: ItemStore,
+         vm: ThreadViewModel,
          actionPerformed: Binding<Action>? = nil,
          allowActions: Bool = true,
          showLevelIndent: Bool = true) {
         self.level = comment.level ?? 0
         self.comment = comment
-        self.itemStore = itemStore
+        self.vm = vm
         self._actionPerformed = actionPerformed ?? Binding<Action>(projectedValue: .constant(.none))
         self.allowActions = allowActions
         self.showLevelIndent = showLevelIndent
@@ -42,7 +41,7 @@ struct CommentTile: View {
     var isHidden: Bool {
         comment.isHidden ?? false
     }
-
+    
     var body: some View {
         mainView
             .if(showLevelIndent && level > 0) { view -> AnyView in
@@ -106,21 +105,21 @@ struct CommentTile: View {
                                 if !isCollapsed {
                                     HapticFeedbackService.shared.ultralight()
                                     withAnimation {
-                                        itemStore.collapse(cmt: comment)
+                                        vm.collapse(cmt: comment)
                                     }
                                 }
                             }
                     }
-                    if itemStore.loadingItemId == comment.id {
+                    if vm.loadingItemId == comment.id {
                         ASCIISpinner(size: 24)
                             .padding(.top, 16)
                             .padding(.bottom, 8)
-                    } else if !itemStore.isRecursivelyFetching && !itemStore.loadedCommentIds.contains(comment.id ) && !isCollapsed && comment.kids.isNotNullOrEmpty {
+                    } else if !vm.isRecursivelyFetching && !vm.loadedCommentIds.contains(comment.id ) && !isCollapsed && comment.kids.isNotNullOrEmpty {
                         Button {
                             HapticFeedbackService.shared.light()
                             
                             Task {
-                                await itemStore.loadKids(of: comment)
+                                await vm.loadKids(of: comment)
                             }
                         } label: {
                             Text("\(comment.kids.countOrZero) \(comment.kids.isMoreThanOne ? "replies" : "reply")")
@@ -137,19 +136,21 @@ struct CommentTile: View {
                 .background(Color(UIColor.systemBackground))
                 .contextMenu {
                     ItemMenu(item: comment,
+                             showViewInSeperateThreadOption: true,
                              actionPerformed: $actionPerformed,
                              activeURL: $activeURL,
                              isFlagDialogPresented: $isFlagDialogPresented,
                              isReplySheetPresented: $isReplySheetPresented)
                 } preview: {
-                    CommentTile(comment: comment, itemStore: itemStore, showLevelIndent: false)
+                    CommentTile(comment: comment, vm: vm, showLevelIndent: false)
                         .frame(width: 360, height: 150, alignment: .topLeading)
+                        .environment(auth)
                 }
                 .onTapGesture {
                     if isCollapsed {
                         HapticFeedbackService.shared.ultralight()
                         withAnimation {
-                            itemStore.uncollapse(cmt: comment)
+                            vm.uncollapse(cmt: comment)
                         }
                     }
                 }

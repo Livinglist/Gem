@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct DownloadMenu: View {
-    @ObservedObject var storyStore: StoryStore
-    @ObservedObject var offlineRepository: OfflineRepository
+    var storyStore: StoryViewModel = .shared
+    var offlineRepository: OfflineRepository
     @Binding var isAbortDownloadAlertPresented: Bool
     
     var body: some View {
@@ -34,10 +34,10 @@ struct DownloadMenu: View {
                 }
             } label: {
                 if offlineRepository.isDownloading {
-                    Label("Download in progress", systemImage: "hourglass")
+                    Label("Download in Progress", systemImage: "hourglass")
                     Text("\(offlineRepository.completionCount) completed")
                 } else {
-                    Label("Download all stories", systemImage: "square.and.arrow.down")
+                    Label("Download All Stories", systemImage: "square.and.arrow.down")
                     if offlineRepository.lastFetchedAt.isNotEmpty {
                         Text("last downloaded at \(offlineRepository.lastFetchedAt)")
                     }

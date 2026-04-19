@@ -2,7 +2,7 @@ import SwiftUI
 import HackerNewsKit
 
 struct FavButton: View {
-    @EnvironmentObject var auth: Authentication
+    @Environment(Authentication.self) var auth
     let vm = FavoritesViewModel.shared
     
     let item: any Item

@@ -10,14 +10,25 @@ public class StoryRepository {
     
     // MARK: - Story related.
     
-    public func fetchAllStories(from storyType: StoryType, onStoryFetched: @escaping (Story) -> Void) async -> Void {
+    public func fetchAllStories(from storyType: StoryType) async -> [Story] {
         let storyIds = await fetchStoryIds(from: storyType)
-        for id in storyIds {
-            let story = await self.fetchStory(id)
-            if let story = story {
-                onStoryFetched(story)
+        let stories: [Story] = await withTaskGroup(of: (Int, (Story)?).self) { group in
+            for (index, id) in storyIds.enumerated() {
+                group.addTask { [self] in
+                    guard let story = await fetchStory(id) else { return (index, nil) }
+                    return (index, story)
+                }
             }
+            
+            var items: [(Int, Story?)] = []
+            for await result in group {
+                items.append(result)
+            }
+            return items
+                .sorted { $0.0 < $1.0 }
+                .compactMap { $0.1 }
         }
+        return stories
     }
     
     public func fetchStoryIds(from storyType: StoryType) async -> [Int] {
@@ -73,7 +84,6 @@ public class StoryRepository {
             return comments
                 .sorted { $0.0 < $1.0 }
                 .compactMap { $0.1 }
-                .compactMap { $0 }
         }
         return comments
     }

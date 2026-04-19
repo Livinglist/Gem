@@ -7,7 +7,7 @@ extension Profile {
     class ProfileStore: ObservableObject {
         @Published var user: User?
         @Published var status: Status = .idle
-        @ObservedObject var settingsStore: SettingsStore = .shared
+        var settingsStore: SettingsStore = .shared
 
         func fetchUser(id: String) async {
             self.status = .inProgress

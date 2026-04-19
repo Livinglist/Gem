@@ -2,7 +2,7 @@ import SwiftUI
 import HackerNewsKit
 
 struct ReplyView: View {
-    @EnvironmentObject private var auth: Authentication
+    @Environment(Authentication.self) var auth
     @Environment(\.presentationMode) private var presentationMode
     @FocusState private var focusState: FocusField?
     @State private var presentationDetent: PresentationDetent = .large

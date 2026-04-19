@@ -16,7 +16,7 @@ class FavoritesViewModel {
     private let repo = StoryRepository.shared
     private let auth = Authentication.shared
     private let pageSize = 30
-    private var page = 1
+    private var storiesPage = 1
     private var commentsPage = 1
     
     static let shared = FavoritesViewModel()
@@ -40,7 +40,7 @@ class FavoritesViewModel {
         let stories = await repo.fetchItems(ids: storyIds).compactMap { $0 as? Story }
         let commentIds = await repo.fetchFavorites(of: username, type: .comment)
         let comments = await repo.fetchComments(ids: commentIds)
-        self.page = 1
+        self.storiesPage = 1
         self.commentsPage = 1
         withAnimation {
             self.stories = stories
@@ -86,8 +86,8 @@ class FavoritesViewModel {
         var fethcingPage = 0
         
         if selectedType == .story {
-            page = page + 1
-            fethcingPage = page
+            storiesPage = storiesPage + 1
+            fethcingPage = storiesPage
         } else {
             commentsPage = commentsPage + 1
             fethcingPage = commentsPage
@@ -109,27 +109,27 @@ class FavoritesViewModel {
     }
     
     private func remove(_ item: any Item) {
-        if let _ = item as? Story {
-            withAnimation {
+        withAnimation {
+            if let _ = item as? Story {
                 stories.removeAll(where: { $0.id == item.id })
-            }
-        } else {
-            withAnimation {
+            } else {
                 comments.removeAll(where: { $0.id == item.id })
             }
         }
     }
     
     private func add(_ item: any Item) {
-        if let story = item as? Story {
-            stories.insert(story, at: 0)
-        } else if let comment = item as? Comment {
-            comments.insert(comment, at: 0)
+        withAnimation {
+            if let story = item as? Story {
+                stories.insert(story, at: 0)
+            } else if let comment = item as? Comment {
+                comments.insert(comment, at: 0)
+            }
         }
     }
     
     func onFavButtonTapped(_ item: any Item) {
-        if let story = item as? Story {
+        if item is Story {
             if stories.contains(where: { $0.id == item.id }) {
                 Task {
                     await auth.unfavorite(item.id)
@@ -159,7 +159,7 @@ class FavoritesViewModel {
     }
     
     func has(_ item: any Item) -> Bool {
-        if let story = item as? Story {
+        if item is Story {
             stories.contains(where: { $0.id == item.id })
         } else {
             comments.contains(where: { $0.id == item.id })
@@ -171,9 +171,12 @@ class FavoritesViewModel {
     }
     
     func reset() {
-        page = 1
+        storiesPage = 1
         commentsPage = 1
         comments.removeAll()
         stories.removeAll()
+        container = container ?? (try? ModelContainer(for: ItemModel.self, configurations: modelConfig))
+        if container == nil { return }
+        try? container?.erase()
     }
 }

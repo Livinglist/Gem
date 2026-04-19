@@ -2,7 +2,7 @@ import SwiftUI
 import HackerNewsKit
 
 struct Settings: View {
-    @ObservedObject var store = SettingsStore.shared
+    @Bindable var store = SettingsStore.shared
 
     var body: some View {
         List {

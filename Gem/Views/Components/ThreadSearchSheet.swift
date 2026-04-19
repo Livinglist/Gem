@@ -5,7 +5,7 @@ extension Thread {
     struct ThreadSearchSheet: View {
         @ObservedObject var debounceObject: DebounceObject
         @Binding var isSearchPresented: Bool
-        var itemStore: ItemStore
+        var vm: ThreadViewModel
         let scrollViewProxy: ScrollViewProxy?
         
         @FocusState private var isSearchFocused: Bool
@@ -13,9 +13,9 @@ extension Thread {
         var body: some View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    ForEach(itemStore.searchResults, id: \.self) { index in
-                        let comment = itemStore.comments[index]
-                        CommentTile(comment: comment, itemStore: itemStore, allowActions: false)
+                    ForEach(vm.searchResults, id: \.self) { index in
+                        let comment = vm.comments[index]
+                        CommentTile(comment: comment, vm: vm, allowActions: false, showLevelIndent: false)
                             .padding(4)
                             .allowsHitTesting(false)
                             .contentShape(Rectangle())
@@ -25,7 +25,7 @@ extension Thread {
                                     scrollViewProxy?.scrollTo(comment.id, anchor: .top)
                                 }
                             }
-                        if index != itemStore.searchResults.last {
+                        if index != vm.searchResults.last {
                             Divider()
                                 .padding(.horizontal, 0)
                         }
@@ -45,10 +45,10 @@ extension Thread {
             .searchFocused($isSearchFocused)
             .onChange(of: debounceObject.debouncedText) { _, text in
                 if text.isEmpty { return }
-                itemStore.searchInThread(text)
+                vm.searchInThread(text)
             }
             .onAppear {
-                if itemStore.searchResults.isEmpty {
+                if vm.searchResults.isEmpty {
                     isSearchFocused = true
                 }
             }

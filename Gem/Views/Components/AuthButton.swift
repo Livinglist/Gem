@@ -2,7 +2,7 @@ import SwiftUI
 import HackerNewsKit
 
 struct AuthButton: View {
-    @EnvironmentObject private var auth: Authentication
+    @Environment(Authentication.self) var auth
     
     @Binding var isLoginDialogPresented: Bool
     @State var isProfileSheetPresented: Bool = false

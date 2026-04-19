@@ -19,18 +19,14 @@ extension StoryRepository {
         }
     }
     
-    private func fetchCommentsRecursivelyFromAPI(of item: any Item) async -> [Comment] {
+    private func fetchCommentsRecursivelyFromAPI(of item: any Item, level: Int = 0) async -> [Comment] {
         guard let kids = item.kids else { return [] }
-        var level = 0
-        if let comment = item as? Comment {
-            level = comment.level.orZero + 1
-        }
         let comments = await withTaskGroup(of: (Int, [Comment]).self) { group in
             for (index, kid) in kids.enumerated() {
                 group.addTask { [self] in
                     guard var comment = await fetchComment(kid) else { return (index, []) }
                     comment = comment.copyWith(level: level)
-                    let childComments = await fetchCommentsRecursivelyFromAPI(of: comment)
+                    let childComments = await fetchCommentsRecursivelyFromAPI(of: comment, level: level + 1)
                     return (index, [comment] + childComments)
                 }
             }
@@ -160,7 +156,7 @@ extension StoryRepository {
                 guard let cmtIndentElements = try? element.select(Self.commentIndentSelector) else { continue }
                 let indentString = try? cmtIndentElements.attr("indent")
                 let indent = Int(indentString ?? String()) ?? 0
-                
+
                 indentToParentId[indent] = cmtId
                 let parentId = indentToParentId[indent - 1] ?? -1
                 

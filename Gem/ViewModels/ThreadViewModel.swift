@@ -6,7 +6,7 @@ import HackerNewsKit
 
 @MainActor
 @Observable
-class ItemStore : ObservableObject {
+class ThreadViewModel : ObservableObject {
     var comments: [Comment] = .init()
     var searchResults: [Int] = .init()
     var status: Status = .idle
@@ -69,7 +69,6 @@ class ItemStore : ObservableObject {
         self.loadingItemId = nil
         self.loadedCommentIds = []
         self.status = .inProgress
-        var commentsBuffer = [Comment]()
         
         if OfflineRepository.shared.isOfflineReading {
             // We don't need to refresh in offline mode
@@ -209,5 +208,11 @@ class ItemStore : ObservableObject {
             }
         }
         self.searchResults = results
+    }
+    
+    deinit {
+        DispatchQueue.main.async {
+            HapticsManager.shared.stop()
+        }
     }
 }

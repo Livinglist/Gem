@@ -4,10 +4,11 @@ import Combine
 
 extension Search {
     @MainActor
-    class SearchStore: ObservableObject {
-        @Published var results: [any Item] = .init()
-        @Published var status: Status = .idle
-        @Published var params: SearchParams = .init(page: 0, query: .init(), sorted: .init(), filters: Set<SearchFilter>()) {
+    @Observable
+    class SearchViewModel: ObservableObject {
+        var results: [any Item] = .init()
+        var status: Status = .idle
+        var params: SearchParams = .init(page: 0, query: .init(), sorted: .init(), filters: Set<SearchFilter>()) {
             didSet {
                 if params.query.isNotEmpty {
                     Task {
@@ -17,6 +18,7 @@ extension Search {
             }
         }
         
+        @ObservationIgnored
         var containsDateRange: Bool {
             return params.filters.contains(where: { filter in
                 if case .dateRange(_, _) = filter {
@@ -26,6 +28,7 @@ extension Search {
             })
         }
         
+        @ObservationIgnored
         var currentDateRange: SearchFilter? {
             for filter in params.filters {
                 if case .dateRange(_, _) = filter {
@@ -56,7 +59,9 @@ extension Search {
         }
         
         func onSortTap() {
-            self.params = params.copyWith(page: 0, sorted: !(params.sorted))
+            withAnimation {
+                self.params = params.copyWith(page: 0, sorted: !(params.sorted))
+            }
         }
         
         func onDateRangeToggle(_ filter: SearchFilter) {

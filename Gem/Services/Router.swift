@@ -2,8 +2,8 @@ import Combine
 import SwiftUI
 import HackerNewsKit
 
-class Router: ObservableObject {
-    @Published var path: NavigationPath = .init()
+@Observable class Router {
+    var path: NavigationPath = .init()
     
     static let shared: Router = .init()
     

@@ -10,23 +10,23 @@ import HackerNewsKit
 /// For accessing cached stories and comments when the device is offline.
 ///
 @MainActor
-public class OfflineRepository: ObservableObject {
-    @Published var isDownloading = false
-    @Published var isOfflineReading = false {
+@Observable public class OfflineRepository {
+    var isDownloading = false
+    var isOfflineReading = false {
         didSet {
             if !isInMemory {
                 loadIntoMemory()
             }
         }
     }
-    @Published var completionCount = 0
+    var completionCount = 0
     
-    lazy var lastFetchedAt = {
+    var lastFetchedAt: String {
         guard let date = UserDefaults.standard.object(forKey: lastDownloadAtKey) as? Date else { return "" }
         let df = DateFormatter()
         df.dateFormat = "MM/dd/yyyy HH:mm"
         return df.string(from: date)
-    }()
+    }
     var isInMemory = false
     
     private let storyRepository = StoryRepository.shared
@@ -115,23 +115,31 @@ public class OfflineRepository: ObservableObject {
         for storyType in downloadOrder {
             var stories = [Story]()
             
-            await storyRepository.fetchAllStories(from: storyType) { story in
-                stories.append(story)
-            }
-            
+            let results = await storyRepository.fetchAllStories(from: storyType)
+            stories.append(contentsOf: results)
             context.insert(StoryCollection(stories, storyType: storyType))
-            
-            // Fetch comments for each story.
-            for story in stories {
-                if !isDownloading { return }
 
-                // Skip already completed stories to prevent fetching for duplicate comments.
-                if completedStoryId.contains(story.id) { continue }
-                await downloadChildComments(of: story, level: 0)
-                
-                // Update counter for UI.
-                completionCount = completionCount + 1
-                completedStoryId.insert(story.id)
+            // Fetch comments for each story concurrently.
+            await withTaskGroup(of: Int?.self) { group in
+                for story in stories {
+                    guard isDownloading else { break }
+                    guard !completedStoryId.contains(story.id) else { continue }
+
+                    group.addTask {
+                        await self.downloadChildComments(of: story, level: 0)
+                        return story.id
+                    }
+                }
+
+                for await completedId in group {
+                    guard isDownloading else {
+                        group.cancelAll()
+                        return
+                    }
+                    guard let completedId else { continue }
+                    completionCount += 1
+                    completedStoryId.insert(completedId)
+                }
             }
         }
         
@@ -140,13 +148,37 @@ public class OfflineRepository: ObservableObject {
     
     private func downloadChildComments(of item: any Item, level: Int) async -> Void {
         let context = container.mainContext
-        let comments = await storyRepository.fetchComments(ids: item.kids ?? [Int]()).map { $0.copyWith(level: level) }
+        let comments = await fetchComments(ids: item.kids ?? [Int]()).map { $0.copyWith(level: level) }
         context.insert(CommentCollection(comments, parentId: item.id))
         try? context.save()
         
         for comment in comments {
             await downloadChildComments(of: comment, level: level + 1)
         }
+    }
+    
+    private func fetchComments(ids: [Int]) async -> [Comment] {
+        let comments: [Comment] = await withTaskGroup(of: (Int, Comment?).self) { group in
+            for (index, id) in ids.enumerated() {
+                group.addTask { [self] in
+                    guard let comment = await storyRepository.fetchComment(id) else { return (index, nil) }
+                    return (index, comment)
+                }
+            }
+            
+            var comments: [(Int, Comment?)] = []
+            for await result in group {
+                guard isDownloading else {
+                    group.cancelAll()
+                    return []
+                }
+                comments.append(result)
+            }
+            return comments
+                .sorted { $0.0 < $1.0 }
+                .compactMap { $0.1 }
+        }
+        return comments
     }
     
     public func fetchAllStories(from storyType: StoryType) -> [Story] {

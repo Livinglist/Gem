@@ -3,10 +3,11 @@ import Foundation
 import HackerNewsKit
 
 @MainActor
-public class Authentication: ObservableObject {
-    @Published var username: String?
-    @Published var loggedIn: Bool = .init()
-    @Published var user: User?
+@Observable
+public class Authentication {
+    var username: String?
+    var loggedIn: Bool = .init()
+    var user: User?
     
     static let shared: Authentication = .init()
     
