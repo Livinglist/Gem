@@ -4,8 +4,7 @@ import Combine
 
 extension Search {
     @MainActor
-    @Observable
-    class SearchViewModel: ObservableObject {
+    @Observable class SearchViewModel: ObservableObject {
         var results: [any Item] = .init()
         var status: Status = .idle
         var params: SearchParams = .init(page: 0, query: .init(), sorted: .init(), filters: Set<SearchFilter>()) {

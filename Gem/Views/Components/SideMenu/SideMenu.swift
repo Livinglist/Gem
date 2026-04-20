@@ -167,13 +167,14 @@ struct SideMenu: View {
                 .autocorrectionDisabled(true)
                 .textInputAutocapitalization(.never)
             SecureField("Password", text: $password)
+                .textContentType(.password)
             Button(Action.login.label, action: {
                 if username.isNotEmpty && password.isNotEmpty {
                     self.isEulaDialogPresented = true
                 }
             })
-            .foregroundStyle(.purple)
-            Button("Cancel", role: .cancel, action: {}).foregroundStyle(.purple)
+            .foregroundStyle(.accent)
+            Button("Cancel", role: .cancel, action: {}).foregroundStyle(.accent)
         }, message: {
             Text("Please enter your Hacker News username and password.")
         })
@@ -213,7 +214,7 @@ struct SideMenu: View {
                                 .padding(.vertical, 12)
                                 .foregroundStyle(.red)
                         }
-                        .buttonStyle(BorderedButtonStyle())
+                        .buttonStyle(.glass)
                         .frame(maxWidth: .infinity)
                         .padding(.bottom)
                         
@@ -241,10 +242,9 @@ struct SideMenu: View {
                             Text("Accept")
                                 .padding(.horizontal, 24)
                                 .padding(.vertical, 12)
-                                .foregroundStyle(.purple)
                                 .fontWeight(.bold)
                         }
-                        .buttonStyle(BorderedButtonStyle())
+                        .buttonStyle(.glassProminent)
                         .frame(maxWidth: .infinity)
                         .padding(.bottom)
                     }
@@ -252,11 +252,10 @@ struct SideMenu: View {
                 .padding()
                 .background {
                     Rectangle()
-                        .fill(.background)
                         .cornerRadius(16)
-                        .padding()
-                        .shadow(radius: 4.0)
+                        .glassEffect(.regular, in: .rect(cornerRadius: 16))
                 }
+                .padding()
             }
             .presentationDetents([.large])
         }

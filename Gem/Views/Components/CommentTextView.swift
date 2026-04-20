@@ -20,6 +20,7 @@ struct CommentTextView: View {
         } else if comment.text.isNotNullOrEmpty {
             HStack {
                 Text(comment.text.orEmpty.markdowned)
+                    .tint(.accent)
                     .font(.body)
                     .textSelection(.enabled)
                     .fixedSize(horizontal: false, vertical: true)

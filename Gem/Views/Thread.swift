@@ -76,9 +76,12 @@ struct Thread: View {
     var mainItemView: some View {
         ScrollViewReader { proxy in
             ScrollView {
-                NameRowView(item: vm.item ?? item, isRoot: true, index: nil)
-                    .padding(.leading, 6)
-                    .padding(.top, 6)
+                NameRowView(item: vm.item ?? item,
+                            isOP: false,
+                            isRoot: true,
+                            index: nil)
+                .padding(.leading, 6)
+                .padding(.top, 6)
                 if item is Story {
                     if let url = URL(string: item.url.orEmpty) {
                         VStack(spacing: 0) {
@@ -95,9 +98,11 @@ struct Thread: View {
                             }
                             if item.text.orEmpty.isNotEmpty {
                                 Text(item.text.orEmpty.markdowned)
+                                    .tint(.accent)
                                     .font(.body)
                                     .padding(.horizontal, 10)
                                     .padding(.top, 6)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
                         }
                     } else {
@@ -107,20 +112,21 @@ struct Thread: View {
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 12)
                             Text(item.text.orEmpty.markdowned)
+                                .tint(.accent)
                                 .font(.body)
                                 .padding(.horizontal, 10)
                                 .padding(.top, 6)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                        .frame(maxWidth: .infinity)
                     }
                 } else if item is Comment {
-                    HStack {
+                    VStack(spacing: 0) {
                         Text(item.text.orEmpty.markdowned)
+                            .tint(.accent)
                             .font(.body)
-                            .frame(maxWidth: .infinity)
                             .padding(.horizontal, 10)
                     }
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 Divider()
                     .padding(.horizontal)

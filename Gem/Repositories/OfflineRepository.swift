@@ -29,7 +29,7 @@ import HackerNewsKit
     }
     var isInMemory = false
     
-    private let storyRepository = StoryRepository.shared
+    private let storyRepository = StoryRepository(session: Session())
     private let container = try! ModelContainer(for: StoryCollection.self, CommentCollection.self)
     private let downloadOrder = [StoryType.top, .ask, .best]
     private let lastDownloadAtKey = "lastDownloadedAt"
@@ -109,8 +109,10 @@ import HackerNewsKit
         let context = container.mainContext
         var completedStoryId = Set<Int>()
         
-        try? context.delete(model: StoryCollection.self)
-        try? context.delete(model: CommentCollection.self)
+        if isTriggerdByUser {
+            try? context.delete(model: StoryCollection.self)
+            try? context.delete(model: CommentCollection.self)
+        }
         
         for storyType in downloadOrder {
             var stories = [Story]()

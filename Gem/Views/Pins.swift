@@ -2,13 +2,13 @@ import SwiftUI
 import HackerNewsKit
 
 struct Pins: View {
-    var viewModel: PinsViewModel = .shared
+    var vm: PinsViewModel = .shared
     @State private var actionPerformed: Action = .none
     @State private var isRemoveAllPinsConfirmationAlertPresented = false
     
     var body: some View {        
         List {
-            ForEach(viewModel.items, id: \.self.id) { item in
+            ForEach(vm.items, id: \.self.id) { item in
                 ItemRow(item: item,
                         isPinnedStory: true,
                         actionPerformed: $actionPerformed)
@@ -38,12 +38,12 @@ struct Pins: View {
         .alert("Remove all pins?", isPresented: $isRemoveAllPinsConfirmationAlertPresented) {
             Button(role: .destructive) {
                 isRemoveAllPinsConfirmationAlertPresented = false
-                PinsViewModel.shared.removeAll()
+                vm.removeAll()
             } label: {
                 Text("Confirm")
             }
         }
-        .sensoryFeedback(trigger: viewModel.items.count) {
+        .sensoryFeedback(trigger: vm.items.count) {
             .success
         }
     }

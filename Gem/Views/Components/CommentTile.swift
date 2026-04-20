@@ -86,7 +86,10 @@ struct CommentTile: View {
                 EmptyView()
             } else {
                 VStack(spacing: 0) {
-                    NameRowView(item: comment, isRoot: false, index: index).padding(.bottom, 4)
+                    NameRowView(item: comment,
+                                isOP: comment.by == vm.item?.by,
+                                isRoot: false,
+                                index: index).padding(.bottom, 4)
                     if allowActions && isCollapsed {
                         Text(comment.text.orEmpty.prefix(100))
                             .lineLimit(1)
@@ -141,8 +144,10 @@ struct CommentTile: View {
                              activeURL: $activeURL,
                              isFlagDialogPresented: $isFlagDialogPresented,
                              isReplySheetPresented: $isReplySheetPresented)
-                } preview: {
+                }
+                preview: {
                     CommentTile(comment: comment, vm: vm, showLevelIndent: false)
+                        .padding(6)
                         .frame(width: 360, height: 150, alignment: .topLeading)
                         .environment(auth)
                 }

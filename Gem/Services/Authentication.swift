@@ -3,8 +3,7 @@ import Foundation
 import HackerNewsKit
 
 @MainActor
-@Observable
-public class Authentication {
+@Observable public class Authentication {
     var username: String?
     var loggedIn: Bool = .init()
     var user: User?

@@ -3,8 +3,7 @@ import SwiftUI
 import HackerNewsKit
 import Foundation
 
-@Observable
-class PinsViewModel {
+@Observable class PinsViewModel {
     var items: [any Item] = []
     @ObservationIgnored private let modelConfig = ModelConfiguration("PinsViewModel")
     @ObservationIgnored private var container: ModelContainer?

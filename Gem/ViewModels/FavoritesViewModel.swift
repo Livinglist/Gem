@@ -3,9 +3,7 @@ import SwiftUI
 import HackerNewsKit
 import Foundation
 
-
-@Observable
-class FavoritesViewModel {
+@Observable class FavoritesViewModel {
     var stories: [Story] = []
     var comments: [Comment] = []
     var selectedType: ItemType = .story

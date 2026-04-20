@@ -18,6 +18,7 @@ struct Profile: View {
                 Section {
                     if let about = user.about, about.isNotEmpty {
                         Text(about.markdowned)
+                            .tint(.accent)
                     } else {
                         HStack {
                             Spacer()

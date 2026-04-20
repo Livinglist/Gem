@@ -12,7 +12,7 @@ struct GemApp: App {
     var offlineRepository: OfflineRepository = .shared
     
     let auth: Authentication = .shared
-    let notification: AppNotification = .shared
+    let notification: RepliesViewModel = .shared
     
     var body: some Scene {
         WindowGroup {
@@ -25,7 +25,7 @@ struct GemApp: App {
                     VStack {
                         Spacer()
                         Rectangle()
-                            .fill(.purple.gradient.opacity(0.4))
+                            .fill(.accent.gradient.opacity(0.4))
                             .frame(height: 40)
                             .overlay {
                                 Text("Offline Mode")

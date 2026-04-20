@@ -4,6 +4,7 @@ import HackerNewsKit
 struct NameRowView: View {
     @State var timeDisplay: TimeDisplay = .timeAgo
     let item: any Item
+    let isOP: Bool
     let isRoot: Bool
     let index: Int?
     
@@ -14,21 +15,23 @@ struct NameRowView: View {
                     Router.shared.to(.profile(author))
                 } label: {
                     Text(author)
-                        .borderedFootnote()
-                        .foregroundColor(getColor(level: isRoot ? 0 : ((item as? Comment)?.level ?? 0)))
+                        .borderedFootnote(backgroundColor: getColor(level: isRoot ? 0 : ((item as? Comment)?.level ?? 0)))
+                        .foregroundColor(.black.opacity(0.8))
                 }
             }
+            if isOP {
+                Text(" <- OP")
+                    .borderedFootnote()
+            }
+            Spacer()
             if let karma = item.score {
                 Text("\(karma) karma")
                     .borderedFootnote()
-                    .foregroundColor(getColor())
             }
             if let descendants = item.descendants {
                 Text("\(descendants) cmt\(descendants <= 1 ? "" : "s")")
                     .borderedFootnote()
-                    .foregroundColor(getColor())
             }
-            Spacer()
             Text(timeDisplay == .timeAgo ? item.shortTimeAgo : item.formattedTime)
                 .borderedFootnote()
                 .onTapGesture {

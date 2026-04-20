@@ -22,7 +22,6 @@ struct Chip: View {
             } label: {
                 Text(label)
             }
-            .tint(.accent)
             .buttonStyle(.glass)
             .buttonBorderShape(.capsule)
             .controlSize(.regular)

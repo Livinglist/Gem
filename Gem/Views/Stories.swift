@@ -24,7 +24,7 @@ struct Stories: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 36, height: 36)
-                            .foregroundStyle(.purple)
+                            .foregroundStyle(.accent)
                             .padding(.bottom, 24)
                         Text("Not connected to network, you can try entering offline mode from the top right menu.")
                             .font(.subheadline)

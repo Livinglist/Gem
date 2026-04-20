@@ -1,8 +1,8 @@
 {
   "fill" : {
     "linear-gradient" : [
-      "display-p3:0.18127,0.31421,0.66309,1.00000",
-      "display-p3:0.21997,0.30225,0.44727,1.00000"
+      "display-p3:0.44710,0.19293,0.72233,1.00000",
+      "display-p3:0.38007,0.08987,0.65094,1.00000"
     ],
     "orientation" : {
       "start" : {
@@ -21,13 +21,13 @@
         {
           "blend-mode" : "normal",
           "fill" : {
-            "automatic-gradient" : "extended-srgb:0.00000,0.53333,1.00000,1.00000"
+            "solid" : "extended-gray:1.00000,1.00000"
           },
           "glass" : true,
           "hidden" : false,
           "image-name" : "gem-svgrepo-com.png",
           "name" : "gem-svgrepo-com",
-          "opacity" : 0.6,
+          "opacity" : 0.77,
           "position" : {
             "scale" : 0.48,
             "translation-in-points" : [

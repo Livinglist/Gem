@@ -36,28 +36,28 @@ struct Favorites: View {
             if vm.selectedType == .story {
                 ForEach(vm.stories, id: \.self.id) { item in
                     ItemRow(item: item, actionPerformed: $actionPerformed)
-                    .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
-                    .listRowSeparator(.hidden)
-                    .onAppear {
-                        if item.id == vm.stories.last?.id {
-                            Task {
-                                await vm.loadMore()
+                        .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+                        .listRowSeparator(.hidden)
+                        .onAppear {
+                            if item.id == vm.stories.last?.id {
+                                Task {
+                                    await vm.loadMore()
+                                }
                             }
                         }
-                    }
                 }
             } else {
                 ForEach(vm.comments, id: \.self.id) { item in
                     ItemRow(item: item, actionPerformed: $actionPerformed)
-                    .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
-                    .listRowSeparator(.hidden)
-                    .onAppear {
-                        if item.id == vm.comments.last?.id {
-                            Task {
-                                await vm.loadMore()
+                        .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+                        .listRowSeparator(.hidden)
+                        .onAppear {
+                            if item.id == vm.comments.last?.id {
+                                Task {
+                                    await vm.loadMore()
+                                }
                             }
                         }
-                    }
                 }
             }
         }

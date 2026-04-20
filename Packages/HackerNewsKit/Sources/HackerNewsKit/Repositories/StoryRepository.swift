@@ -5,8 +5,11 @@ public class StoryRepository {
     public static let shared: StoryRepository = .init()
     
     private let baseUrl: String = "https://hacker-news.firebaseio.com/v0/"
+    private let session: Session
     
-    private init() {}
+    public init(session: Session = .default) {
+        self.session = session
+    }
     
     // MARK: - Story related.
     
@@ -32,14 +35,14 @@ public class StoryRepository {
     }
     
     public func fetchStoryIds(from storyType: StoryType) async -> [Int] {
-        let response =  await AF.request("\(self.baseUrl)\(storyType.rawValue)stories.json").serializingString().response
+        let response =  await session.request("\(self.baseUrl)\(storyType.rawValue)stories.json").serializingString().response
         guard response.data != nil else { return [Int]() }
         let storyIds = try? JSONDecoder().decode([Int].self, from: response.data!)
         return storyIds ?? [Int]()
     }
     
     public func fetchStoryIds(from storyType: String) async -> [Int] {
-        let response =  await AF.request("\(self.baseUrl)\(storyType)stories.json").serializingString().response
+        let response =  await session.request("\(self.baseUrl)\(storyType)stories.json").serializingString().response
         guard response.data != nil else { return [Int]() }
         let storyIds = try? JSONDecoder().decode([Int].self, from: response.data!)
         return storyIds ?? [Int]()
@@ -55,7 +58,7 @@ public class StoryRepository {
     }
     
     public func fetchStory(_ id: Int) async -> Story?{
-        let response = await AF.request("\(self.baseUrl)item/\(id).json").serializingString().response
+        let response = await session.request("\(self.baseUrl)item/\(id).json").serializingString().response
         if let data = response.data,
            var story = try? JSONDecoder().decode(Story.self, from: data) {
             let formattedText = story.text.htmlStripped
@@ -89,7 +92,7 @@ public class StoryRepository {
     }
     
     public func fetchComment(_ id: Int) async -> Comment? {
-        let response = await AF.request("\(self.baseUrl)item/\(id).json").serializingString().response
+        let response = await session.request("\(self.baseUrl)item/\(id).json").serializingString().response
         if let data = response.data,
            var comment = try? JSONDecoder().decode(Comment.self, from: data) {
             let formattedText = comment.text.htmlStripped
@@ -130,7 +133,7 @@ public class StoryRepository {
     }
     
     public func fetchItem(_ id: Int) async -> (any Item)? {
-        let response = await AF.request("\(self.baseUrl)item/\(id).json").serializingString().response
+        let response = await session.request("\(self.baseUrl)item/\(id).json").serializingString().response
         if let data = response.data,
            let result = try? response.result.get(),
            let map = result.toJSON() as? [String: AnyObject],
@@ -155,7 +158,7 @@ public class StoryRepository {
     // MARK: - User related.
     
     public func fetchUser(_ id: String) async -> User? {
-        let response = await AF.request("\(self.baseUrl)/user/\(id).json").serializingString().response
+        let response = await session.request("\(self.baseUrl)/user/\(id).json").serializingString().response
         if let data = response.data,
            let user = try? JSONDecoder().decode(User.self, from: data) {
             let formattedText = user.about.orEmpty.htmlStripped

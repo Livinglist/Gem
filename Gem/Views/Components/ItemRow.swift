@@ -7,6 +7,7 @@ struct ItemRow: View {
     let item: any Item
     let url: URL?
     let isPinnedStory: Bool
+    let isNew: Bool
     let addToRecents: Bool
     
     @Environment(Authentication.self) var auth
@@ -19,11 +20,13 @@ struct ItemRow: View {
     
     init(item: any Item,
          isPinnedStory: Bool = false,
+         isNew: Bool = false,
          addToRecents: Bool = false,
          actionPerformed: Binding<Action>) {
         self.item = item
         self.url = URL(string: item.url ?? "https://news.ycombinator.com/item?id=\(item.id)")
         self.isPinnedStory = isPinnedStory
+        self.isNew = isNew
         self.addToRecents = addToRecents
         self._actionPerformed = actionPerformed
     }
@@ -55,11 +58,11 @@ struct ItemRow: View {
                                 if let url = item.readableUrl {
                                     Text(url)
                                         .font(.footnote)
-                                        .foregroundColor(.purple)
+                                        .foregroundColor(.accent)
                                 } else if let text = item.text {
                                     Text(text.replacingOccurrences(of: "\n", with: " "))
-                                        .lineLimit(2)
-                                        .foregroundColor(.gray)
+                                        .lineLimit(item is Story ? 2 : 4)
+                                        .foregroundColor(isNew ? nil : .gray)
                                 }
                                 Spacer()
                             }.padding(item is Comment ? [.horizontal, .top] : [.horizontal])
@@ -93,7 +96,7 @@ struct ItemRow: View {
                                             .labelStyle(.iconOnly)
                                             .padding(.horizontal, 24)
                                             .padding(.vertical, 12)
-                                            .foregroundColor(.purple)
+                                            .foregroundColor(.accent)
                                             .contentShape(Rectangle())
                                             .glassEffect()
                                             .padding(.trailing, 6)
