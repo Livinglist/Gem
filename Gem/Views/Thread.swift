@@ -3,8 +3,8 @@ import WebKit
 import HackerNewsKit
 
 struct Thread: View {
-    @EnvironmentObject private var auth: Authentication
-    @StateObject private var itemStore: ItemStore = .init()
+    @Environment(Authentication.self) var auth
+    @State private var vm: ThreadViewModel = .init()
     @StateObject private var debounceObject: DebounceObject = .init()
     @State private var scrollViewProxy: ScrollViewProxy? = nil
     @State private var activeURL: IdentifiableURL? = nil
@@ -30,7 +30,7 @@ struct Thread: View {
                 NavigationStack {
                     ThreadSearchSheet(debounceObject: debounceObject,
                                       isSearchPresented: $isSearchPresented,
-                                      itemStore: itemStore,
+                                      vm: vm,
                                       scrollViewProxy: scrollViewProxy)
                 }
             }
@@ -65,9 +65,9 @@ struct Thread: View {
                 return .handled
             })
             .task {
-                if itemStore.item == nil {
-                    itemStore.item = item
-                    await itemStore.refresh()
+                if vm.item == nil {
+                    vm.item = item
+                    await vm.refresh()
                 }
             }
     }
@@ -76,9 +76,12 @@ struct Thread: View {
     var mainItemView: some View {
         ScrollViewReader { proxy in
             ScrollView {
-                NameRowView(item: itemStore.item ?? item, isRoot: true, index: nil)
-                    .padding(.leading, 6)
-                    .padding(.top, 6)
+                NameRowView(item: vm.item ?? item,
+                            isOP: false,
+                            isRoot: true,
+                            index: nil)
+                .padding(.leading, 6)
+                .padding(.top, 6)
                 if item is Story {
                     if let url = URL(string: item.url.orEmpty) {
                         VStack(spacing: 0) {
@@ -95,9 +98,11 @@ struct Thread: View {
                             }
                             if item.text.orEmpty.isNotEmpty {
                                 Text(item.text.orEmpty.markdowned)
+                                    .tint(.accent)
                                     .font(.body)
                                     .padding(.horizontal, 10)
                                     .padding(.top, 6)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
                         }
                     } else {
@@ -107,43 +112,44 @@ struct Thread: View {
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 12)
                             Text(item.text.orEmpty.markdowned)
+                                .tint(.accent)
                                 .font(.body)
                                 .padding(.horizontal, 10)
                                 .padding(.top, 6)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                        .frame(maxWidth: .infinity)
                     }
                 } else if item is Comment {
-                    HStack {
+                    VStack(spacing: 0) {
                         Text(item.text.orEmpty.markdowned)
+                            .tint(.accent)
                             .font(.body)
-                            .frame(maxWidth: .infinity)
                             .padding(.horizontal, 10)
                     }
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 Divider()
                     .padding(.horizontal)
-                if itemStore.status == .inProgress {
+                if vm.status == .inProgress {
                     ASCIISpinner().padding(.top, 100)
-                } else if itemStore.comments.count > 200 {
+                } else if vm.comments.count > 200 {
                     LazyVStack(spacing: 0) {
-                        ForEach(itemStore.comments, id: \.id) { comment in
+                        ForEach(vm.comments, id: \.id) { comment in
                             if comment.isHidden ?? true {
                                 EmptyView()
                             } else {
-                                CommentTile(comment: comment, itemStore: itemStore, actionPerformed: $actionPerformed)
+                                CommentTile(comment: comment, vm: vm, actionPerformed: $actionPerformed)
                                     .id(comment.id)
                             }
                         }
                     }
                 } else {
                     VStack(spacing: 0) {
-                        ForEach(itemStore.comments, id: \.id) { comment in
+                        ForEach(vm.comments, id: \.id) { comment in
                             if comment.isHidden ?? true {
                                 EmptyView()
                             } else {
-                                CommentTile(comment: comment, itemStore: itemStore, actionPerformed: $actionPerformed)
+                                CommentTile(comment: comment, vm: vm, actionPerformed: $actionPerformed)
                                     .id(comment.id)
                             }
                         }
@@ -151,7 +157,7 @@ struct Thread: View {
                 }
                 
                 Spacer().frame(height: 60)
-                if itemStore.status == Status.completed {
+                if vm.status == Status.completed {
                     Text(Constants.happyFace)
                         .foregroundColor(.gray)
                         .padding(.bottom, 40)
@@ -166,7 +172,7 @@ struct Thread: View {
                 ToolbarItem {
                     Button {
                         Task {
-                            await itemStore.fetchParent(of: item)
+                            await vm.fetchParent(of: item)
                         }
                     } label: {
                         Image(systemName: "figure.stairs")
@@ -190,21 +196,22 @@ struct Thread: View {
             ToolbarItemGroup {
                 if !OfflineRepository.shared.isOfflineReading {
                     Button {
-                        if !itemStore.status.isLoading {
-                            let prevState = itemStore.isRecursivelyFetching
+                        if !vm.status.isLoading {
+                            let prevState = vm.isRecursivelyFetching
                             withAnimation {
-                                itemStore.isRecursivelyFetching.toggle()
+                                vm.isRecursivelyFetching.toggle()
                             }
                             actionPerformed = prevState ? .lazyFetching : .eagerFetching
-                            Task { await itemStore.refresh() }
+                            Task { await vm.refresh() }
                         }
                     } label: {
-                        Image(systemName: itemStore.isRecursivelyFetching ? Action.eagerFetching.icon : Action.lazyFetching.icon)
-                            .symbolEffect(.bounce, isActive: itemStore.status.isLoading)
+                        Image(systemName: vm.isRecursivelyFetching ? Action.eagerFetching.icon : Action.lazyFetching.icon)
+                            .symbolEffect(.bounce, isActive: vm.status.isLoading)
                     }
                 }
                 Menu {
                     ItemMenu(item: item,
+                             showViewInSeperateThreadOption: false,
                              actionPerformed: $actionPerformed,
                              activeURL: $activeURL,
                              isFlagDialogPresented: $isFlagDialogPresented,
@@ -221,11 +228,11 @@ struct Thread: View {
                 }
             }
         }
-        .sensoryFeedback(.success, trigger: itemStore.status.isCompleted)
+        .sensoryFeedback(.success, trigger: vm.status.isCompleted)
         .navigationBarTitleDisplayMode(.inline)
         .refreshable {
             Task {
-                await itemStore.refresh()
+                await vm.refresh()
             }
         }
     }

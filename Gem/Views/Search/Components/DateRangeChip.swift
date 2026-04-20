@@ -22,7 +22,7 @@ struct DateTimeRangeChip: View {
             } label: {
                 Text(label)
             }
-            .tint(.purple)
+            .tint(.accent)
             .buttonStyle(.borderedProminent)
             .buttonBorderShape(.capsule)
             .controlSize(.mini)
@@ -37,7 +37,7 @@ struct DateTimeRangeChip: View {
             } label: {
                 Text(label)
             }
-            .tint(.purple)
+            .tint(.accent)
             .buttonStyle(.bordered)
             .buttonBorderShape(.capsule)
             .controlSize(.mini)

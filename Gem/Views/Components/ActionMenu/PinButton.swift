@@ -2,8 +2,6 @@ import SwiftUI
 import HackerNewsKit
 
 struct PinButton: View {
-    @ObservedObject private var settings: SettingsStore = .shared
-    
     let item: any Item
     let actionPerformed: Binding<Action>
     var isPinned: Bool {

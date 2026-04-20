@@ -9,10 +9,10 @@ import UserNotifications
 struct GemApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.scenePhase) private var phase
-    @ObservedObject var offlineRepository: OfflineRepository = .shared
+    var offlineRepository: OfflineRepository = .shared
     
     let auth: Authentication = .shared
-    let notification: AppNotification = .shared
+    let notification: RepliesViewModel = .shared
     
     var body: some Scene {
         WindowGroup {
@@ -25,7 +25,7 @@ struct GemApp: App {
                     VStack {
                         Spacer()
                         Rectangle()
-                            .fill(.purple.gradient.opacity(0.4))
+                            .fill(.accent.gradient.opacity(0.4))
                             .frame(height: 40)
                             .overlay {
                                 Text("Offline Mode")
@@ -39,11 +39,11 @@ struct GemApp: App {
                 }
             }
             .preferredColorScheme(.dark)
-            .environmentObject(auth)
             .onAppear {
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
             }
         }
+        .environment(auth)
         .onChange(of: phase) { _, newPhase in
             switch newPhase {
             case .background: notification.scheduleFetching()

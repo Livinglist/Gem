@@ -19,7 +19,7 @@ enum DownloadFrequency: TimeInterval, Equatable, CaseIterable {
     case halfDay = 43200
     case fourHours = 14400
     case oneHour = 3600
-
+    
     var label: String {
         switch self {
         case .oneWeek: return "Every Week"
@@ -34,7 +34,7 @@ enum DownloadFrequency: TimeInterval, Equatable, CaseIterable {
 enum FetchMode: Int, Equatable, CaseIterable {
     case eager = 0
     case lazy = 1
-
+    
     var label: String {
         switch self {
         case .eager: return "Eager"
@@ -50,38 +50,38 @@ enum FetchMode: Int, Equatable, CaseIterable {
     }
 }
 
-class SettingsStore: ObservableObject {
-    @Published var favList: [Int] = .init()
-    @Published var pinList: [Int] = .init()
-    @Published var blocklist: Set<String> = .init()
-    @Published var isAutomaticDownloadEnabled: Bool = .init() {
+@Observable class SettingsStore {
+    var favList: [Int] = .init()
+    var pinList: [Int] = .init()
+    var blocklist: Set<String> = .init()
+    var isAutomaticDownloadEnabled: Bool = .init() {
         didSet {
             UserDefaults.standard.set(isAutomaticDownloadEnabled, forKey: .isAutomaticDownloadEnabledKey)
         }
     }
-    @Published var useCellularData: Bool = .init() {
+    var useCellularData: Bool = .init() {
         didSet {
             UserDefaults.standard.set(useCellularData, forKey: .useCellularDataKey)
         }
     }
-    @Published var downloadFrequency: DownloadFrequency = .oneDay {
+    var downloadFrequency: DownloadFrequency = .oneDay {
         didSet {
             UserDefaults.standard.setValue(downloadFrequency.rawValue, forKey: .downloadFrequencyKey)
         }
     }
-    @Published var defaultStoryType: StoryType = .top {
+    var defaultStoryType: StoryType = .top {
         didSet {
             UserDefaults.standard.setValue(defaultStoryType.rawValue, forKey: .defaultStoryTypeKey)
         }
     }
-    @Published var defaultFetchMode: FetchMode = .eager {
+    var defaultFetchMode: FetchMode = .eager {
         didSet {
             UserDefaults.standard.setValue(defaultFetchMode.rawValue, forKey: .defaultFetchModeKey)
         }
     }
-
+    
     static let shared: SettingsStore = .init()
-
+    
     private init() {
         if let favList = UserDefaults.standard.array(forKey: .favListKey) as? [Int] {
             self.favList = Array(favList)
@@ -94,26 +94,26 @@ class SettingsStore: ObservableObject {
         } else {
             UserDefaults.standard.set([Int](), forKey: .pinListKey)
         }
-
+        
         if let blocklist = UserDefaults.standard.array(forKey: .blockListKey) as? [String] {
             self.blocklist = Set(blocklist)
         } else {
             UserDefaults.standard.set([String](), forKey: .blockListKey)
         }
-
+        
         isAutomaticDownloadEnabled = UserDefaults.standard.bool(forKey: .isAutomaticDownloadEnabledKey)
         useCellularData = UserDefaults.standard.bool(forKey: .useCellularDataKey)
-
+        
         let downloadFrequencyRawValue = UserDefaults.standard.double(forKey: .downloadFrequencyKey)
         if let downloadFrequency = DownloadFrequency(rawValue: downloadFrequencyRawValue) {
             self.downloadFrequency = downloadFrequency
         }
-
+        
         if let defaultStoryTypeRawValue = UserDefaults.standard.string(forKey: .defaultStoryTypeKey),
            let defaultStoryType = StoryType(rawValue: defaultStoryTypeRawValue) {
             self.defaultStoryType = defaultStoryType
         }
-
+        
         let defaultFetchModeRawValue = UserDefaults.standard.integer(forKey: .defaultFetchModeKey)
         if let defaultFetchMode = FetchMode(rawValue: defaultFetchModeRawValue) {
             self.defaultFetchMode = defaultFetchMode
@@ -128,12 +128,12 @@ class SettingsStore: ObservableObject {
         }
         UserDefaults.standard.set(Array(favList), forKey: .favListKey)
     }
-
+    
     func block(_ id: String) -> Void {
         blocklist.insert(id)
         UserDefaults.standard.set(Array(blocklist), forKey: .blockListKey)
     }
-
+    
     func unblock(_ id: String) -> Void {
         blocklist.remove(id)
         UserDefaults.standard.set(Array(blocklist), forKey: .blockListKey)

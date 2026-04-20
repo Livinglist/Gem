@@ -2,7 +2,7 @@ import SwiftUI
 
 extension View {
     func getColor(level: Int = 0) -> Color {
-        if level == 0 { return .accent }
+        //if level == 0 { return .accent }
         var level = level
         let initialLevel = level
         

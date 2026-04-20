@@ -4,7 +4,7 @@ import Combine
 import HackerNewsKit
 
 struct Search: View {
-    @StateObject private var searchStore: SearchStore = .init()
+    @State private var vm: SearchViewModel = .init()
     @StateObject private var debounceObject: DebounceObject = .init()
     @State private var actionPerformed: Action = .none
     @State private var startDate: Date = .init()
@@ -12,23 +12,26 @@ struct Search: View {
     
     var body: some View {
         List {
-            
             HStack {
-                Chip(selected: searchStore.params.sorted, label: "sorted") {
-                    searchStore.onSortTap()
+                Chip(selected: vm.params.sorted, label: "sorted") {
+                    vm.onSortTap()
                 }
-                Chip(selected: searchStore.contains(.comment), label: "comment") {
-                    searchStore.onTap(filter: .comment)
+                .sensoryFeedback(.selection, trigger: vm.params.sorted)
+                Chip(selected: vm.contains(.comment), label: "comment") {
+                    vm.onTap(filter: .comment)
                 }
-                Chip(selected: searchStore.contains(.story), label: "story") {
-                    searchStore.onTap(filter: .story)
+                .sensoryFeedback(.selection, trigger: vm.contains(.comment))
+                Chip(selected: vm.contains(.story), label: "story") {
+                    vm.onTap(filter: .story)
                 }
-                Chip(selected: searchStore.containsDateRange, label: "date") {
-                    searchStore.onDateRangeToggle(.dateRange(startDate, endDate))
+                .sensoryFeedback(.selection, trigger: vm.contains(.story))
+                Chip(selected: vm.containsDateRange, label: "date") {
+                    vm.onDateRangeToggle(.dateRange(startDate, endDate))
                 }
+                .sensoryFeedback(.selection, trigger: vm.containsDateRange)
             }
             .listRowSeparator(.hidden)
-            if searchStore.containsDateRange {
+            if vm.containsDateRange {
                 VStack {
                     DatePicker(selection: $startDate, in: ...Date(), displayedComponents: [.date]) {
                         Text("from")
@@ -39,15 +42,16 @@ struct Search: View {
                 }
                 .listRowSeparator(.hidden)
             }
-            ForEach(searchStore.results, id: \.self.id) { item in
+            ForEach(vm.results, id: \.self.id) { item in
                 ItemRow(item: item, actionPerformed: $actionPerformed)
                 .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
                 .listRowSeparator(.hidden)
                 .onAppear {
-                    searchStore.onItemRowAppear(item)
+                    vm.onItemRowAppear(item)
                 }
             }
         }
+        .sensoryFeedback(.success, trigger: vm.status) { $1.isCompleted }
         .listStyle(.plain)
         .searchable(text: $debounceObject.text, placement: .toolbar, prompt: "Search Hacker News")
         .navigationBarTitleDisplayMode(.inline)
@@ -55,12 +59,12 @@ struct Search: View {
         .withToast(actionPerformed: $actionPerformed)
         .onChange(of: debounceObject.debouncedText) { _, text in
             if text.isEmpty { return }
-            searchStore.onQueryUpdate(text)
+            vm.onQueryUpdate(text)
         }
         .onChange(of: startDate) { _, _ in
-            searchStore.onDateRangeUpdate(.dateRange(startDate, endDate))
+            vm.onDateRangeUpdate(.dateRange(startDate, endDate))
         }.onChange(of: endDate) { _, date in
-            searchStore.onDateRangeUpdate(.dateRange(startDate, endDate))
+            vm.onDateRangeUpdate(.dateRange(startDate, endDate))
         }
     }
 }

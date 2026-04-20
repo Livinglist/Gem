@@ -2,21 +2,62 @@ import SwiftUI
 import HackerNewsKit
 
 struct Favorites: View {
-    @StateObject var favStore: FavStore = .init()
+    @Environment(Authentication.self) private var auth
+    @State private var vm = FavoritesViewModel.shared
     @State private var actionPerformed: Action = .none
-    private let settings: SettingsStore = .shared
     
     var body: some View {
-        if settings.favList.isEmpty {
-            EmptyView()
-        }
         List {
-            ForEach(favStore.items, id: \.self.id) { story in
-                ItemRow(item: story, actionPerformed: $actionPerformed)
-                .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+            Picker("", selection: $vm.selectedType) {
+                ForEach(ItemType.allCases, id: \.self) { type in
+                    Text(type.label)
+                }
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            .listRowSeparator(.hidden)
+            .sensoryFeedback(.selection, trigger: vm.selectedType)
+            
+            if !auth.loggedIn {
+                HStack {
+                    Spacer()
+                    VStack {
+                        Spacer()
+                        Text("You will be able to view your favorites after login.")
+                            .font(.subheadline)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 48)
+                    }
+                    Spacer()
+                }
+                .padding(.top, 200)
                 .listRowSeparator(.hidden)
-                .onAppear {
-                    favStore.onItemRowAppear(story)
+            }
+            
+            if vm.selectedType == .story {
+                ForEach(vm.stories, id: \.self.id) { item in
+                    ItemRow(item: item, actionPerformed: $actionPerformed)
+                        .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+                        .listRowSeparator(.hidden)
+                        .onAppear {
+                            if item.id == vm.stories.last?.id {
+                                Task {
+                                    await vm.loadMore()
+                                }
+                            }
+                        }
+                }
+            } else {
+                ForEach(vm.comments, id: \.self.id) { item in
+                    ItemRow(item: item, actionPerformed: $actionPerformed)
+                        .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+                        .listRowSeparator(.hidden)
+                        .onAppear {
+                            if item.id == vm.comments.last?.id {
+                                Task {
+                                    await vm.loadMore()
+                                }
+                            }
+                        }
                 }
             }
         }
@@ -24,14 +65,16 @@ struct Favorites: View {
         .listStyle(.plain)
         .refreshable {
             Task {
-                await favStore.refresh()
+                await vm.refresh()
             }
         }
-        .onAppear {
-            if favStore.status == Status.idle {
+        .onChange(of: auth.loggedIn) { _, loggedIn in
+            if loggedIn {
                 Task {
-                    await favStore.fetchItems()
+                    await vm.refresh()
                 }
+            } else {
+                vm.reset()
             }
         }
     }

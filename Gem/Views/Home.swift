@@ -3,11 +3,10 @@ import CoreData
 import HackerNewsKit
 
 struct Home: View {
-    @EnvironmentObject private var auth: Authentication
-    @StateObject private var storyStore: StoryStore = .init()
-    @ObservedObject private var settings: SettingsStore = .shared
-    @ObservedObject private var router: Router = .shared
-    @ObservedObject private var offlineRepository: OfflineRepository = .shared
+    @Environment(Authentication.self) var auth
+    private var storyStore: StoryViewModel = .shared
+    @Bindable private var router: Router = .shared
+    private var offlineRepository: OfflineRepository = .shared
     
     @State private var isEulaDialogPresented: Bool = .init()
     @State private var isLoginDialogPresented: Bool = .init()
@@ -84,86 +83,162 @@ struct Home: View {
     }
     
     var body: some View {
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            ZStack(alignment: .leading) {
-                // Side Menu
-                ZStack {
-                    SideMenu(menuWidth: menuWidth, onDismiss: { selectedItem in
-                        withAnimation(.bouncy.speed(300))  {
-                            showSlideOutMenu = false
+        ZStack(alignment: .leading) {
+            // Side Menu
+            ZStack {
+                SideMenu(menuWidth: menuWidth, onDismiss: { selectedItem in
+                    withAnimation(.bouncy.speed(300))  {
+                        showSlideOutMenu = false
+                    }
+                    
+                    if let selectedItem {
+                        withAnimation(.snappy.speed(200)) {
+                            selectedMenuItem = selectedItem
                         }
-                        
-                        if let selectedItem {
-                            withAnimation(.snappy.speed(200)) {
-                                selectedMenuItem = selectedItem
+                    }
+                })
+                .scaleEffect(sideMenuScale, anchor: .center)
+                .overlay {
+                    sideMenuDimOverlay
+                }
+            }
+            .frame(width: menuWidth + 60, alignment: .leading)
+            .background(Color(.secondarySystemBackground))
+            .edgesIgnoringSafeArea(.vertical)
+        
+            ZStack(alignment: .leading) {
+                NavigationStack(path: $router.path) {
+                    ZStack {
+                        switch selectedMenuItem {
+                        case .home: Stories()
+                        case .pinned: Pins()
+                        case .favorites: Favorites()
+                        case .replies: Replies()
+                        case .search: Search()
+                        }
+                    }
+                    .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button {
+                                withAnimation(.bouncy.speed(300)) {
+                                    showSlideOutMenu = !showSlideOutMenu
+                                }
+                            } label: {
+                                Label("Side menu", systemImage: "book.pages")
+                                    .labelStyle(.iconOnly)
+                                    .foregroundStyle(.foreground)
+                                    .glassEffect()
+                            }
+                            .sensoryFeedback(.impact(flexibility: .soft), trigger: showSlideOutMenu)
+                        }
+                        if selectedMenuItem == .home {
+                            if offlineRepository.isDownloading {
+                                ToolbarItem(placement: .topBarTrailing) {
+                                    Text("\(offlineRepository.completionCount)")
+                                }
+                            }
+                            ToolbarItem(placement: .topBarTrailing) {
+                                DownloadMenu(storyStore: storyStore,
+                                             offlineRepository: offlineRepository,
+                                             isAbortDownloadAlertPresented: $isAbortDownloadAlertPresented)
+                            }
+                        }
+                    }
+                    .toolbarTitleDisplayMode(.inline)
+                    .withToast(actionPerformed: $actionPerformed)
+                    .alert("Abort Download", isPresented: $isAbortDownloadAlertPresented) {
+                        Button {
+                            offlineRepository.abortDownload()
+                        } label: {
+                            Text("Confirm")
+                        }
+                        Button(role: .cancel) {
+                            offlineRepository.abortDownload()
+                        } label: {
+                            Text("Confirm")
+                        }
+                    }
+                    .sheet(isPresented: $isAboutSheetPresented, content: {
+                        SafariView(url: Constants.githubUrl)
+                    })
+                    .sheet(isPresented: $isUrlSheetPresented, content: {
+                        SafariView(url: Self.handledUrl!)
+                    })
+                    .onOpenURL(perform: { url in
+                        if let id = url.absoluteString.itemId {
+                            Task {
+                                let story = await StoryRepository.shared.fetchStory(id)
+                                guard let story = story else { return }
+                                router.to(story)
                             }
                         }
                     })
-                    .scaleEffect(sideMenuScale, anchor: .center)
-                    .overlay {
-                        sideMenuDimOverlay
-                    }
-                }
-                .frame(width: menuWidth + 60, alignment: .leading)
-                .background(Color(.secondarySystemBackground))
-                .edgesIgnoringSafeArea(.vertical)
-                
-                ZStack(alignment: .leading) {
-                    mainView
-                        .clipShape(RoundedRectangle(cornerRadius: 47, style: .continuous))
-                        .overlay {
-                            mainContentDimOverlay
-                        }
-                }
-                .id("mainView")
-                .offset(x: dragOffset == 0 ? (showSlideOutMenu ? menuWidth : 0) : (dragOffset > 0 ? dragOffset : menuWidth + dragOffset))
-                .shadow(radius: 5)
-            }
-            .gesture(
-                DragGesture()
-                    .onChanged { value in
-                        let translation = value.translation.width
-                        
-                        // If menu is closed, only allow dragging from the left edge (positive)
-                        // If menu is open, only allow dragging to the left (negative)
-                        if !showSlideOutMenu && translation > 0 {
-                            dragOffset = translation
-                        } else if showSlideOutMenu && translation < 0 {
-                            dragOffset = translation
+                    .onChange(of: offlineRepository.isOfflineReading) {
+                        Task {
+                            await storyStore.fetchStories()
                         }
                     }
-                    .onEnded { value in
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                            
-                            // Threshold: if dragged more than 1/3 of the width, toggle state
-                            if abs(value.translation.width) > menuWidth / 3 {
-                                showSlideOutMenu = value.translation.width > 0
-                                UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+                    .environment(\.openURL, OpenURLAction { url in
+                        if let id = url.absoluteString.itemId {
+                            Task {
+                                let item = await StoryRepository.shared.fetchItem(id)
+                                guard let item = item else {
+                                    Self.handledUrl = url
+                                    isUrlSheetPresented = true
+                                    return
+                                }
+                                
+                                router.to(item)
                             }
-                            dragOffset = 0 // Always reset temporary offset
+                            return .handled
+                        } else {
+                            Self.handledUrl = url
+                            isUrlSheetPresented = true
+                            return .handled
                         }
+                    })
+                    .navigationDestination(for: Comment.self) { cmt in
+                        Thread(item: cmt, level: 0)
                     }
-            )
-        } else {
-            NavigationSplitView(columnVisibility: $columnVisibility) {
-                mainView
-            } detail: {
-                NavigationStack(path: $router.path) {
-                    Text("Tap on a story to its comments")
-                        .navigationDestination(for: Comment.self) { cmt in
-                            Thread(item: cmt, level: 0)
-                        }
-                        .navigationDestination(for: Story.self) { story in
-                            Thread(item: story, level: 0)
-                        }
-                        .navigationDestination(for: Destination.self) { val in
-                            val.toView()
-                        }
+                    .navigationDestination(for: Story.self) { story in
+                        Thread(item: story, level: 0)
+                    }
+                    .navigationDestination(for: Destination.self) { val in val.toView() }
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 47, style: .continuous))
+                .overlay {
+                    mainContentDimOverlay
                 }
             }
-            .navigationSplitViewStyle(.balanced)
-            .tint(.purple)
+            .id("mainView")
+            .offset(x: dragOffset == 0 ? (showSlideOutMenu ? menuWidth : 0) : (dragOffset > 0 ? dragOffset : menuWidth + dragOffset))
+            .shadow(radius: 5)
         }
+        .gesture(
+            DragGesture()
+                .onChanged { value in
+                    let translation = value.translation.width
+                    
+                    // If menu is closed, only allow dragging from the left edge (positive)
+                    // If menu is open, only allow dragging to the left (negative)
+                    if !showSlideOutMenu && translation > 0 {
+                        dragOffset = translation
+                    } else if showSlideOutMenu && translation < 0 {
+                        dragOffset = translation
+                    }
+                }
+                .onEnded { value in
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        
+                        // Threshold: if dragged more than 1/3 of the width, toggle state
+                        if abs(value.translation.width) > menuWidth / 3 {
+                            showSlideOutMenu = value.translation.width > 0
+                            UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+                        }
+                        dragOffset = 0 // Always reset temporary offset
+                    }
+                }
+        )
     }
     
     @ViewBuilder
@@ -185,7 +260,7 @@ struct Home: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 36, height: 36)
-                            .foregroundStyle(.purple)
+                            .foregroundStyle(.accent)
                             .padding(.bottom, 24)
                         Text("Not connected to network, you can try entering offline mode from the top right menu.")
                             .font(.subheadline)
@@ -312,96 +387,5 @@ struct Home: View {
         //            }
         //        }
         //.navigationTitle(storyStore.storyType.label.uppercased())
-        .alert("Abort Download", isPresented: $isAbortDownloadAlertPresented) {
-            Button {
-                offlineRepository.abortDownload()
-            } label: {
-                Text("Confirm")
-            }
-            Button(role: .cancel) {
-                offlineRepository.abortDownload()
-            } label: {
-                Text("Confirm")
-            }
-        }
-    }
-    
-    @ViewBuilder
-    var mainView: some View {
-        ZStack {
-            switch selectedMenuItem {
-            case .home: Stories()
-            case .pinned: Pins()
-            case .favorites: Favorites()
-            case .replies: Replies()
-            case .search: Search()
-            }
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    withAnimation(.bouncy.speed(300)) {
-                        showSlideOutMenu = !showSlideOutMenu
-                    }
-                } label: {
-                    Label("Side menu", systemImage: "book.pages")
-                        .labelStyle(.iconOnly)
-                        .foregroundStyle(.foreground)
-                        .glassEffect()
-                }
-                .sensoryFeedback(.impact(flexibility: .soft), trigger: showSlideOutMenu)
-            }
-        }
-        .toolbarTitleDisplayMode(.inline)
-        .if(UIDevice.current.userInterfaceIdiom == .phone) { view in
-            view
-                .navigationDestination(for: Comment.self) { cmt in
-                    Thread(item: cmt, level: 0)
-                }
-                .navigationDestination(for: Story.self) { story in
-                    Thread(item: story, level: 0)
-                }
-                .navigationDestination(for: Destination.self) { val in val.toView() }
-        }
-        .if(UIDevice.current.userInterfaceIdiom == .phone) { view in
-            NavigationStack(path: $router.path) {
-                view
-            }
-        }
-        .withToast(actionPerformed: $actionPerformed)
-        .sheet(isPresented: $isAboutSheetPresented, content: {
-            SafariView(url: Constants.githubUrl)
-        })
-        .sheet(isPresented: $isUrlSheetPresented, content: {
-            SafariView(url: Self.handledUrl!)
-        })
-        .onOpenURL(perform: { url in
-            if let id = url.absoluteString.itemId {
-                Task {
-                    let story = await StoryRepository.shared.fetchStory(id)
-                    guard let story = story else { return }
-                    router.to(story)
-                }
-            }
-        })
-        .environment(\.openURL, OpenURLAction { url in
-            if let id = url.absoluteString.itemId {
-                Task {
-                    let item = await StoryRepository.shared.fetchItem(id)
-                    guard let item = item else {
-                        Self.handledUrl = url
-                        isUrlSheetPresented = true
-                        return
-                    }
-                    
-                    router.to(item)
-                }
-                return .handled
-            } else {
-                Self.handledUrl = url
-                isUrlSheetPresented = true
-                return .handled
-            }
-        })
     }
 }

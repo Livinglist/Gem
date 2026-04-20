@@ -5,14 +5,13 @@ import Alamofire
 import HackerNewsKit
 
 @MainActor
-@Observable
-class ItemStore : ObservableObject {
+@Observable class ThreadViewModel : ObservableObject {
     var comments: [Comment] = .init()
     var searchResults: [Int] = .init()
     var status: Status = .idle
     var item: (any Item)?
     var loadingItemId: Int?
-
+    
     /// Stores ids of loaded comments, including both root and child comments.
     var loadedCommentIds: Set<Int> = .init()
     var isRecursivelyFetching: Bool = SettingsStore.shared.defaultFetchMode == .eager || OfflineRepository.shared.isOfflineReading {
@@ -24,7 +23,7 @@ class ItemStore : ObservableObject {
     }
     
     private var cache = NSCache<NSNumber, CommentCollection>()
-
+    
     /// Load child comments of a comment.
     func loadKids(of cmt: Comment) async {
         if let parentIndex = comments.firstIndex(of: cmt),
@@ -69,7 +68,6 @@ class ItemStore : ObservableObject {
         self.loadingItemId = nil
         self.loadedCommentIds = []
         self.status = .inProgress
-        var commentsBuffer = [Comment]()
         
         if OfflineRepository.shared.isOfflineReading {
             // We don't need to refresh in offline mode
@@ -139,7 +137,7 @@ class ItemStore : ObservableObject {
             var commentsBuffer = await Array(comments)
             func sendUpdates() async {
                 await MainActor.run { [commentsBuffer] in
-                    withAnimation {
+                    withAnimation(.snappy.speed(200)) {
                         self.comments = commentsBuffer
                     }
                 }
@@ -171,7 +169,7 @@ class ItemStore : ObservableObject {
                 nextComment = commentsBuffer[index]
                 nextCommentLevel = nextComment.level ?? 0
             } while (nextCommentLevel > parentLevel)
-
+            
             await sendUpdates()
         }
     }
@@ -204,10 +202,17 @@ class ItemStore : ObservableObject {
         var results = [Int]()
         for index in 0..<comments.count {
             let comment = comments[index]
-            if let commentText = comment.text, commentText.localizedCaseInsensitiveContains(text) {
+            if let commentText = comment.text,
+               commentText.localizedCaseInsensitiveContains(text) || comment.by.orEmpty.lowercased().contains(text.lowercased()) {
                 results.append(index)
             }
         }
         self.searchResults = results
+    }
+    
+    deinit {
+        DispatchQueue.main.async {
+            HapticsManager.shared.stop()
+        }
     }
 }

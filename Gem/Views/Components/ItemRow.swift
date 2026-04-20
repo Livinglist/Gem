@@ -4,12 +4,13 @@ import UniformTypeIdentifiers
 import HackerNewsKit
 
 struct ItemRow: View {
-    let settings: SettingsStore = .shared
     let item: any Item
     let url: URL?
     let isPinnedStory: Bool
+    let isNew: Bool
+    let addToRecents: Bool
     
-    @EnvironmentObject var auth: Authentication
+    @Environment(Authentication.self) var auth
     
     @State private var activeURL: IdentifiableURL?
     @State private var isReplySheetPresented: Bool = .init()
@@ -19,10 +20,14 @@ struct ItemRow: View {
     
     init(item: any Item,
          isPinnedStory: Bool = false,
+         isNew: Bool = false,
+         addToRecents: Bool = false,
          actionPerformed: Binding<Action>) {
         self.item = item
         self.url = URL(string: item.url ?? "https://news.ycombinator.com/item?id=\(item.id)")
         self.isPinnedStory = isPinnedStory
+        self.isNew = isNew
+        self.addToRecents = addToRecents
         self._actionPerformed = actionPerformed
     }
     
@@ -33,7 +38,7 @@ struct ItemRow: View {
                     if item.isJobWithUrl, let urlStr = item.url, let url = URL(string: urlStr) {
                         activeURL = IdentifiableURL(url: url)
                     } else {
-                        if let story = item as? Story {
+                        if addToRecents, let story = item as? Story {
                             RecentsViewModel.shared.insert(story: story)
                         }
                         Router.shared.to(item)
@@ -53,12 +58,11 @@ struct ItemRow: View {
                                 if let url = item.readableUrl {
                                     Text(url)
                                         .font(.footnote)
-                                        .foregroundColor(.purple)
+                                        .foregroundColor(.accent)
                                 } else if let text = item.text {
                                     Text(text.replacingOccurrences(of: "\n", with: " "))
-                                        .font(.footnote)
-                                        .lineLimit(2)
-                                        .foregroundColor(.gray)
+                                        .lineLimit(item is Story ? 2 : 4)
+                                        .foregroundColor(isNew ? nil : .gray)
                                 }
                                 Spacer()
                             }.padding(item is Comment ? [.horizontal, .top] : [.horizontal])
@@ -82,6 +86,7 @@ struct ItemRow: View {
                                 } else {
                                     Menu {
                                         ItemMenu(item: item,
+                                                 showViewInSeperateThreadOption: false,
                                                  actionPerformed: $actionPerformed,
                                                  activeURL: $activeURL,
                                                  isFlagDialogPresented: $isFlagDialogPresented,
@@ -91,7 +96,7 @@ struct ItemRow: View {
                                             .labelStyle(.iconOnly)
                                             .padding(.horizontal, 24)
                                             .padding(.vertical, 12)
-                                            .foregroundColor(.purple)
+                                            .foregroundColor(.accent)
                                             .contentShape(Rectangle())
                                             .glassEffect()
                                             .padding(.trailing, 6)

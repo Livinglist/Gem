@@ -2,7 +2,7 @@ import SwiftUI
 import HackerNewsKit
 
 struct AuthButton: View {
-    @EnvironmentObject private var auth: Authentication
+    @Environment(Authentication.self) var auth
     
     @Binding var isLoginDialogPresented: Bool
     @State var isProfileSheetPresented: Bool = false
@@ -13,11 +13,10 @@ struct AuthButton: View {
                 isProfileSheetPresented = true
             } label: {
                 Label(auth.username.orEmpty, systemImage: "person.fill")
-                    .foregroundStyle(.foreground.opacity(0.7))
                     .padding(.horizontal, 6)
                     .padding(.vertical, 6)
             }
-            .tint(.accent.opacity(0.6))
+            .tint(.accent.opacity(0.8))
             .buttonStyle(.glassProminent)
             .padding(.leading, 12)
             .sensoryFeedback(.impact(flexibility: .soft), trigger: isProfileSheetPresented)
@@ -38,12 +37,11 @@ struct AuthButton: View {
                 isLoginDialogPresented = true
             } label: {
                 Label(Action.login.label, systemImage: Action.login.icon)
-                    .foregroundStyle(.foreground.opacity(0.7))
                     .padding(.horizontal, 6)
                     .padding(.vertical, 6)
             }
             .sensoryFeedback(.impact(flexibility: .soft), trigger: isLoginDialogPresented)
-            .tint(.accent.opacity(0.6))
+            .tint(.accent.opacity(0.8))
             .buttonStyle(.glassProminent)
             .padding(.leading, 12)
         }

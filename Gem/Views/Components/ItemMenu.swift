@@ -4,6 +4,7 @@ import HackerNewsKit
 struct ItemMenu: View {
     let auth = Authentication.shared
     let item: any Item
+    let showViewInSeperateThreadOption: Bool
     @Binding var actionPerformed: Action
     @Binding var activeURL: IdentifiableURL?
     @Binding var isFlagDialogPresented: Bool
@@ -17,7 +18,7 @@ struct ItemMenu: View {
             }
             
             ControlGroup {
-                FavButton(id: item.id, actionPerformed: $actionPerformed)
+                FavButton(item: item, actionPerformed: $actionPerformed)
                 PinButton(item: item, actionPerformed: $actionPerformed)
                 Button {
                     onReplyTap(item: item)
@@ -37,6 +38,13 @@ struct ItemMenu: View {
                 onViewOnHackerNewsTap(item: item)
             } label: {
                 Label("View in Safari", systemImage: "safari")
+            }
+            if showViewInSeperateThreadOption {
+                Button {
+                    Router.shared.to(item)
+                } label: {
+                    Label("View in Separate Thread", systemImage: "arrow.turn.up.right")
+                }
             }
         }
     }
