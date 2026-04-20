@@ -321,6 +321,8 @@
 		E1E2417B2F96E6050093A7E5 /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
 		E1E2417C2F96EDDF0093A7E5 /* app_store_badge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = app_store_badge.png; sourceTree = "<group>"; };
 		E1E2417D2F96EDDF0093A7E5 /* github_badge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = github_badge.png; sourceTree = "<group>"; };
+		E1E2417E2F96EEF50093A7E5 /* eula.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = eula.md; sourceTree = "<group>"; };
+		E1E2417F2F96EEF50093A7E5 /* privacy_policy.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = privacy_policy.md; sourceTree = "<group>"; };
 		E1E93A382F8E0EB100172BD8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E5DAC21E2F8F159600EB1354 /* SideMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenu.swift; sourceTree = "<group>"; };
 		E5DAC2202F8F19F200EB1354 /* Replies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Replies.swift; sourceTree = "<group>"; };
@@ -709,6 +711,8 @@
 		E1D7A4072F8D871800D8C934 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				E1E2417E2F96EEF50093A7E5 /* eula.md */,
+				E1E2417F2F96EEF50093A7E5 /* privacy_policy.md */,
 				E1E2417C2F96EDDF0093A7E5 /* app_store_badge.png */,
 				E1E2417D2F96EDDF0093A7E5 /* github_badge.png */,
 				E1898C282F96BD5600288592 /* gem_app_icon_1024.png */,
