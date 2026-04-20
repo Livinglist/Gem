@@ -7,13 +7,7 @@ struct SafariView: View {
     let url: URL
     let draggable: Bool
     let heights: Set<PresentationDetent> = [
-        .height(100),
-        .fraction(0.3),
-        .fraction(0.4),
-        .fraction(0.5),
-        .fraction(0.6),
-        .fraction(0.7),
-        .fraction(0.8),
+        .fraction(0.14),
         .large
     ]
     

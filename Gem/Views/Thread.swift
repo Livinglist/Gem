@@ -168,6 +168,9 @@ struct Thread: View {
             }
         }
         .toolbar {
+            ToolbarItem(placement: .title) {
+                Text("")
+            }
             if let item = item as? Comment {
                 ToolbarItem {
                     Button {
@@ -229,6 +232,7 @@ struct Thread: View {
             }
         }
         .sensoryFeedback(.success, trigger: vm.status.isCompleted)
+        .navigationTitle(item is Story ? item.title.orEmpty : "Comment by \(item.by.orEmpty)")
         .navigationBarTitleDisplayMode(.inline)
         .refreshable {
             Task {

@@ -4,7 +4,7 @@ import HackerNewsKit
 
 struct Home: View {
     @Environment(Authentication.self) var auth
-    private var storyStore: StoryViewModel = .shared
+    private var storyVM: StoryViewModel = .shared
     @Bindable private var router: Router = .shared
     private var offlineRepository: OfflineRepository = .shared
     
@@ -138,7 +138,7 @@ struct Home: View {
                                 }
                             }
                             ToolbarItem(placement: .topBarTrailing) {
-                                DownloadMenu(storyStore: storyStore,
+                                DownloadMenu(storyViewModel: storyVM,
                                              offlineRepository: offlineRepository,
                                              isAbortDownloadAlertPresented: $isAbortDownloadAlertPresented)
                             }
@@ -175,7 +175,7 @@ struct Home: View {
                     })
                     .onChange(of: offlineRepository.isOfflineReading) {
                         Task {
-                            await storyStore.fetchStories()
+                            await storyVM.fetchStories()
                         }
                     }
                     .environment(\.openURL, OpenURLAction { url in
@@ -239,153 +239,5 @@ struct Home: View {
                     }
                 }
         )
-    }
-    
-    @ViewBuilder
-    var storyList: some View {
-        List {
-            if storyStore.status.isLoading {
-                HStack {
-                    Spacer()
-                    LoadingIndicator().frame(height: 200)
-                    Spacer()
-                }
-                .listRowSeparator(.hidden)
-            } else if !storyStore.isConnectedToNetwork && !offlineRepository.isOfflineReading && storyStore.stories.isEmpty {
-                HStack {
-                    Spacer()
-                    VStack {
-                        Spacer()
-                        Image(systemName: "exclamationmark.circle")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 36, height: 36)
-                            .foregroundStyle(.accent)
-                            .padding(.bottom, 24)
-                        Text("Not connected to network, you can try entering offline mode from the top right menu.")
-                            .font(.subheadline)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 48)
-                    }
-                    Spacer()
-                }
-                .frame(height: 240)
-                .listRowSeparator(.hidden)
-            } else {
-                ForEach(storyStore.stories) { story in
-                    ItemRow(item: story,
-                            actionPerformed: $actionPerformed)
-                    .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
-                    .listRowSeparator(.hidden)
-                    .onAppear {
-                        storyStore.onStoryRowAppear(story)
-                    }
-                }
-            }
-        }
-        .listStyle(.plain)
-        .refreshable {
-            await storyStore.refresh()
-        }
-        //        .toolbar {
-        //            ToolbarItem {
-        //                Button {
-        //                    router.to(Destination.search)
-        //                } label: {
-        //                    Image(systemName: "magnifyingglass")
-        //                }
-        //            }
-        //            ToolbarItem {
-        //                Button {
-        //                    router.to(Destination.fav)
-        //                } label: {
-        //                    Image(systemName: "heart")
-        //                }
-        //            }
-        //            ToolbarItem {
-        //                Menu {
-        //                    ForEach(StoryType.allCases, id: \.self) { storyType in
-        //                        Button {
-        //                            storyStore.storyType = storyType
-        //
-        //                            Task {
-        //                                await storyStore.fetchStories()
-        //                            }
-        //                        } label: {
-        //                            Label("\(storyType.label.capitalized)", systemImage: storyType.icon)
-        //                        }
-        //                        .disabled(offlineRepository.isOfflineReading && !storyType.isDownloadable)
-        //                    }
-        //                    Divider()
-        //                    Button {
-        //                        Task {
-        //                            HapticFeedbackService.shared.light()
-        //                            await offlineRepository.downloadAllStories(isTriggerdByUser: true)
-        //                        }
-        //                    } label: {
-        //                        if offlineRepository.isDownloading {
-        //                            Text("Download in progress")
-        //                            Text("\(offlineRepository.completionCount) completed")
-        //                        } else {
-        //                            Label("Download all stories", systemImage: "square.and.arrow.down")
-        //                            if offlineRepository.lastFetchedAt.isNotEmpty {
-        //                                Text("last downloaded at \(offlineRepository.lastFetchedAt)")
-        //                            }
-        //                        }
-        //                    }
-        //                    .disabled(offlineRepository.isDownloading || !storyStore.isConnectedToNetwork)
-        //                    if offlineRepository.isDownloading {
-        //                        Button {
-        //                            isAbortDownloadAlertPresented = true
-        //                        } label: {
-        //                            Text("Abort")
-        //                        }
-        //                    } else if offlineRepository.isOfflineReading {
-        //                        Button {
-        //                            offlineRepository.isOfflineReading = false
-        //                        } label: {
-        //                            Text("Exit Offline Mode")
-        //                        }
-        //                    } else {
-        //                        Button {
-        //                            offlineRepository.isOfflineReading = true
-        //                        } label: {
-        //                            Text("Enter Offline Mode")
-        //                        }
-        //                    }
-        //                    Divider()
-        //                    AuthButton(isLoginDialogPresented: $isLoginDialogPresented)
-        //                    NavigationLink {
-        //                        Settings()
-        //                    } label: {
-        //                        Text("Settings")
-        //                    }
-        //                    Button {
-        //                        isAboutSheetPresented = true
-        //                    } label: {
-        //                        Text("About")
-        //                    }
-        //                } label: {
-        //                    if offlineRepository.isDownloading {
-        //                        ProgressView()
-        //                            .progressViewStyle(.circular)
-        //                    } else {
-        //                        Image(systemName: "list.bullet")
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        .toolbar {
-        //            ToolbarItem(placement: .principal) {
-        //                Menu {
-        //                    Button("Settings") { /* action */ }
-        //                    Button("Profile") { /* action */ }
-        //                } label: {
-        //                    Text(storyStore.storyType.label.capitalized)
-        //                        .font(.headline)
-        //                }
-        //            }
-        //        }
-        //.navigationTitle(storyStore.storyType.label.uppercased())
     }
 }
