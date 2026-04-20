@@ -6,6 +6,17 @@ struct Stories: View {
     private var offlineRepository: OfflineRepository = .shared
     @State private var actionPerformed: Action = .none
     
+    var navigationTitle: String {
+        switch vm.storyType {
+        case .ask: "Ash HN"
+        case .best: "Best stories"
+        case .jobs: "YC Jobs"
+        case .new: "New stories"
+        case .show: "Show HN"
+        case .top: "Top stories"
+        }
+    }
+    
     var body: some View {
         List {
             if vm.status.isLoading {
@@ -53,6 +64,7 @@ struct Stories: View {
             await vm.refresh()
         }
         .sensoryFeedback(.success, trigger: vm.status) { $1.isCompleted }
+        .sensoryFeedback(.selection, trigger: vm.storyType)
         .withToast(actionPerformed: $actionPerformed)
         .toolbar {
             ToolbarItem(placement: .principal) {
@@ -60,9 +72,8 @@ struct Stories: View {
                     ForEach(StoryType.allCases, id: \.self) { storyType in
                         Button {
                             if vm.storyType == storyType { return }
-                            vm.storyType = storyType
-                            Task {
-                                await vm.fetchStories()
+                            withAnimation(.snappy.speed(200)) {
+                                vm.storyType = storyType
                             }
                         } label: {
                             Label("\(storyType.label.capitalized)", systemImage: storyType.icon)
@@ -79,8 +90,15 @@ struct Stories: View {
                             .scaledToFit()
                             .frame(height: 8)
                     }
+                    .frame(minWidth: 80, alignment: .center)
                 }
             }
         }
+        .onChange(of: vm.storyType) {
+            Task {
+                await vm.fetchStories()
+            }
+        }
+        .navigationTitle(navigationTitle)
     }
 }

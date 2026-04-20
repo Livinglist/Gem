@@ -66,33 +66,24 @@ struct LinkPreview: View {
         .task(priority: .background) {
             let provider = LPMetadataProvider()
             
+            try? await Task.sleep(until: .now + .milliseconds(200))
             let metadata = try? await provider.startFetchingMetadata(for: url)
             if let metadata = metadata {
-                DispatchQueue.main.async {
-                    metadata.title = title
-                    let summary = metadata.value(forKey: "summary") as? String
-                    
-                    _ = metadata.iconProvider?.loadDataRepresentation(for: .image) { imageData, error in
-                        if let imageData = imageData {
-                            // We now have access to the URL's icon by using NSItemProvider to load the image object
-                            let iconUiImage = UIImage(data: imageData)
-                            DispatchQueue.main.async {
-                                withAnimation {
-                                    self.iconImage = iconUiImage
-                                }
+                metadata.title = title
+                let summary = metadata.value(forKey: "summary") as? String
+                _ = metadata.iconProvider?.loadDataRepresentation(for: .image) { imageData, error in
+                    if let imageData = imageData {
+                        // We now have access to the URL's icon by using NSItemProvider to load the image object
+                        let iconUiImage = UIImage(data: imageData)
+                        DispatchQueue.main.async {
+                            withAnimation(.snappy.speed(200)) {
+                                self.iconImage = iconUiImage
                             }
                         }
                     }
-                    
-                    withAnimation {
-                        self.summary = summary.orEmpty
-                    }
                 }
-            } else {
-                DispatchQueue.main.async {
-                    let metadata = LPLinkMetadata()
-                    metadata.title = title
-                    metadata.url = url
+                withAnimation(.snappy.speed(200)) {
+                    self.summary = summary.orEmpty
                 }
             }
         }

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct DownloadMenu: View {
-    var storyStore: StoryViewModel = .shared
+    var storyViewModel: StoryViewModel = .shared
     var offlineRepository: OfflineRepository
     @Binding var isAbortDownloadAlertPresented: Bool
     
@@ -43,7 +43,7 @@ struct DownloadMenu: View {
                     }
                 }
             }
-            .disabled(offlineRepository.isDownloading || !storyStore.isConnectedToNetwork)
+            .disabled(offlineRepository.isDownloading || !storyViewModel.isConnectedToNetwork)
         } label: {
             Image(systemName: "square.and.arrow.down.on.square")
                 .glassEffect()
