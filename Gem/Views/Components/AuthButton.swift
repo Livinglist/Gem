@@ -3,14 +3,14 @@ import HackerNewsKit
 
 struct AuthButton: View {
     @Environment(Authentication.self) var auth
+    @Bindable var router = Router.shared
     
     @Binding var isLoginDialogPresented: Bool
-    @State var isProfileSheetPresented: Bool = false
     
     var body: some View {
         if auth.loggedIn, let username = auth.username {
             Button {
-                isProfileSheetPresented = true
+                router.isProfileSheetPresented = true
             } label: {
                 Label(auth.username.orEmpty, systemImage: "person.fill")
                     .padding(.horizontal, 6)
@@ -19,17 +19,24 @@ struct AuthButton: View {
             .tint(.accent.opacity(0.8))
             .buttonStyle(.glassProminent)
             .padding(.leading, 12)
-            .sensoryFeedback(.impact(flexibility: .soft), trigger: isProfileSheetPresented)
-            .sheet(isPresented: $isProfileSheetPresented) {
-                NavigationStack {
+            .sensoryFeedback(.impact(flexibility: .soft), trigger: router.isProfileSheetPresented)
+            .sheet(isPresented: $router.isProfileSheetPresented) {
+                NavigationStack(path: $router.sheetPath) {
                     Profile(id: username)
                         .toolbar {
                             ToolbarItem {
                                 Button(role: .close) {
-                                    isProfileSheetPresented = false
+                                    router.isProfileSheetPresented = false
                                 }
                             }
                         }
+                        .navigationDestination(for: Comment.self) { cmt in
+                            Thread(item: cmt, level: 0)
+                        }
+                        .navigationDestination(for: Story.self) { story in
+                            Thread(item: story, level: 0)
+                        }
+                        .navigationDestination(for: Destination.self) { val in val.toView() }
                 }
             }
         } else {

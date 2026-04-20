@@ -68,6 +68,11 @@ struct Replies: View {
             }
         }
         .alert("Mark all as read?", isPresented: $isMarkAllAsReadAlertPresented) {
+            Button(role: .cancel) {
+                isMarkAllAsReadAlertPresented = false
+            } label: {
+                Text("Cancel")
+            }
             Button {
                 isMarkAllAsReadAlertPresented = false
                 vm.markAllAsRead()
