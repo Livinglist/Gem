@@ -1,4 +1,4 @@
-# <img width="64" src="Resources/Screenshots/gem_app_icon_1024.png"> Gem for Hacker News
+# <img width="64" src="Resources/gem_app_icon_1024.png"> Gem for Hacker News
 
 Gem is a [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
 
