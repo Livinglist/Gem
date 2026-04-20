@@ -295,6 +295,7 @@
 		E1898BF92F96BB4D00288592 /* thread_deep.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_deep.png; sourceTree = "<group>"; };
 		E1898BFA2F96BB4D00288592 /* thread_deep_alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_deep_alt.png; sourceTree = "<group>"; };
 		E1898BFB2F96BB4D00288592 /* thread_with_url.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_with_url.png; sourceTree = "<group>"; };
+		E1898C282F96BD5600288592 /* gem_app_icon_1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gem_app_icon_1024.png; sourceTree = "<group>"; };
 		E1AB28A42F91AE1500A8B707 /* NameRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameRowView.swift; sourceTree = "<group>"; };
 		E1AB28A62F91AE3A00A8B707 /* TimeDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeDisplay.swift; sourceTree = "<group>"; };
 		E1AB28AA2F91F7F200A8B707 /* CommentTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTextView.swift; sourceTree = "<group>"; };
@@ -704,6 +705,7 @@
 		E1D7A4072F8D871800D8C934 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				E1898C282F96BD5600288592 /* gem_app_icon_1024.png */,
 				E1898BFC2F96BB4D00288592 /* Screenshots */,
 				E1AB28B82F92B76200A8B707 /* Haptics */,
 			);
