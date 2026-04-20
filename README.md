@@ -1,6 +1,6 @@
 # <img width="64" src="Resources/gem_app_icon_1024.png"> Gem for Hacker News
 
-Gem is a [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
+A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
 
 
 [![Publish (iOS)](https://github.com/Livinglist/Gem/actions/workflows/publish_ios.yml/badge.svg?branch=main)](https://github.com/Livinglist/Gem/actions/workflows/publish_ios.yml)
