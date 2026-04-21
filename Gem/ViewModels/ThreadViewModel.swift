@@ -124,8 +124,8 @@ import HackerNewsKit
         }
     }
     
-    func fetchParent(of cmt: Comment) async {
-        guard let parentId = cmt.parent,
+    func goToParent() async {
+        guard let parentId = item?.parent,
               let parent = await StoryRepository.shared.fetchItem(parentId)
         else { return }
         
