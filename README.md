@@ -27,7 +27,7 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
   <img width="200" src="Resources/Screenshots/thread.png">
   <img width="200" src="Resources/Screenshots/thread_comment_context_menu.png">
   <img width="200" src="Resources/Screenshots/thread_deep.png">
-  <img width="200" src="Resources/Screenshots/thread_ask_hn.png">
+  <img width="200" src="Resources/Screenshots/comment_thread.png">
 </p>
 
 ## Pins, favorites, and replies
