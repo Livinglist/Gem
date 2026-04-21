@@ -171,11 +171,11 @@ struct Thread: View {
             ToolbarItem(placement: .title) {
                 Text("")
             }
-            if let item = item as? Comment {
+            if item is Comment {
                 ToolbarItem {
                     Button {
                         Task {
-                            await vm.fetchParent(of: item)
+                            await vm.goToParent()
                         }
                     } label: {
                         Image(systemName: "figure.stairs")
