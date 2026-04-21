@@ -9,7 +9,7 @@ struct CommentTile: View {
     @State private var isSafariSheetPresented: Bool = .init()
     @State private var isReplySheetPresented: Bool = .init()
     @State private var isFlagDialogPresented: Bool = .init()
-    var settings: SettingsStore = .shared
+    var settings: SettingsViewModel = .shared
     
     let level: Int
     let comment: Comment

@@ -4,10 +4,10 @@ import Combine
 
 extension Profile {
     @MainActor
-    class ProfileStore: ObservableObject {
-        @Published var user: User?
-        @Published var status: Status = .idle
-        var settingsStore: SettingsStore = .shared
+    @Observable class ProfileViewModel {
+        var user: User?
+        var status: Status = .idle
+        let settings: SettingsViewModel = .shared
 
         func fetchUser(id: String) async {
             self.status = .inProgress
@@ -21,20 +21,20 @@ extension Profile {
 
         var isBlocked: Bool {
             if let user = self.user, let id = user.id, id != Authentication.shared.username {
-                return self.settingsStore.blocklist.contains(id)
+                return self.settings.blocklist.contains(id)
             }
             return false
         }
 
         func block() {
             if let user = self.user, let id = user.id, id != Authentication.shared.username {
-                self.settingsStore.block(id)
+                self.settings.block(id)
             }
         }
 
         func unblock() {
             if let user = self.user, let id = user.id, id != Authentication.shared.username {
-                self.settingsStore.unblock(id)
+                self.settings.unblock(id)
             }
         }
     }

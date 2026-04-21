@@ -2,11 +2,13 @@ import SwiftUI
 import HackerNewsKit
 
 struct Settings: View {
-    @Bindable var store = SettingsStore.shared
+    @Environment(\.openURL) private var openURL
+    @Bindable var vm = SettingsViewModel.shared
     @State var url: IdentifiableURL?
     
     private let githubRepoUrl = URL(string: "https://github.com/Livinglist/Gem")!
     private let githubIssuesUrl = URL(string: "https://github.com/Livinglist/Gem/issues")!
+    private let appStoreReviewUrl = URL(string: "https://apps.apple.com/us/app/gem/id6762153947?action=write-review")!
     
     var versionString: String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
@@ -17,7 +19,7 @@ struct Settings: View {
     var body: some View {
         List {
             Section {
-                Picker("Default Story Type", selection: $store.defaultStoryType) {
+                Picker("Default Story Type", selection: $vm.defaultStoryType) {
                     ForEach(StoryType.allCases, id: \.self) { value in
                         Text(value.label.capitalized)
                             .tag(value)
@@ -28,7 +30,7 @@ struct Settings: View {
             }
             
             Section {
-                Picker("Default Fetch Mode", selection: $store.defaultFetchMode) {
+                Picker("Default Fetch Mode", selection: $vm.defaultFetchMode) {
                     ForEach(FetchMode.allCases, id: \.self) { value in
                         Text(value.label)
                             .tag(value)
@@ -39,23 +41,23 @@ struct Settings: View {
             }
             
             Section {
-                Toggle(isOn: $store.isAutomaticDownloadEnabled) {
+                Toggle(isOn: $vm.isAutomaticDownloadEnabled) {
                     Text("Automatic Download")
                 }
                 .tint(.accent)
-                Toggle(isOn: $store.useCellularData) {
+                Toggle(isOn: $vm.useCellularData) {
                     Text("Use Cellular Data")
                 }
                 .tint(.accent)
-                .disabled(!store.isAutomaticDownloadEnabled)
+                .disabled(!vm.isAutomaticDownloadEnabled)
                 
-                Picker("Download Frequency", selection: $store.downloadFrequency) {
+                Picker("Download Frequency", selection: $vm.downloadFrequency) {
                     ForEach(DownloadFrequency.allCases, id: \.self) { value in
                         Text(value.label)
                             .tag(value)
                     }
                 }
-                .disabled(!store.isAutomaticDownloadEnabled)
+                .disabled(!vm.isAutomaticDownloadEnabled)
             } header: {
                 Text("Offline Mode")
             } footer: {
@@ -74,6 +76,13 @@ struct Settings: View {
                     url = IdentifiableURL(url: githubIssuesUrl)
                 } label: {
                     Label("Feature Request", systemImage: "star.bubble")
+                }
+                .foregroundStyle(.accent)
+                .brightness(0.2)
+                Button {
+                    openURL(appStoreReviewUrl)
+                } label: {
+                    Label("Rate Gem :)", systemImage: "pencil.and.outline")
                 }
                 .foregroundStyle(.accent)
                 .brightness(0.2)

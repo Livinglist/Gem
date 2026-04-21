@@ -4,7 +4,7 @@ import Combine
 import HackerNewsKit
 
 struct Submissions: View {
-    @StateObject var submissionStore: SubmissionStore = .init()
+    @State var vm: SubmissionsViewModel = .init()
     @StateObject var debounceObject: DebounceObject = .init()
     @State private var actionPerformed: Action = .none
     
@@ -12,12 +12,12 @@ struct Submissions: View {
     
     var body: some View {
         List {
-            ForEach(submissionStore.submitted, id: \.self.id) { item in
+            ForEach(vm.submitted, id: \.self.id) { item in
                 ItemRow(item: item,actionPerformed: $actionPerformed)
                 .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
                 .listRowSeparator(.hidden)
                 .onAppear {
-                    submissionStore.onItemRowAppear(item)
+                    vm.onItemRowAppear(item)
                 }
             }
         }
@@ -25,9 +25,9 @@ struct Submissions: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Submissions")
         .onAppear {
-            if submissionStore.status == .idle {
+            if vm.status == .idle {
                 Task {
-                    await submissionStore.fetchSubmissions(ids: ids)
+                    await vm.fetchSubmissions(ids: ids)
                 }
             }
         }

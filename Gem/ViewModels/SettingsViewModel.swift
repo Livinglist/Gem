@@ -3,14 +3,13 @@ import HackerNewsKit
 import Combine
 
 fileprivate extension String {
-    static let favListKey = "favList"
-    static let pinListKey = "pinList"
     static let blockListKey = "blockListKey"
     static let isAutomaticDownloadEnabledKey = "isAutomaticDownloadEnabled"
     static let useCellularDataKey = "useCellularData"
     static let downloadFrequencyKey = "downloadFrequency"
     static let defaultStoryTypeKey = "defaultStoryType"
     static let defaultFetchModeKey = "defaultFetchMode"
+    static let appOpenCounterKey = "appOpenCounter"
 }
 
 enum DownloadFrequency: TimeInterval, Equatable, CaseIterable {
@@ -50,9 +49,7 @@ enum FetchMode: Int, Equatable, CaseIterable {
     }
 }
 
-@Observable class SettingsStore {
-    var favList: [Int] = .init()
-    var pinList: [Int] = .init()
+@Observable class SettingsViewModel {
     var blocklist: Set<String> = .init()
     var isAutomaticDownloadEnabled: Bool = .init() {
         didSet {
@@ -62,6 +59,13 @@ enum FetchMode: Int, Equatable, CaseIterable {
     var useCellularData: Bool = .init() {
         didSet {
             UserDefaults.standard.set(useCellularData, forKey: .useCellularDataKey)
+        }
+    }
+    var appOpenCounter: Int = 0 {
+        didSet {
+            if appOpenCounter <= 10 {
+                UserDefaults.standard.setValue(appOpenCounter, forKey: .appOpenCounterKey)
+            }
         }
     }
     var downloadFrequency: DownloadFrequency = .oneDay {
@@ -80,27 +84,16 @@ enum FetchMode: Int, Equatable, CaseIterable {
         }
     }
     
-    static let shared: SettingsStore = .init()
+    static let shared: SettingsViewModel = .init()
     
     private init() {
-        if let favList = UserDefaults.standard.array(forKey: .favListKey) as? [Int] {
-            self.favList = Array(favList)
-        } else {
-            UserDefaults.standard.set([Int](), forKey: .favListKey)
-        }
-        
-        if let pinList = UserDefaults.standard.array(forKey: .pinListKey) as? [Int] {
-            self.pinList = Array(pinList)
-        } else {
-            UserDefaults.standard.set([Int](), forKey: .pinListKey)
-        }
-        
         if let blocklist = UserDefaults.standard.array(forKey: .blockListKey) as? [String] {
             self.blocklist = Set(blocklist)
         } else {
             UserDefaults.standard.set([String](), forKey: .blockListKey)
         }
         
+        appOpenCounter = UserDefaults.standard.integer(forKey: .appOpenCounterKey)
         isAutomaticDownloadEnabled = UserDefaults.standard.bool(forKey: .isAutomaticDownloadEnabledKey)
         useCellularData = UserDefaults.standard.bool(forKey: .useCellularDataKey)
         
@@ -118,15 +111,6 @@ enum FetchMode: Int, Equatable, CaseIterable {
         if let defaultFetchMode = FetchMode(rawValue: defaultFetchModeRawValue) {
             self.defaultFetchMode = defaultFetchMode
         }
-    }
-    
-    func onFavToggle(_ id: Int) -> Void {
-        if favList.contains(id) {
-            favList.removeAll { $0 == id }
-        } else {
-            favList.append(id)
-        }
-        UserDefaults.standard.set(Array(favList), forKey: .favListKey)
     }
     
     func block(_ id: String) -> Void {

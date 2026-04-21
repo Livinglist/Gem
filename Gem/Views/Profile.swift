@@ -5,7 +5,7 @@ import HackerNewsKit
 struct Profile: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(Authentication.self) var auth
-    @StateObject var profileStore: ProfileStore = .init()
+    @State var vm: ProfileViewModel = .init()
     @State var isLogoutDialogPresented: Bool = .init()
     @State var isBlockDialogPresented: Bool = .init()
     @State var actionPerformed: Action = .none
@@ -14,7 +14,7 @@ struct Profile: View {
     
     var body: some View {
         List {
-            if let user = profileStore.user {
+            if let user = vm.user {
                 Section {
                     if let about = user.about, about.isNotEmpty {
                         Text(about.markdowned)
@@ -35,7 +35,7 @@ struct Profile: View {
                 Section {
                     DetailedRow(title: "Created at", detail: user.createdAt.orEmpty)
                     DetailedRow(title: "Karma", detail: String(user.karma.orZero))
-                    NavigationLink(value: Destination.submission(profileStore.user?.submitted ?? [Int]()), label: {
+                    NavigationLink(value: Destination.submission(vm.user?.submitted ?? [Int]()), label: {
                         Text("Submissions")
                     })
                 } header: {
@@ -49,9 +49,9 @@ struct Profile: View {
                         Label("Log out", systemImage: "rectangle.portrait.and.arrow.forward")
                             .foregroundColor(.red)
                     }
-                } else if profileStore.isBlocked {
+                } else if vm.isBlocked {
                     Button {
-                        profileStore.unblock()
+                        vm.unblock()
                         actionPerformed = .unblock
                     } label: {
                         Label("Unblock", systemImage: "eye")
@@ -70,9 +70,9 @@ struct Profile: View {
         .navigationBarTitleDisplayMode(.inline)
         .listStyle(.insetGrouped)
         .onAppear {
-            if profileStore.status == .idle {
+            if vm.status == .idle {
                 Task {
-                    await profileStore.fetchUser(id: id)
+                    await vm.fetchUser(id: id)
                 }
             }
         }
@@ -88,7 +88,7 @@ struct Profile: View {
         })
         .confirmationDialog("Are you sure?", isPresented: $isBlockDialogPresented) {
             Button("Block", role: .destructive) {
-                profileStore.block()
+                vm.block()
                 actionPerformed = .block
             }
         } message: {

@@ -6,7 +6,7 @@ struct CommentTextView: View {
     
     var isBlocked: Bool {
         if let authorId = comment.by {
-            return SettingsStore.shared.blocklist.contains(authorId)
+            return SettingsViewModel.shared.blocklist.contains(authorId)
         }
         return false
     }
