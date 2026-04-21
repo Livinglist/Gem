@@ -4,9 +4,9 @@ import HackerNewsKit
 
 extension Submissions {
     @MainActor
-    class SubmissionStore: ObservableObject {
-        @Published var submitted: [any Item] = .init()
-        @Published var status: Status = .idle
+    @Observable class SubmissionsViewModel {
+        var submitted: [any Item] = .init()
+        var status: Status = .idle
         
         private var currentPage: Int = 0
         private let pageSize: Int = 10

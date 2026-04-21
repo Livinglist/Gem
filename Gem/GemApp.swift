@@ -2,17 +2,21 @@ import BackgroundTasks
 import Foundation
 import SwiftUI
 import SwiftData
+import StoreKit
 import HackerNewsKit
 import UserNotifications
 
 @main
 struct GemApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @Environment(\.requestReview) private var requestReview
     @Environment(\.scenePhase) private var phase
     var offlineRepository: OfflineRepository = .shared
     
     let auth: Authentication = .shared
     let notification: RepliesViewModel = .shared
+    let settings: SettingsViewModel = .shared
+    let appStoreReviewReuqestTrigger = 10
     
     var body: some Scene {
         WindowGroup {
@@ -41,6 +45,12 @@ struct GemApp: App {
             .preferredColorScheme(.dark)
             .onAppear {
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+                let appOpenCounter = settings.appOpenCounter
+                if appOpenCounter == appStoreReviewReuqestTrigger {
+                    requestReview()
+                } else if appOpenCounter < appStoreReviewReuqestTrigger {
+                    settings.appOpenCounter = appOpenCounter + 1
+                }
             }
         }
         .environment(auth)

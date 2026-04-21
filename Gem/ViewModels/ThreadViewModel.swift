@@ -5,7 +5,7 @@ import Alamofire
 import HackerNewsKit
 
 @MainActor
-@Observable class ThreadViewModel : ObservableObject {
+@Observable class ThreadViewModel {
     var comments: [Comment] = .init()
     var searchResults: [Int] = .init()
     var status: Status = .idle
@@ -14,7 +14,7 @@ import HackerNewsKit
     
     /// Stores ids of loaded comments, including both root and child comments.
     var loadedCommentIds: Set<Int> = .init()
-    var isRecursivelyFetching: Bool = SettingsStore.shared.defaultFetchMode == .eager || OfflineRepository.shared.isOfflineReading {
+    var isRecursivelyFetching: Bool = SettingsViewModel.shared.defaultFetchMode == .eager || OfflineRepository.shared.isOfflineReading {
         didSet {
             if OfflineRepository.shared.isOfflineReading {
                 return

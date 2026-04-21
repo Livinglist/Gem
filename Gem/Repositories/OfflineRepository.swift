@@ -94,7 +94,7 @@ import HackerNewsKit
     }
 
     public func downloadAllStories(isTriggerdByUser: Bool) async -> Void {
-        let settings = SettingsStore.shared
+        let settings = SettingsViewModel.shared
 
         /// Initiate download process if:
         /// - process is triggered by user action.

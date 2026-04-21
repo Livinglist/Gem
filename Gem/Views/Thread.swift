@@ -13,7 +13,7 @@ struct Thread: View {
     @State private var isSearchPresented: Bool = .init()
     @State private var actionPerformed: Action = .none
     
-    let settings: SettingsStore = .shared
+    let settings: SettingsViewModel = .shared
     
     let level: Int
     let item: any Item

@@ -5,7 +5,7 @@ import HackerNewsKit
 
 @MainActor
 @Observable class StoryViewModel {
-    var storyType: StoryType = SettingsStore.shared.defaultStoryType
+    var storyType: StoryType = SettingsViewModel.shared.defaultStoryType
     var stories: [Story] = .init()
     var status: Status = .idle
     var isConnectedToNetwork: Bool = true
