@@ -25,6 +25,14 @@ struct Thread: View {
     
     var body: some View {
         mainItemView
+            .onChange(of: vm.scrollTo) { _, index in
+                if settings.isAutoScrollEnabled, let index {
+                    withAnimation {
+                        scrollViewProxy?.scrollTo(index, anchor: .top)
+                    }
+                    vm.scrollTo = nil
+                }
+            }
             .withToast(actionPerformed: $actionPerformed)
             .sheet(isPresented: $isSearchPresented) {
                 NavigationStack {

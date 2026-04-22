@@ -41,6 +41,15 @@ struct Settings: View {
             }
             
             Section {
+                Toggle(isOn: $vm.isAutoScrollEnabled) {
+                    Text("Auto-scroll on Collapse")
+                }
+                .tint(.accent)
+            } footer: {
+                Text("Automatically scroll to next comment after collapsing a thread.")
+            }
+            
+            Section {
                 Toggle(isOn: $vm.isAutomaticDownloadEnabled) {
                     Text("Automatic Download")
                 }

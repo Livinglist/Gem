@@ -10,6 +10,7 @@ fileprivate extension String {
     static let defaultStoryTypeKey = "defaultStoryType"
     static let defaultFetchModeKey = "defaultFetchMode"
     static let appOpenCounterKey = "appOpenCounter"
+    static let autoScrollOnCollapseKey = "autoScrollOnCollapse"
 }
 
 enum DownloadFrequency: TimeInterval, Equatable, CaseIterable {
@@ -61,6 +62,11 @@ enum FetchMode: Int, Equatable, CaseIterable {
             UserDefaults.standard.set(useCellularData, forKey: .useCellularDataKey)
         }
     }
+    var isAutoScrollEnabled: Bool = .init() {
+        didSet {
+            UserDefaults.standard.set(isAutoScrollEnabled, forKey: .autoScrollOnCollapseKey)
+        }
+    }
     var appOpenCounter: Int = 0 {
         didSet {
             if appOpenCounter <= 10 {
@@ -96,6 +102,7 @@ enum FetchMode: Int, Equatable, CaseIterable {
         appOpenCounter = UserDefaults.standard.integer(forKey: .appOpenCounterKey)
         isAutomaticDownloadEnabled = UserDefaults.standard.bool(forKey: .isAutomaticDownloadEnabledKey)
         useCellularData = UserDefaults.standard.bool(forKey: .useCellularDataKey)
+        isAutoScrollEnabled = (UserDefaults.standard.object(forKey: .autoScrollOnCollapseKey) as? Bool) ?? true
         
         let downloadFrequencyRawValue = UserDefaults.standard.double(forKey: .downloadFrequencyKey)
         if let downloadFrequency = DownloadFrequency(rawValue: downloadFrequencyRawValue) {
