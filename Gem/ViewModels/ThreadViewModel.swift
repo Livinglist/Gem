@@ -185,11 +185,9 @@ import HackerNewsKit
                     }
                 }
             }
-            var updatedCommentsSlice = [Comment]()
             let updatedComment = cmt.copyWith(isCollapsed: false)
             let parentIndex = commentsBuffer.firstIndex { $0.id == cmt.id }
             let parentLevel = cmt.level
-            updatedCommentsSlice.append(updatedComment)
             guard let parentIndex, let parentLevel else { return }
             commentsBuffer.replaceSubrange(parentIndex..<parentIndex + 1, with: [updatedComment])
             var index = parentIndex + 1
@@ -234,7 +232,6 @@ import HackerNewsKit
             
             await sendUpdates()
         }
-
     }
     
     func searchInThread(_ text: String) {
