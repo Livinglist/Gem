@@ -21,6 +21,7 @@ import HackerNewsKit
             }
         }
     }
+    var scrollTo: Int?
     
     private var cache = NSCache<NSNumber, CommentCollection>()
     
@@ -133,21 +134,20 @@ import HackerNewsKit
     }
     
     func collapse(cmt: Comment) {
-        Task.detached(priority: .background) { [self] in
-            var commentsBuffer = await Array(comments)
+        Task { [self] in
+            guard status.isCompleted else { return }
+            var commentsBuffer = Array(comments)
+            let updatedComment = cmt.copyWith(isCollapsed: true)
+            let parentIndex = commentsBuffer.firstIndex { $0.id == cmt.id }
+            let parentLevel = cmt.level
             func sendUpdates() async {
                 await MainActor.run { [commentsBuffer] in
                     withAnimation(.snappy.speed(200)) {
                         self.comments = commentsBuffer
                     }
+                    self.scrollTo = cmt.id
                 }
             }
-            guard await status.isCompleted else { return }
-            var updatedCommentsSlice = [Comment]()
-            let updatedComment = cmt.copyWith(isCollapsed: true)
-            let parentIndex = commentsBuffer.firstIndex { $0.id == cmt.id }
-            let parentLevel = cmt.level
-            updatedCommentsSlice.append(updatedComment)
             guard let parentIndex, let parentLevel else { return }
             commentsBuffer.replaceSubrange(parentIndex..<parentIndex + 1, with: [updatedComment])
             var index = parentIndex + 1
@@ -175,27 +175,66 @@ import HackerNewsKit
     }
     
     func uncollapse(cmt: Comment) {
-        guard status.isCompleted else { return }
-        var updatedCommentsSlice = [Comment]()
-        let updatedComment = cmt.copyWith(isCollapsed: false)
-        let parentIndex = comments.firstIndex { $0.id == cmt.id }
-        let parentLevel = cmt.level
-        updatedCommentsSlice.append(updatedComment)
-        guard let parentIndex, let parentLevel else { return }
-        comments.replaceSubrange(parentIndex..<parentIndex + 1, with: [updatedComment])
-        var index = parentIndex + 1
-        guard index < comments.count else { return }
-        var nextComment = comments[index]
-        var nextCommentLevel: Int = nextComment.level ?? 0
-        guard nextCommentLevel > parentLevel else { return }
-        repeat {
-            let updatedComment = nextComment.copyWith(isHidden: false)
-            comments.replaceSubrange(index..<index + 1, with: [updatedComment])
-            index = index + 1
-            guard index < comments.count else { return }
-            nextComment = comments[index]
-            nextCommentLevel = nextComment.level ?? 0
-        } while (nextCommentLevel > parentLevel)
+        Task { [self] in
+            guard status.isCompleted else { return }
+            var commentsBuffer = Array(comments)
+            func sendUpdates() async {
+                await MainActor.run { [commentsBuffer] in
+                    withAnimation(.snappy.speed(200)) {
+                        self.comments = commentsBuffer
+                    }
+                }
+            }
+            var updatedCommentsSlice = [Comment]()
+            let updatedComment = cmt.copyWith(isCollapsed: false)
+            let parentIndex = commentsBuffer.firstIndex { $0.id == cmt.id }
+            let parentLevel = cmt.level
+            updatedCommentsSlice.append(updatedComment)
+            guard let parentIndex, let parentLevel else { return }
+            commentsBuffer.replaceSubrange(parentIndex..<parentIndex + 1, with: [updatedComment])
+            var index = parentIndex + 1
+            guard index < commentsBuffer.count else {
+                await sendUpdates()
+                return
+            }
+            var nextComment = commentsBuffer[index]
+            var nextCommentLevel: Int = nextComment.level ?? 0
+            guard nextCommentLevel > parentLevel else {
+                await sendUpdates()
+                return
+            }
+            
+            // Uncollapse comments until the next same-level comment is reached
+            repeat {
+                let updatedComment = nextComment.copyWith(isHidden: false)
+                commentsBuffer.replaceSubrange(index..<index + 1, with: [updatedComment])
+                // If the comment is collapsed, skip to the next comment on the same level
+                if updatedComment.isCollapsed ?? false {
+                    repeat {
+                        index = index + 1
+                        guard index < commentsBuffer.count else {
+                            await sendUpdates()
+                            return
+                        }
+                        nextComment = commentsBuffer[index]
+                        nextCommentLevel = nextComment.level ?? 0
+                    } while nextCommentLevel > updatedComment.level.orZero
+                }
+                // If the comment is not collapsed, proceed to the next one
+                else {
+                    index = index + 1
+                    guard index < commentsBuffer.count else {
+                        await sendUpdates()
+                        return
+                    }
+                    nextComment = commentsBuffer[index]
+                    nextCommentLevel = nextComment.level ?? 0
+                }
+            } while (nextCommentLevel > parentLevel)
+            
+            await sendUpdates()
+        }
+
     }
     
     func searchInThread(_ text: String) {

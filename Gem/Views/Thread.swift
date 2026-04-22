@@ -25,6 +25,13 @@ struct Thread: View {
     
     var body: some View {
         mainItemView
+            .onChange(of: vm.scrollTo) { _, index in
+                if let index {
+                    withAnimation {
+                        scrollViewProxy?.scrollTo(index, anchor: .top)
+                    }
+                }
+            }
             .withToast(actionPerformed: $actionPerformed)
             .sheet(isPresented: $isSearchPresented) {
                 NavigationStack {
