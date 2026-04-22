@@ -42,7 +42,7 @@ struct Settings: View {
             
             Section {
                 Toggle(isOn: $vm.isAutoScrollEnabled) {
-                    Text("Auto Scroll on Collapse")
+                    Text("Auto-scroll on Collapse")
                 }
                 .tint(.accent)
             } header: {
