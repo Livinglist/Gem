@@ -45,8 +45,8 @@ struct Settings: View {
                     Text("Auto-scroll on Collapse")
                 }
                 .tint(.accent)
-            } header: {
-                Text("Thread")
+            } footer: {
+                Text("Automatically scroll to next comment after collapsing a thread.")
             }
             
             Section {
