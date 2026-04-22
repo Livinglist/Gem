@@ -23,6 +23,8 @@ extension String {
             str = str.replacingOccurrences(of: matchedString, with: "[\(display)](\(matchedString))")
         }
         
+        str = str.replacingOccurrences(of: "\n**", with: "**")
+        
         if let attributedString = try? AttributedString(
             markdown: str, options: AttributedString.MarkdownParsingOptions(interpretedSyntax: .inlineOnlyPreservingWhitespace)) {
             return attributedString
