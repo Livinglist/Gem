@@ -41,6 +41,15 @@ struct Settings: View {
             }
             
             Section {
+                Toggle(isOn: $vm.isAutoScrollEnabled) {
+                    Text("Auto Scroll on Collapse")
+                }
+                .tint(.accent)
+            } header: {
+                Text("Thread")
+            }
+            
+            Section {
                 Toggle(isOn: $vm.isAutomaticDownloadEnabled) {
                     Text("Automatic Download")
                 }
