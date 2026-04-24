@@ -35,10 +35,11 @@ enum MenuItem: String, Hashable, Sendable, CaseIterable {
 }
 
 struct SideMenu: View {
+    @Environment(Authentication.self) var auth
+    
     let menuWidth: CGFloat
     let onDismiss: (MenuItem?) -> Void
     
-    @Environment(Authentication.self) var auth
     @State private var selectedMenuItem: MenuItem = .home
     @State private var username: String = .init()
     @State private var password: String = .init()
@@ -51,6 +52,7 @@ struct SideMenu: View {
     
     struct MenuButton: View {
         @Binding var selectedMenuItem: MenuItem
+        
         let menuItem: MenuItem
         let namespace: Namespace.ID
         let onTap: () -> Void
@@ -85,6 +87,7 @@ struct SideMenu: View {
                                 MenuButton(selectedMenuItem: $selectedMenuItem, menuItem: menuItem, namespace: namespace) {
                                     onDismiss(menuItem)
                                 }
+                                .id(menuItem)
                             }
                         }
                         .padding(.horizontal)
