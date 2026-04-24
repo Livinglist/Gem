@@ -313,6 +313,87 @@ extension ThreadViewModel {
         }
     }
     
+    func uncollapse(cmt: Comment) async {
+        await Task { [self] in
+            guard status.isCompleted else { return }
+            var commentsBuffer = Array(comments)
+            func sendUpdates() async {
+                await MainActor.run { [commentsBuffer] in
+                    self.comments = commentsBuffer
+                }
+            }
+            let updatedComment = cmt.copyWith(isCollapsed: false)
+            let parentIndex = commentsBuffer.firstIndex { $0.id == cmt.id }
+            let parentLevel = cmt.level
+            guard let parentIndex, let parentLevel else { return }
+            commentsBuffer.replaceSubrange(parentIndex..<parentIndex + 1, with: [updatedComment])
+            var index = parentIndex + 1
+            guard index < commentsBuffer.count else {
+                await sendUpdates()
+                return
+            }
+            var nextComment = commentsBuffer[index]
+            var nextCommentLevel: Int = nextComment.level ?? 0
+            guard nextCommentLevel > parentLevel else {
+                await sendUpdates()
+                return
+            }
+            
+            // Uncollapse comments until the next same-level comment is reached
+            repeat {
+                let updatedComment = nextComment.copyWith(isHidden: false)
+                commentsBuffer.replaceSubrange(index..<index + 1, with: [updatedComment])
+                // If the comment is collapsed, skip to the next comment on the same level
+                if updatedComment.isCollapsed ?? false {
+                    repeat {
+                        index = index + 1
+                        guard index < commentsBuffer.count else {
+                            await sendUpdates()
+                            return
+                        }
+                        nextComment = commentsBuffer[index]
+                        nextCommentLevel = nextComment.level ?? 0
+                    } while nextCommentLevel > updatedComment.level.orZero
+                }
+                // If the comment is not collapsed, proceed to the next one
+                else {
+                    index = index + 1
+                    guard index < commentsBuffer.count else {
+                        await sendUpdates()
+                        return
+                    }
+                    nextComment = commentsBuffer[index]
+                    nextCommentLevel = nextComment.level ?? 0
+                }
+            } while (nextCommentLevel > parentLevel)
+            
+            await sendUpdates()
+        }.value
+    }
+    
+    func uncollapseRoot(of index: Int) async {
+        var comment: Comment? = comments[index]
+        guard var isHidden = comment?.isHidden,
+              var isCollapsed = comment?.isCollapsed,
+              isHidden || isCollapsed else { return }
+        repeat {
+            if comment != nil {
+                if isCollapsed {
+                    await uncollapse(cmt: comment!)
+                }
+                
+                if isHidden {
+                    comment = comments.first { $0.id == comment?.parent }
+                } else {
+                    return
+                }
+            }
+            
+            isHidden = comment?.isHidden ?? false
+            isCollapsed = comment?.isCollapsed ?? false
+        } while isHidden || isCollapsed
+    }
+    
     func searchInThread(_ text: String) {
         var results = [Int]()
         let text = text.trimmingCharacters(in: .whitespaces)

@@ -30,8 +30,13 @@ extension Thread {
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 isSearchPresented = false
-                                withAnimation {
-                                    scrollViewProxy?.scrollTo(comment.id, anchor: .top)
+                                
+                                Task {
+                                    await vm.uncollapseRoot(of: index)
+                                    
+                                    withAnimation {
+                                        scrollViewProxy?.scrollTo(comment.id, anchor: .top)
+                                    }
                                 }
                             }
                             .id(index)
