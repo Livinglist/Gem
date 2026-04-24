@@ -301,6 +301,10 @@
 		E1898BFB2F96BB4D00288592 /* thread_with_url.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_with_url.png; sourceTree = "<group>"; };
 		E1898C282F96BD5600288592 /* gem_app_icon_1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gem_app_icon_1024.png; sourceTree = "<group>"; };
 		E1A752FA2F9B3D56004DB084 /* ThreadCacheModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadCacheModel.swift; sourceTree = "<group>"; };
+		E1A752FC2F9B5FB4004DB084 /* thread_exchange_indicator.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_exchange_indicator.png; sourceTree = "<group>"; };
+		E1A752FD2F9B5FB4004DB084 /* thread_main_view.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_main_view.png; sourceTree = "<group>"; };
+		E1A752FE2F9B5FB4004DB084 /* thread_new_comment_indicator.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_new_comment_indicator.png; sourceTree = "<group>"; };
+		E1A752FF2F9B5FB4004DB084 /* thread_new_comments.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_new_comments.png; sourceTree = "<group>"; };
 		E1AB28A42F91AE1500A8B707 /* NameRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameRowView.swift; sourceTree = "<group>"; };
 		E1AB28A62F91AE3A00A8B707 /* TimeDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeDisplay.swift; sourceTree = "<group>"; };
 		E1AB28AA2F91F7F200A8B707 /* CommentTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTextView.swift; sourceTree = "<group>"; };
@@ -618,6 +622,10 @@
 		E1898BFC2F96BB4D00288592 /* Screenshots */ = {
 			isa = PBXGroup;
 			children = (
+				E1A752FC2F9B5FB4004DB084 /* thread_exchange_indicator.png */,
+				E1A752FD2F9B5FB4004DB084 /* thread_main_view.png */,
+				E1A752FE2F9B5FB4004DB084 /* thread_new_comment_indicator.png */,
+				E1A752FF2F9B5FB4004DB084 /* thread_new_comments.png */,
 				E1898BD12F96BB4D00288592 /* about_livinglist.png */,
 				E1898BD22F96BB4D00288592 /* agree_to_hn_guidelines_dialog.png */,
 				E1898BD32F96BB4D00288592 /* comment_thread.png */,

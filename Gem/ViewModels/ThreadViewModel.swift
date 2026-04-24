@@ -7,38 +7,59 @@ import HackerNewsKit
 
 typealias SearchConditionTester = (Comment) -> Bool
 
+extension ModelContainer {
+    static let threadCache: ModelContainer = {
+        let storageUrl = URL.cachesDirectory.appending(path: "cache.sqlite")
+        let config = ModelConfiguration("ThreadCache", url: storageUrl, cloudKitDatabase: .none)
+        return try! ModelContainer(for: ThreadCacheModel.self, configurations: config)
+    }()
+}
+
 extension ThreadViewModel {
     fileprivate class ThreadCache {
-        @ObservationIgnored private let modelConfig: ModelConfiguration
         @ObservationIgnored private let container: ModelContainer?
         let parentId: Int
         var fetchedComments = Set<Int>()
         
         fileprivate init(parentId: Int) {
             self.parentId = parentId
-            let storageUrl = URL.cachesDirectory.appending(path: "cache.sqlite")
-            self.modelConfig = ModelConfiguration("ThreadCache", url: storageUrl, cloudKitDatabase: .none)
-            self.container = try? ModelContainer(for: ThreadCacheModel.self, configurations: modelConfig)
-            guard let container else { return }
-            let context = container.mainContext
-            var descriptor = FetchDescriptor<ThreadCacheModel>(predicate: #Predicate { $0.parentId == parentId })
-            descriptor.fetchLimit = 1
-            if let models = try? context.fetch(descriptor), let model = models.first {
-                self.fetchedComments = Set(model.commentIds)
+            self.container = .threadCache
+            
+            Task {
+                await initializeCache()
             }
         }
         
-        func cacheCommentIds(_ comments: [Comment]) {
+        func initializeCache() async {
+            let id = parentId
+            let comments = await Task.detached(priority: .userInitiated) {
+                let context = await ModelContext(.threadCache)
+                var descriptor = FetchDescriptor<ThreadCacheModel>(
+                    predicate: #Predicate { $0.parentId == id }
+                )
+                descriptor.fetchLimit = 1
+                let models = try? context.fetch(descriptor)
+                return Set(models?.first?.commentIds ?? [])
+            }.value
+            self.fetchedComments = comments
+        }
+        
+        func cacheCommentIds(_ comments: [Comment]) async {
             let ids = comments.map { $0.id }
-            let model = ThreadCacheModel(ids, parentId: parentId)
-            container?.mainContext.insert(model)
-            try? container?.mainContext.save()
+            await Task.detached(priority: .userInitiated) {
+                let context = await ModelContext(.threadCache)
+                let model = ThreadCacheModel(ids, parentId: self.parentId)
+                context.insert(model)
+                try? context.save()
+            }.value
             self.fetchedComments = Set<Int>(ids)
         }
         
         func markNewComments(_ comments: [Comment]) -> [Comment] {
             let updatedComments = fetchedComments.isEmpty ? comments : comments.map { $0.copyWith(isNew: !fetchedComments.contains($0.id) ) }
-            cacheCommentIds(comments)
+            Task {
+                await cacheCommentIds(comments)
+            }
             return updatedComments
         }
     }

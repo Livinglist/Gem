@@ -20,6 +20,7 @@ extension Thread {
                         vm.isByOpSelected.toggle()
                     }
                 }
+                .frame(maxWidth: .infinity)
                 VStack(alignment: .leading, spacing: 0) {
                     ForEach(vm.searchResults, id: \.self) { index in
                         let comment = vm.comments[index]
