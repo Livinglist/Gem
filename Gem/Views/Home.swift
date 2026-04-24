@@ -1,9 +1,12 @@
 import SwiftUI
 import CoreData
 import HackerNewsKit
+import StoreKit
+import Logging
 
 struct Home: View {
     @Environment(Authentication.self) var auth
+    @Environment(\.requestReview) private var requestReview
     private var storyVM: StoryViewModel = .shared
     @Bindable private var router: Router = .shared
     private var offlineRepository: OfflineRepository = .shared
@@ -22,6 +25,8 @@ struct Home: View {
     @State private var showSlideOutMenu: Bool = false
     @State private var dragOffset: Double = 0
     @State private var selectedMenuItem: MenuItem = .home
+    private let settings: SettingsViewModel = .shared
+    private let appStoreReviewReuqestTrigger = 10
     private let menuWidth: CGFloat = 300
     private static var handledUrl: URL? = nil
     
@@ -105,7 +110,7 @@ struct Home: View {
             .frame(width: menuWidth + 60, alignment: .leading)
             .background(Color(.secondarySystemBackground))
             .edgesIgnoringSafeArea(.vertical)
-        
+            
             ZStack(alignment: .leading) {
                 NavigationStack(path: $router.path) {
                     ZStack {
@@ -214,10 +219,14 @@ struct Home: View {
             .offset(x: dragOffset == 0 ? (showSlideOutMenu ? menuWidth : 0) : (dragOffset > 0 ? dragOffset : menuWidth + dragOffset))
             .shadow(radius: 5)
         }
-        .gesture(
-            DragGesture()
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 15)
                 .onChanged { value in
                     let translation = value.translation.width
+                    let vector = CGVector(dx: value.location.x - value.startLocation.x, dy: value.location.y - value.startLocation.y)
+                    let radians = atan2(vector.dy, vector.dx)
+                    let angle = radians * 180 / .pi
+                    guard (angle > -36 && angle < 0) || (angle > 140 && angle < 180) else { return }
                     
                     // If menu is closed, only allow dragging from the left edge (positive)
                     // If menu is open, only allow dragging to the left (negative)
@@ -228,10 +237,20 @@ struct Home: View {
                     }
                 }
                 .onEnded { value in
+                    let vector = CGVector(dx: value.location.x - value.startLocation.x, dy: value.location.y - value.startLocation.y)
+                    let radians = atan2(vector.dy, vector.dx)
+                    let angle = radians * 180 / .pi
+                    guard (angle > -36 && angle < 0) || (angle > 140 && angle < 180)  else {
+                        withAnimation {
+                            dragOffset = 0
+                        }
+                        return
+                    }
+                    
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                         
                         // Threshold: if dragged more than 1/3 of the width, toggle state
-                        if abs(value.translation.width) > menuWidth / 3 {
+                        if abs(value.translation.width) > menuWidth / 4 {
                             showSlideOutMenu = value.translation.width > 0
                             UIImpactFeedbackGenerator(style: .soft).impactOccurred()
                         }
@@ -239,5 +258,16 @@ struct Home: View {
                     }
                 }
         )
+        .task(priority: .background) {
+            try? await Task.sleep(until: .now + .seconds(2))
+            let appOpenCounter = settings.appOpenCounter
+            logger.info("Requesting review counter: \(appOpenCounter)")
+            if appOpenCounter == appStoreReviewReuqestTrigger {
+                requestReview()
+                settings.appOpenCounter = appStoreReviewReuqestTrigger + 1
+            } else if appOpenCounter < appStoreReviewReuqestTrigger {
+                settings.appOpenCounter = appOpenCounter + 1
+            }
+        }
     }
 }

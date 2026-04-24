@@ -69,9 +69,7 @@ enum FetchMode: Int, Equatable, CaseIterable {
     }
     var appOpenCounter: Int = 0 {
         didSet {
-            if appOpenCounter <= 10 {
-                UserDefaults.standard.setValue(appOpenCounter, forKey: .appOpenCounterKey)
-            }
+            UserDefaults.standard.setValue(appOpenCounter, forKey: .appOpenCounterKey)
         }
     }
     var downloadFrequency: DownloadFrequency = .oneDay {

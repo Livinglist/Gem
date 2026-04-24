@@ -64,11 +64,6 @@ extension Thread {
                 if text.isEmpty { return }
                 vm.searchInThread(text)
             }
-            .onAppear {
-                if vm.searchResults.isEmpty {
-                    isSearchFocused = true
-                }
-            }
             .sensoryFeedback(.success, trigger: vm.searchResults)
         }
     }
