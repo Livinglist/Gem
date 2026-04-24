@@ -134,7 +134,6 @@ struct Home: View {
                                     .foregroundStyle(.foreground)
                                     .glassEffect()
                             }
-                            .sensoryFeedback(.impact(flexibility: .soft), trigger: showSlideOutMenu)
                         }
                         if selectedMenuItem == .home {
                             if offlineRepository.isDownloading {
@@ -220,13 +219,13 @@ struct Home: View {
             .shadow(radius: 5)
         }
         .simultaneousGesture(
-            DragGesture(minimumDistance: 15)
+            DragGesture()
                 .onChanged { value in
                     let translation = value.translation.width
                     let vector = CGVector(dx: value.location.x - value.startLocation.x, dy: value.location.y - value.startLocation.y)
                     let radians = atan2(vector.dy, vector.dx)
                     let angle = radians * 180 / .pi
-                    guard (angle > -36 && angle < 0) || (angle > 140 && angle < 180) else { return }
+                    guard -20...20 ~= angle || 160...180 ~= angle else { return }
                     
                     // If menu is closed, only allow dragging from the left edge (positive)
                     // If menu is open, only allow dragging to the left (negative)
@@ -240,24 +239,24 @@ struct Home: View {
                     let vector = CGVector(dx: value.location.x - value.startLocation.x, dy: value.location.y - value.startLocation.y)
                     let radians = atan2(vector.dy, vector.dx)
                     let angle = radians * 180 / .pi
-                    guard (angle > -36 && angle < 0) || (angle > 140 && angle < 180)  else {
+                    guard -20...20 ~= angle || 160...180 ~= angle else {
                         withAnimation {
                             dragOffset = 0
                         }
                         return
                     }
                     
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                        
-                        // Threshold: if dragged more than 1/3 of the width, toggle state
+                    withAnimation(.bouncy.speed(300)) {
+                        // Threshold: if dragged more than 1/4 of the width, toggle state
                         if abs(value.translation.width) > menuWidth / 4 {
                             showSlideOutMenu = value.translation.width > 0
-                            UIImpactFeedbackGenerator(style: .soft).impactOccurred()
                         }
                         dragOffset = 0 // Always reset temporary offset
                     }
-                }
+                },
+            including: .gesture
         )
+        .sensoryFeedback(.impact(flexibility: .rigid), trigger: showSlideOutMenu)
         .task(priority: .background) {
             try? await Task.sleep(until: .now + .seconds(2))
             let appOpenCounter = settings.appOpenCounter
