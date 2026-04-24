@@ -4,7 +4,7 @@ import HackerNewsKit
 
 struct Thread: View {
     @Environment(Authentication.self) var auth
-    @State private var vm: ThreadViewModel = .init()
+    @State private var vm: ThreadViewModel
     @StateObject private var debounceObject: DebounceObject = .init()
     @State private var scrollViewProxy: ScrollViewProxy? = nil
     @State private var activeURL: IdentifiableURL? = nil
@@ -21,6 +21,11 @@ struct Thread: View {
     init(item: any Item, level: Int = 0) {
         self.level = level
         self.item = item
+        self.vm = ThreadViewModel(item)
+        
+        Task { [self] in
+            await self.vm.refresh()
+        }
     }
     
     var body: some View {
@@ -36,7 +41,7 @@ struct Thread: View {
             .withToast(actionPerformed: $actionPerformed)
             .sheet(isPresented: $isSearchPresented) {
                 NavigationStack {
-                    ThreadSearchSheet(debounceObject: debounceObject,
+                    InThreadSearchSheet(debounceObject: debounceObject,
                                       isSearchPresented: $isSearchPresented,
                                       vm: vm,
                                       scrollViewProxy: scrollViewProxy)
@@ -72,12 +77,6 @@ struct Thread: View {
                 }
                 return .handled
             })
-            .task {
-                if vm.item == nil {
-                    vm.item = item
-                    await vm.refresh()
-                }
-            }
     }
     
     @ViewBuilder

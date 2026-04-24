@@ -1,8 +1,48 @@
 import Foundation
+import SwiftData
 import Combine
 import SwiftUI
 import Alamofire
 import HackerNewsKit
+
+typealias SearchConditionTester = (Comment) -> Bool
+
+extension ThreadViewModel {
+    fileprivate class ThreadCache {
+        @ObservationIgnored private let modelConfig: ModelConfiguration
+        @ObservationIgnored private let container: ModelContainer?
+        let parentId: Int
+        var fetchedComments = Set<Int>()
+        
+        fileprivate init(parentId: Int) {
+            self.parentId = parentId
+            let storageUrl = URL.cachesDirectory.appending(path: "cache.sqlite")
+            self.modelConfig = ModelConfiguration("ThreadCache", url: storageUrl, cloudKitDatabase: .none)
+            self.container = try? ModelContainer(for: ThreadCacheModel.self, configurations: modelConfig)
+            guard let container else { return }
+            let context = container.mainContext
+            var descriptor = FetchDescriptor<ThreadCacheModel>(predicate: #Predicate { $0.parentId == parentId })
+            descriptor.fetchLimit = 1
+            if let models = try? context.fetch(descriptor), let model = models.first {
+                self.fetchedComments = Set(model.commentIds)
+            }
+        }
+        
+        func cacheCommentIds(_ comments: [Comment]) {
+            let ids = comments.map { $0.id }
+            let model = ThreadCacheModel(ids, parentId: parentId)
+            container?.mainContext.insert(model)
+            try? container?.mainContext.save()
+            self.fetchedComments = Set<Int>(ids)
+        }
+        
+        func markNewComments(_ comments: [Comment]) -> [Comment] {
+            let updatedComments = fetchedComments.isEmpty ? comments : comments.map { $0.copyWith(isNew: !fetchedComments.contains($0.id) ) }
+            cacheCommentIds(comments)
+            return updatedComments
+        }
+    }
+}
 
 @MainActor
 @Observable class ThreadViewModel {
@@ -11,6 +51,17 @@ import HackerNewsKit
     var status: Status = .idle
     var item: (any Item)?
     var loadingItemId: Int?
+    var isNewSelected: Bool = false {
+        didSet {
+            searchInThread(inThreadSearchQuery)
+        }
+    }
+    var isByOpSelected: Bool = false {
+        didSet {
+            searchInThread(inThreadSearchQuery)
+        }
+    }
+    private var inThreadSearchQuery = ""
     
     /// Stores ids of loaded comments, including both root and child comments.
     var loadedCommentIds: Set<Int> = .init()
@@ -23,7 +74,13 @@ import HackerNewsKit
     }
     var scrollTo: Int?
     
-    private var cache = NSCache<NSNumber, CommentCollection>()
+    private var commentsCache = NSCache<NSNumber, CommentCollection>()
+    private let threadCache: ThreadCache
+    
+    init(_ item: any Item) {
+        self.item = item
+        self.threadCache = ThreadCache(parentId: item.id)
+    }
     
     /// Load child comments of a comment.
     func loadKids(of cmt: Comment) async {
@@ -61,6 +118,7 @@ import HackerNewsKit
         defer {
             HapticsManager.shared.stop()
             self.status = .completed
+            self.comments = threadCache.markNewComments(comments)
         }
         
         withAnimation {
@@ -111,12 +169,12 @@ import HackerNewsKit
         guard let itemId = item?.id, !comments.isEmpty else { return }
         let key = NSNumber(integerLiteral: itemId)
         let commentCollection = CommentCollection(comments, parentId: itemId)
-        cache.setObject(commentCollection, forKey: key)
+        commentsCache.setObject(commentCollection, forKey: key)
     }
     
     private func getFromCache() -> Bool {
         guard let itemId = item?.id else { return  false }
-        let cachedComments = cache.object(forKey: .init(integerLiteral: itemId))
+        let cachedComments = commentsCache.object(forKey: .init(integerLiteral: itemId))
         if let cachedComments {
             comments = cachedComments.comments
             return true
@@ -236,14 +294,18 @@ import HackerNewsKit
     
     func searchInThread(_ text: String) {
         var results = [Int]()
+        let text = text.trimmingCharacters(in: .whitespaces)
+        let isByOpConditionSatisfied: SearchConditionTester = isByOpSelected ? { $0.by.orEmpty.isNotEmpty && $0.by == self.item?.by.orEmpty } : { _ in true }
+        let isNewConditionSatisfied: SearchConditionTester = isNewSelected ? { $0.isNew ?? false } : { _ in true }
+        let isSearchQueryHit: SearchConditionTester = text.isEmpty ? { _ in self.isNewSelected || self.isByOpSelected } : { $0.text.orEmpty.localizedCaseInsensitiveContains(text) || $0.by.orEmpty.lowercased().contains(text.lowercased()) }
         for index in 0..<comments.count {
             let comment = comments[index]
-            if let commentText = comment.text,
-               commentText.localizedCaseInsensitiveContains(text) || comment.by.orEmpty.lowercased().contains(text.lowercased()) {
+            if isByOpConditionSatisfied(comment) && isNewConditionSatisfied(comment) && isSearchQueryHit(comment) {
                 results.append(index)
             }
         }
         self.searchResults = results
+        self.inThreadSearchQuery = text
     }
     
     deinit {
