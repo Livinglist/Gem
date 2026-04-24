@@ -68,7 +68,6 @@ struct SideMenu: View {
                     .padding()
             }
             .buttonStyle(.plain)
-            .sensoryFeedback(.impact(flexibility: .soft), trigger: selectedMenuItem)
             .if(selectedMenuItem == menuItem) { view in
                 view
                     .glassEffect()

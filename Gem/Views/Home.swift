@@ -256,7 +256,7 @@ struct Home: View {
                 },
             including: .gesture
         )
-        .sensoryFeedback(.impact(flexibility: .rigid), trigger: showSlideOutMenu)
+        .sensoryFeedback(.impact(flexibility: .solid), trigger: showSlideOutMenu)
         .task(priority: .background) {
             try? await Task.sleep(until: .now + .seconds(2))
             let appOpenCounter = settings.appOpenCounter
