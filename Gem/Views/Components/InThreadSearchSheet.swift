@@ -2,7 +2,7 @@ import SwiftUI
 import HackerNewsKit
 
 extension Thread {
-    struct ThreadSearchSheet: View {
+    struct InThreadSearchSheet: View {
         @ObservedObject var debounceObject: DebounceObject
         @Binding var isSearchPresented: Bool
         var vm: ThreadViewModel
@@ -12,6 +12,15 @@ extension Thread {
         
         var body: some View {
             ScrollView {
+                HStack {
+                    Chip(selected: vm.isNewSelected, label: "New") {
+                        vm.isNewSelected.toggle()
+                    }
+                    Chip(selected: vm.isByOpSelected, label: "By OP") {
+                        vm.isByOpSelected.toggle()
+                    }
+                }
+                .frame(maxWidth: .infinity)
                 VStack(alignment: .leading, spacing: 0) {
                     ForEach(vm.searchResults, id: \.self) { index in
                         let comment = vm.comments[index]
@@ -21,10 +30,16 @@ extension Thread {
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 isSearchPresented = false
-                                withAnimation {
-                                    scrollViewProxy?.scrollTo(comment.id, anchor: .top)
+                                
+                                Task {
+                                    await vm.uncollapseRoot(of: index)
+                                    
+                                    withAnimation {
+                                        scrollViewProxy?.scrollTo(comment.id, anchor: .top)
+                                    }
                                 }
                             }
+                            .id(index)
                         if index != vm.searchResults.last {
                             Divider()
                                 .padding(.horizontal, 0)
@@ -32,6 +47,8 @@ extension Thread {
                     }
                 }
             }
+            .toolbar(.visible, for: .navigationBar)
+            .scrollDismissesKeyboard(.immediately)
             .navigationTitle("Search in Thread")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -52,6 +69,7 @@ extension Thread {
                     isSearchFocused = true
                 }
             }
+            .sensoryFeedback(.success, trigger: vm.searchResults)
         }
     }
 }

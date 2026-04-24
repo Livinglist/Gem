@@ -32,10 +32,17 @@ struct NameRowView: View {
                 Text("\(descendants) cmt\(descendants <= 1 ? "" : "s")")
                     .borderedFootnote()
             }
-            if let comment = item as? Comment, comment.isReply ?? false {
+            if let comment = item as? Comment {
                 // Wrapped in text so that it has same height as other text elements in the row.
-                Text("\(Image(systemName: "arrow.2.squarepath"))")
-                    .borderedFootnote()
+                if comment.isNew ?? false {
+                    Text("\(Image(systemName: "sparkles"))")
+                        .borderedFootnote()
+                        .foregroundStyle(.orange)
+                }
+                if comment.isReply ?? false {
+                    Text("\(Image(systemName: "arrow.2.squarepath"))")
+                        .borderedFootnote()
+                }
             }
             Text(timeDisplay == .timeAgo ? item.shortTimeAgo : item.formattedTime)
                 .borderedFootnote()
