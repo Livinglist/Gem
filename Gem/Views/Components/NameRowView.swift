@@ -32,6 +32,11 @@ struct NameRowView: View {
                 Text("\(descendants) cmt\(descendants <= 1 ? "" : "s")")
                     .borderedFootnote()
             }
+            if let comment = item as? Comment, comment.isReply ?? false {
+                // Wrapped in text so that it has same height as other text elements in the row.
+                Text("\(Image(systemName: "arrow.2.squarepath"))")
+                    .borderedFootnote()
+            }
             Text(timeDisplay == .timeAgo ? item.shortTimeAgo : item.formattedTime)
                 .borderedFootnote()
                 .onTapGesture {

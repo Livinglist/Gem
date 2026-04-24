@@ -2,6 +2,7 @@ import SwiftData
 import SwiftUI
 import HackerNewsKit
 import BackgroundTasks
+import Logging
 
 private extension Calendar {
     func numberOfDaysBetween(_ from: Date, and to: Date) -> Int {
@@ -34,6 +35,32 @@ private extension Calendar {
         Task(priority: .background) {
             await fetchAllReplies()
         }
+        observeAuthState()
+    }
+    
+    private func observeAuthState() {
+        withObservationTracking {
+            _ = auth.loggedIn
+        } onChange: {
+            DispatchQueue.main.async { [weak self] in
+                if let isLoggedIn = self?.auth.loggedIn {                    
+                    if isLoggedIn {
+                        Task(priority: .background) {
+                            await self?.fetchAllReplies()
+                        }
+                    } else {
+                        self?.reset()
+                    }
+                }
+                self?.observeAuthState()
+            }
+        }
+    }
+    
+    private func reset() {
+        fetchedComments.removeAll()
+        newReplies.removeAll()
+        saveToCache()
     }
     
     func scheduleFetching() {
@@ -64,6 +91,8 @@ private extension Calendar {
                 let replies = await repo.fetchComments(ids: kids)
                 fetchedReplies.append(contentsOf: replies)
             }
+        } else {
+            return
         }
         
         var updatedFetchedReplies = [Comment]()
@@ -95,6 +124,9 @@ private extension Calendar {
         self.newReplies = newReplies
         self.status = .completed
         saveToCache()
+        
+        logger.info("All replies fetched: \(updatedFetchedReplies.count)")
+        logger.info("New replies fetched: \(newReplies.count)")
     }
     
     func markAsRead(comment: Comment) {
@@ -114,6 +146,7 @@ private extension Calendar {
     private func saveToCache() {
         let model = RepliesModel(fetchedReplies: fetchedComments, newReplies: newReplies)
         try? container?.mainContext.delete(model: RepliesModel.self)
+        try? container?.mainContext.save()
         container?.mainContext.insert(model)
         try? container?.mainContext.save()
     }
