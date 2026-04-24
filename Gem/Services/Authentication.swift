@@ -5,7 +5,11 @@ import HackerNewsKit
 @MainActor
 @Observable public class Authentication {
     var username: String?
-    var loggedIn: Bool = .init()
+    var loggedIn: Bool = .init() {
+        didSet {
+            logger.info("Is logged in: \(loggedIn)")
+        }
+    }
     var user: User?
     
     static let shared: Authentication = .init()

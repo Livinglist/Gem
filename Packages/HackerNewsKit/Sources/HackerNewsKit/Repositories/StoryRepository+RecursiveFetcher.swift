@@ -13,10 +13,22 @@ public enum FetchError: Error {
 
 extension StoryRepository {
     public func fetchCommentsRecursively(of item: any Item, from source: CommentSource) async throws -> [Comment] {
+        var comments = [Comment]()
         switch source {
-        case .API: return await fetchCommentsRecursivelyFromAPI(of: item)
-        case .web: return try await fetchCommentsRecursivelyFromWeb(of: item)
+        case .API: comments = await fetchCommentsRecursivelyFromAPI(of: item)
+        case .web: comments = try await fetchCommentsRecursivelyFromWeb(of: item)
         }
+
+        for i in 0..<max(0, comments.count - 2) {
+            let commentAbove = comments[i]
+            let comment = comments[i + 2]
+            if commentAbove.by == comment.by {
+                let updatedComment = comment.copyWith(isReply: true)
+                comments.replaceSubrange(i+2..<i+3, with: [updatedComment])
+            }
+        }
+        
+        return comments
     }
     
     private func fetchCommentsRecursivelyFromAPI(of item: any Item, level: Int = 0) async -> [Comment] {

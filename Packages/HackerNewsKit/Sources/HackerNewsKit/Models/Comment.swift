@@ -9,6 +9,7 @@ public struct Comment: Item, Equatable {
     public let level: Int?
     public let isCollapsed: Bool?
     public let isHidden: Bool?
+    public let isReply: Bool?
     
     /// Values below will always be nil for `Comment`.
     public let title: String?
@@ -24,7 +25,7 @@ public struct Comment: Item, Equatable {
         }
     }
     
-    public init(id: Int, parent: Int?, text: String?, by: String?, time: Int, kids: [Int]? = [Int](), level: Int? = 0, isCollapsed: Bool = false, isHidden: Bool = false) {
+    public init(id: Int, parent: Int?, text: String?, by: String?, time: Int, kids: [Int]? = [Int](), level: Int? = 0, isCollapsed: Bool = false, isHidden: Bool = false, isReply: Bool = false) {
         self.id = id
         self.parent = parent
         self.text = text
@@ -39,6 +40,7 @@ public struct Comment: Item, Equatable {
         self.score = nil
         self.isCollapsed = isCollapsed
         self.isHidden = isHidden
+        self.isReply = isReply
     }
     
     // Empty initializer
@@ -46,7 +48,7 @@ public struct Comment: Item, Equatable {
         self.init(id: 0, parent: 0, text: "", by: "", time: 0)
     }
     
-    public func copyWith(text: String? = nil, level: Int? = nil, isCollapsed: Bool? = nil, isHidden: Bool? = nil) -> Comment {
+    public func copyWith(text: String? = nil, level: Int? = nil, isCollapsed: Bool? = nil, isHidden: Bool? = nil, isReply: Bool? = nil) -> Comment {
         Comment(id: id,
                 parent: parent,
                 text: text ?? self.text,
@@ -55,7 +57,8 @@ public struct Comment: Item, Equatable {
                 kids: kids ?? [Int](),
                 level: level ?? self.level,
                 isCollapsed: isCollapsed ?? self.isCollapsed ?? false,
-                isHidden: isHidden ?? self.isHidden ?? false)
+                isHidden: isHidden ?? self.isHidden ?? false,
+                isReply: isReply ?? self.isReply ?? false)
     }
     
     public static func == (lhs: Comment, rhs: Comment) -> Bool {
