@@ -30,10 +30,11 @@ struct Thread: View {
     
     var body: some View {
         mainItemView
-            .onChange(of: vm.scrollTo) { _, index in
-                if settings.isAutoScrollEnabled, let index {
+            .sensoryFeedback(.impact(flexibility: .solid), trigger: isSearchPresented) { $1 }
+            .onChange(of: vm.scrollTo) { _, id in
+                if settings.isAutoScrollEnabled, let id, vm.comments.first?.id != id {
                     withAnimation {
-                        scrollViewProxy?.scrollTo(index, anchor: .top)
+                        scrollViewProxy?.scrollTo(id, anchor: .top)
                     }
                     vm.scrollTo = nil
                 }
@@ -144,6 +145,7 @@ struct Thread: View {
                         ForEach(vm.comments, id: \.id) { comment in
                             if comment.isHidden ?? true {
                                 EmptyView()
+                                    .id(comment.id)
                             } else {
                                 CommentTile(comment: comment, vm: vm, actionPerformed: $actionPerformed)
                                     .id(comment.id)
@@ -155,6 +157,7 @@ struct Thread: View {
                         ForEach(vm.comments, id: \.id) { comment in
                             if comment.isHidden ?? true {
                                 EmptyView()
+                                    .id(comment.id)
                             } else {
                                 CommentTile(comment: comment, vm: vm, actionPerformed: $actionPerformed)
                                     .id(comment.id)

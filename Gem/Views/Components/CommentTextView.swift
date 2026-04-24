@@ -19,7 +19,7 @@ struct CommentTextView: View {
                 .padding(.top, 6)
         } else if comment.text.isNotNullOrEmpty {
             HStack {
-                Text(comment.text.orEmpty.markdowned)
+                Text(MarkdownParser.shared.markdown(id: comment.id, text: comment.text.orEmpty))
                     .tint(.accent)
                     .font(.body)
                     .textSelection(.enabled)

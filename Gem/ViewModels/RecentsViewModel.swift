@@ -2,16 +2,22 @@ import SwiftData
 import Foundation
 import HackerNewsKit
 
+fileprivate extension ModelContainer {
+    static let storyModel: ModelContainer? = {
+        let config = ModelConfiguration("RecentsViewModel")
+        return try? ModelContainer(for: StoryModel.self, configurations: config)
+    }()
+}
+
 @Observable class RecentsViewModel {
     var stories: [StoryModel] = []
-    @ObservationIgnored private let modelConfig = ModelConfiguration("RecentsViewModel")
     @ObservationIgnored private let container: ModelContainer?
     private let limit = 20
     
     static let shared = RecentsViewModel()
     
     init() {
-        container = try? ModelContainer(for: StoryModel.self, configurations: modelConfig)
+        container = .storyModel
         guard let container else { return }
         let context = container.mainContext
         var recents = FetchDescriptor<StoryModel>()

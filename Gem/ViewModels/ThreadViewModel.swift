@@ -5,13 +5,13 @@ import SwiftUI
 import Alamofire
 import HackerNewsKit
 
-typealias SearchConditionTester = (Comment) -> Bool
+fileprivate typealias SearchConditionTester = (Comment) -> Bool
 
-extension ModelContainer {
-    static let threadCache: ModelContainer = {
+fileprivate extension ModelContainer {
+    static let threadCache: ModelContainer? = {
         let storageUrl = URL.cachesDirectory.appending(path: "cache.sqlite")
         let config = ModelConfiguration("ThreadCache", url: storageUrl, cloudKitDatabase: .none)
-        return try! ModelContainer(for: ThreadCacheModel.self, configurations: config)
+        return try? ModelContainer(for: ThreadCacheModel.self, configurations: config)
     }()
 }
 
@@ -33,7 +33,8 @@ extension ThreadViewModel {
         func initializeCache() async {
             let id = parentId
             let comments = await Task.detached(priority: .userInitiated) {
-                let context = await ModelContext(.threadCache)
+                guard let container = await ModelContainer.threadCache else { return Set<Int>() }
+                let context = ModelContext(container)
                 var descriptor = FetchDescriptor<ThreadCacheModel>(
                     predicate: #Predicate { $0.parentId == id }
                 )
@@ -47,7 +48,8 @@ extension ThreadViewModel {
         func cacheCommentIds(_ comments: [Comment]) async {
             let ids = comments.map { $0.id }
             await Task.detached(priority: .userInitiated) {
-                let context = await ModelContext(.threadCache)
+                guard let container = await ModelContainer.threadCache else { return }
+                let context = ModelContext(container)
                 let model = ThreadCacheModel(ids, parentId: self.parentId)
                 context.insert(model)
                 try? context.save()
@@ -131,30 +133,31 @@ extension ThreadViewModel {
     func refresh() async -> Void {
         guard let item = self.item, !status.isLoading else { return }
         let id = item.id
+        var commentsBuffer = [Comment]()
         
         if item is Comment || item.descendants.orZero > 0 {
             HapticsManager.shared.playLoadingHaptics()
         }
         
         defer {
+            // Pre-parse markdown text
+            commentsBuffer.forEach { _ = MarkdownParser.shared.markdown(id: $0.id, text: $0.text.orEmpty) }
+            
             HapticsManager.shared.stop()
             self.status = .completed
-            self.comments = threadCache.markNewComments(comments)
+            self.comments = threadCache.markNewComments(commentsBuffer)
         }
         
         withAnimation {
             self.comments = []
+            self.status = .inProgress
         }
-        self.loadingItemId = nil
-        self.loadedCommentIds = []
-        self.status = .inProgress
         
         if OfflineRepository.shared.isOfflineReading {
             // We don't need to refresh in offline mode
             if !self.comments.isEmpty { self.status = .completed }
             let cmts = OfflineRepository.shared.fetchComments(of: id)
-            self.comments = cmts
-            self.status = .completed
+            commentsBuffer = cmts
         } else {
             if let item = await StoryRepository.shared.fetchItem(id),
                let kids = item.kids {
@@ -162,25 +165,17 @@ extension ThreadViewModel {
                 if isRecursivelyFetching {
                     let source: CommentSource = item is Comment ? .API : .web
                     do {
-                        let comments = try await StoryRepository.shared.fetchCommentsRecursively(of: item, from: source)
-                        withAnimation {
-                            self.comments = comments
-                        }
+                        commentsBuffer = try await StoryRepository.shared.fetchCommentsRecursively(of: item, from: source)
                     } catch {
                         let hasCache = getFromCache()
                         if !hasCache {
                             if let comments = try? await StoryRepository.shared.fetchCommentsRecursively(of: item, from: source == .API ? .web : .API) {
-                                withAnimation {
-                                    self.comments = comments
-                                }
+                                commentsBuffer = comments
                             }
                         }
                     }
                 } else {
-                    let comments = await StoryRepository.shared.fetchComments(ids: kids).map { $0.copyWith(level: 0) }
-                    withAnimation {
-                        self.comments = comments
-                    }
+                    commentsBuffer = await StoryRepository.shared.fetchComments(ids: kids).map { $0.copyWith(level: 0) }
                 }
             }
         }
