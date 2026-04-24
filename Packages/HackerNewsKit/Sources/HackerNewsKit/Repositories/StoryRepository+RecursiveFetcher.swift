@@ -22,9 +22,9 @@ extension StoryRepository {
         for i in 0..<max(0, comments.count - 2) {
             let commentAbove = comments[i]
             let comment = comments[i + 2]
-            if commentAbove.by == comment.by {
+            if comment.by.orEmpty.isNotEmpty && commentAbove.by == comment.by {
                 let updatedComment = comment.copyWith(isReply: true)
-                comments.replaceSubrange(i+2..<i+3, with: [updatedComment])
+                comments.replaceSubrange(i + 2..<i + 3, with: [updatedComment])
             }
         }
         
