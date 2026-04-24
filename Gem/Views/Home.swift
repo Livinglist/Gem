@@ -134,7 +134,6 @@ struct Home: View {
                                     .foregroundStyle(.foreground)
                                     .glassEffect()
                             }
-                            .sensoryFeedback(.impact(flexibility: .soft), trigger: showSlideOutMenu)
                         }
                         if selectedMenuItem == .home {
                             if offlineRepository.isDownloading {
