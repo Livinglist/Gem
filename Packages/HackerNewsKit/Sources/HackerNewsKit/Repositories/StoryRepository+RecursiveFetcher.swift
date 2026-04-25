@@ -18,13 +18,28 @@ extension StoryRepository {
         case .API: comments = await fetchCommentsRecursivelyFromAPI(of: item)
         case .web: comments = try await fetchCommentsRecursivelyFromWeb(of: item)
         }
-
-        for i in 0..<max(0, comments.count - 2) {
-            let commentAbove = comments[i]
-            let comment = comments[i + 2]
-            if comment.by.orEmpty.isNotEmpty && commentAbove.by == comment.by {
-                let updatedComment = comment.copyWith(isReply: true)
-                comments.replaceSubrange(i + 2..<i + 3, with: [updatedComment])
+        
+        let map = Dictionary(uniqueKeysWithValues: comments.map { ($0.id, $0) })
+        for i in 0..<comments.count {
+            let c = comments[i]
+            guard let level = c.level else { continue }
+            if level == 0 {
+                continue
+            } else if level == 1 && item.by == c.by {
+                let updatedComment = c.copyWith(isReply: true)
+                comments.replaceSubrange(i..<i + 1, with: [updatedComment])
+                continue
+            } else {
+                guard let parentId = c.parent,
+                      let parent = map[parentId],
+                      let grandparentId = parent.parent,
+                      let grandParent = map[grandparentId] else {
+                    continue
+                }
+                if grandParent.by == c.by {
+                    let updatedComment = c.copyWith(isReply: true)
+                    comments.replaceSubrange(i..<i + 1, with: [updatedComment])
+                }
             }
         }
         
