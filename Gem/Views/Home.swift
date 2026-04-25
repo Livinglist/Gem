@@ -254,7 +254,7 @@ struct Home: View {
                         dragOffset = 0 // Always reset temporary offset
                     }
                 },
-            including: .gesture
+            isEnabled: showSlideOutMenu || router.path.isEmpty
         )
         .sensoryFeedback(.impact(flexibility: .solid), trigger: showSlideOutMenu)
         .task(priority: .background) {
