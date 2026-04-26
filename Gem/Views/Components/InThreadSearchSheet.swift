@@ -38,7 +38,7 @@ extension Thread {
                                         scrollViewProxy?.scrollTo(comment.id, anchor: .top)
                                     }
                                     
-                                    try? await Task.sleep(until: .now + .second(1))
+                                    try? await Task.sleep(until: .now + .seconds(1))
                                     
                                     withAnimation {
                                         scrollViewProxy?.scrollTo(comment.id, anchor: .top)

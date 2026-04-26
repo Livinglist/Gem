@@ -189,7 +189,7 @@ import Translation
     
     func collapse(cmt: Comment) {
         Task { [self] in
-            guard status.isCompleted && translationStatus.isCompleted else { return }
+            guard status.isCompleted && translationStatus != .inProgress else { return }
             var commentsBuffer = Array(comments)
             let updatedComment = cmt.copyWith(isCollapsed: true)
             let parentIndex = commentsBuffer.firstIndex { $0.id == cmt.id }
@@ -230,7 +230,7 @@ import Translation
     
     func uncollapse(cmt: Comment) {
         Task { [self] in
-            guard status.isCompleted && translationStatus.isCompleted else { return }
+            guard status.isCompleted && translationStatus != .inProgress else { return }
             var commentsBuffer = Array(comments)
             func sendUpdates() async {
                 await MainActor.run { [commentsBuffer] in
