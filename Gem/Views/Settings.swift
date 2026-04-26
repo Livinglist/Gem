@@ -150,5 +150,6 @@ struct Settings: View {
                 }
             }
         }
+        .sensoryFeedback(.selection, trigger: vm.translationTarget)
     }
 }
