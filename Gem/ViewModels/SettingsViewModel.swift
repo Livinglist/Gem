@@ -10,7 +10,8 @@ fileprivate extension String {
     static let defaultStoryTypeKey = "defaultStoryType"
     static let defaultFetchModeKey = "defaultFetchMode"
     static let appOpenCounterKey = "appOpenCounter"
-    static let autoScrollOnCollapseKey = "autoScrollOnCollapse"
+    static let isAutoScrollEnabledKey = "isAutoScrollEnabled"
+    static let isTranslationEnabledKey = "isTranslationEnabled"
 }
 
 enum DownloadFrequency: TimeInterval, Equatable, CaseIterable {
@@ -64,7 +65,12 @@ enum FetchMode: Int, Equatable, CaseIterable {
     }
     var isAutoScrollEnabled: Bool = .init() {
         didSet {
-            UserDefaults.standard.set(isAutoScrollEnabled, forKey: .autoScrollOnCollapseKey)
+            UserDefaults.standard.set(isAutoScrollEnabled, forKey: .isAutoScrollEnabledKey)
+        }
+    }
+    var isTranslationEnabled: Bool = .init() {
+        didSet {
+            UserDefaults.standard.set(isTranslationEnabled, forKey: .isTranslationEnabledKey)
         }
     }
     var appOpenCounter: Int = 0 {
@@ -100,7 +106,8 @@ enum FetchMode: Int, Equatable, CaseIterable {
         appOpenCounter = UserDefaults.standard.integer(forKey: .appOpenCounterKey)
         isAutomaticDownloadEnabled = UserDefaults.standard.bool(forKey: .isAutomaticDownloadEnabledKey)
         useCellularData = UserDefaults.standard.bool(forKey: .useCellularDataKey)
-        isAutoScrollEnabled = (UserDefaults.standard.object(forKey: .autoScrollOnCollapseKey) as? Bool) ?? true
+        isAutoScrollEnabled = (UserDefaults.standard.object(forKey: .isAutoScrollEnabledKey) as? Bool) ?? true
+        isTranslationEnabled = (UserDefaults.standard.object(forKey: .isTranslationEnabledKey) as? Bool) ?? false
         
         let downloadFrequencyRawValue = UserDefaults.standard.double(forKey: .downloadFrequencyKey)
         if let downloadFrequency = DownloadFrequency(rawValue: downloadFrequencyRawValue) {

@@ -50,6 +50,13 @@ struct Settings: View {
             }
             
             Section {
+                Toggle(isOn: $vm.isTranslationEnabled) {
+                    Text("Translation")
+                }
+                .tint(.accent)
+            }
+            
+            Section {
                 Toggle(isOn: $vm.isAutomaticDownloadEnabled) {
                     Text("Automatic Download")
                 }

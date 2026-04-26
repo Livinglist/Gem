@@ -19,7 +19,7 @@ extension StoryRepository {
         case .web: comments = try await fetchCommentsRecursivelyFromWeb(of: item)
         }
         
-        let map = Dictionary(uniqueKeysWithValues: comments.map { ($0.id, $0) })
+        let map = Dictionary(comments.map { ($0.id, $0) }, uniquingKeysWith: { _, last in last })
         for i in 0..<comments.count {
             let c = comments[i]
             guard let level = c.level else { continue }

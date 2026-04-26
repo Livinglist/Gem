@@ -4,76 +4,33 @@ import Combine
 import SwiftUI
 import Alamofire
 import HackerNewsKit
-
-fileprivate typealias SearchConditionTester = (Comment) -> Bool
-
-fileprivate extension ModelContainer {
-    static let threadCache: ModelContainer? = {
-        let storageUrl = URL.cachesDirectory.appending(path: "cache.sqlite")
-        let config = ModelConfiguration("ThreadCache", url: storageUrl, cloudKitDatabase: .none)
-        return try? ModelContainer(for: ThreadCacheModel.self, configurations: config)
-    }()
-}
-
-extension ThreadViewModel {
-    fileprivate class ThreadCache {
-        @ObservationIgnored private let container: ModelContainer?
-        let parentId: Int
-        var fetchedComments = Set<Int>()
-        
-        fileprivate init(parentId: Int) {
-            self.parentId = parentId
-            self.container = .threadCache
-            
-            Task {
-                await initializeCache()
-            }
-        }
-        
-        func initializeCache() async {
-            let id = parentId
-            let comments = await Task.detached(priority: .userInitiated) {
-                guard let container = await ModelContainer.threadCache else { return Set<Int>() }
-                let context = ModelContext(container)
-                var descriptor = FetchDescriptor<ThreadCacheModel>(
-                    predicate: #Predicate { $0.parentId == id }
-                )
-                descriptor.fetchLimit = 1
-                let models = try? context.fetch(descriptor)
-                return Set(models?.first?.commentIds ?? [])
-            }.value
-            self.fetchedComments = comments
-        }
-        
-        func cacheCommentIds(_ comments: [Comment]) async {
-            let ids = comments.map { $0.id }
-            await Task.detached(priority: .userInitiated) {
-                guard let container = await ModelContainer.threadCache else { return }
-                let context = ModelContext(container)
-                let model = ThreadCacheModel(ids, parentId: self.parentId)
-                context.insert(model)
-                try? context.save()
-            }.value
-            self.fetchedComments = Set<Int>(ids)
-        }
-        
-        func markNewComments(_ comments: [Comment]) -> [Comment] {
-            let updatedComments = fetchedComments.isEmpty ? comments : comments.map { $0.copyWith(isNew: !fetchedComments.contains($0.id) ) }
-            Task {
-                await cacheCommentIds(comments)
-            }
-            return updatedComments
-        }
-    }
-}
+import Translation
 
 @MainActor
 @Observable class ThreadViewModel {
     var comments: [Comment] = .init()
+    @ObservationIgnored var buffer: [Comment] = .init()
     var searchResults: [Int] = .init()
     var status: Status = .idle
     var item: (any Item)?
     var loadingItemId: Int?
+    var scrollTo: Int?
+    @ObservationIgnored var streamTask: Task<Void, Never>?
+    
+    // MARK: - Translation
+    var isTranslationEnabled: Bool = false {
+        didSet {
+            if isTranslationEnabled {
+                translate()
+            } else {
+                untranslate()
+            }
+        }
+    }
+    var targetLanguage: Locale.Language = .englishUS
+    var translationStatus: Status = .idle
+    
+    // MARK: - In-thread Search Options
     var isNewSelected: Bool = false {
         didSet {
             searchInThread(inThreadSearchQuery)
@@ -95,14 +52,23 @@ extension ThreadViewModel {
             }
         }
     }
-    var scrollTo: Int?
     
+    @ObservationIgnored
+    private var factory: CommentFactory = .init(processors: [])
     private var commentsCache = NSCache<NSNumber, CommentCollection>()
-    private let threadCache: ThreadCache
     
     init(_ item: any Item) {
         self.item = item
-        self.threadCache = ThreadCache(parentId: item.id)
+        if item is Story {
+            factory = .init(processors: [
+                NewCommentMarker(parentId: item.id),
+                MarkdownParser(language: .englishUS)
+            ])
+        } else {
+            factory = .init(processors: [
+                MarkdownParser(language: .englishUS)
+            ])
+        }
     }
     
     /// Load child comments of a comment.
@@ -131,6 +97,16 @@ extension ThreadViewModel {
     }
     
     func refresh() async -> Void {
+        var processors: [CommentProcessor] = []
+        if let story = item as? Story {
+            processors.append(NewCommentMarker(parentId: story.id))
+        }
+        if isTranslationEnabled, let translator = CommentTranslator(targetLanguage: targetLanguage) {
+            processors.append(translator)
+        }
+        processors.append(MarkdownParser(language: targetLanguage))
+        factory = .init(processors: processors)
+        
         guard let item = self.item, !status.isLoading else { return }
         let id = item.id
         var commentsBuffer = [Comment]()
@@ -140,12 +116,9 @@ extension ThreadViewModel {
         }
         
         defer {
-            // Pre-parse markdown text
-            commentsBuffer.forEach { _ = MarkdownParser.shared.markdown(id: $0.id, text: $0.text.orEmpty) }
-            
             HapticsManager.shared.stop()
             self.status = .completed
-            self.comments = threadCache.markNewComments(commentsBuffer)
+            self.comments = commentsBuffer
         }
         
         withAnimation {
@@ -177,6 +150,13 @@ extension ThreadViewModel {
                 } else {
                     commentsBuffer = await StoryRepository.shared.fetchComments(ids: kids).map { $0.copyWith(level: 0) }
                 }
+            }
+        }
+        
+        buffer = commentsBuffer
+        for await comment in factory.process(commentsBuffer) {
+            if let index = commentsBuffer.firstIndex(where: { $0.id == comment.id }) {
+                commentsBuffer[index] = comment
             }
         }
     }
@@ -405,7 +385,59 @@ extension ThreadViewModel {
         self.inThreadSearchQuery = text
     }
     
+    func translate() {
+        guard item != nil else { return }
+        targetLanguage = Locale.Language(identifier: "zh")
+        translationStatus = .inProgress
+        guard let translator = CommentTranslator(targetLanguage: targetLanguage) else { return }
+        factory = .init(processors: [
+            translator,
+            MarkdownParser(language: targetLanguage)
+        ])
+        buffer = comments
+        withAnimation {
+            comments = []
+        }
+        streamTask = Task {
+            for await comment in factory.process(buffer) {
+                await MainActor.run {
+                    withAnimation {
+                        comments.append(comment)
+                    }
+                }
+            }
+            
+            await MainActor.run {
+                withAnimation {
+                    translationStatus = .completed
+                }
+            }
+        }
+    }
+    
+    func untranslate() {
+        guard item != nil else { return }
+        targetLanguage = .englishUS
+        factory = .init(processors: [
+            MarkdownParser(language: .englishUS)
+        ])
+        let buffer = buffer
+        withAnimation {
+            comments = []
+        }
+        Task {
+            for await comment in factory.process(buffer) {
+                await MainActor.run {
+                    withAnimation {
+                        comments.append(comment)
+                    }
+                }
+            }
+        }
+    }
+    
     deinit {
+        streamTask?.cancel()
         DispatchQueue.main.async {
             HapticsManager.shared.stop()
         }

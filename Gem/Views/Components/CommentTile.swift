@@ -1,6 +1,7 @@
 import SwiftUI
 import WebKit
 import HackerNewsKit
+import Translation
 
 struct CommentTile: View {
     @Environment(Authentication.self) var auth
@@ -9,6 +10,7 @@ struct CommentTile: View {
     @State private var isSafariSheetPresented: Bool = .init()
     @State private var isReplySheetPresented: Bool = .init()
     @State private var isFlagDialogPresented: Bool = .init()
+    @State private var isTranslationPresented: Bool = .init()
     var settings: SettingsViewModel = .shared
     
     let level: Int
@@ -70,6 +72,7 @@ struct CommentTile: View {
                     )
                 }
             }
+            .translationPresentation(isPresented: $isTranslationPresented, text: comment.text.orEmpty)
             .confirmationDialog("Are you sure?", isPresented: $isFlagDialogPresented) {
                 Button("Flag", role: .destructive) {
                     onFlagTap()
@@ -103,7 +106,7 @@ struct CommentTile: View {
                             .font(.footnote.weight(.bold))
                             .foregroundColor(getColor(level: level))
                     } else {
-                        CommentTextView(comment: comment)
+                        CommentTextView(comment: comment, language: vm.targetLanguage)
                             .onTapGesture {
                                 if !isCollapsed {
                                     HapticFeedbackService.shared.ultralight()
@@ -140,10 +143,12 @@ struct CommentTile: View {
                 .contextMenu {
                     ItemMenu(item: comment,
                              showViewInSeperateThreadOption: true,
+                             showTranslation: true,
                              actionPerformed: $actionPerformed,
                              activeURL: $activeURL,
                              isFlagDialogPresented: $isFlagDialogPresented,
-                             isReplySheetPresented: $isReplySheetPresented)
+                             isReplySheetPresented: $isReplySheetPresented,
+                             isTranslationPresented: $isTranslationPresented)
                 }
                 preview: {
                     CommentTile(comment: comment, vm: vm, showLevelIndent: false)

@@ -3,6 +3,7 @@ import HackerNewsKit
 
 struct CommentTextView: View {
     let comment: Comment
+    let language: Locale.Language
     
     var isBlocked: Bool {
         if let authorId = comment.by {
@@ -19,7 +20,7 @@ struct CommentTextView: View {
                 .padding(.top, 6)
         } else if comment.text.isNotNullOrEmpty {
             HStack {
-                Text(MarkdownParser.shared.markdown(id: comment.id, text: comment.text.orEmpty))
+                Text(MarkdownParser.getCachedAttributedString(id: comment.id, language: language) ?? MarkdownParser.shared.markdown(id: comment.id, text: comment.text.orEmpty))
                     .tint(.accent)
                     .font(.body)
                     .textSelection(.enabled)

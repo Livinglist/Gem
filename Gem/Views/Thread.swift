@@ -1,6 +1,7 @@
 import SwiftUI
 import WebKit
 import HackerNewsKit
+import Translation
 
 struct Thread: View {
     @Environment(Authentication.self) var auth
@@ -10,6 +11,7 @@ struct Thread: View {
     @State private var activeURL: IdentifiableURL? = nil
     @State private var isReplySheetPresented: Bool = .init()
     @State private var isFlagDialogPresented: Bool = .init()
+    @State private var isTranslationPresented: Bool = .init()
     @State private var isSearchPresented: Bool = .init()
     @State private var actionPerformed: Action = .none
     
@@ -195,6 +197,19 @@ struct Thread: View {
             
             ToolbarSpacer(.fixed)
             
+            if settings.isTranslationEnabled {
+                ToolbarItem {
+                    Button {
+                        vm.isTranslationEnabled.toggle()
+                    } label: {
+                        Image(systemName: "character.bubble")
+                            .symbolEffect(.variableColor, isActive: vm.translationStatus.isLoading)
+                    }
+                    .tint(vm.isTranslationEnabled ? .accent : nil)
+                }
+                ToolbarSpacer(.fixed)
+            }
+
             ToolbarItem {
                 Button {
                     isSearchPresented = true
@@ -225,10 +240,12 @@ struct Thread: View {
                 Menu {
                     ItemMenu(item: item,
                              showViewInSeperateThreadOption: false,
+                             showTranslation: true,
                              actionPerformed: $actionPerformed,
                              activeURL: $activeURL,
                              isFlagDialogPresented: $isFlagDialogPresented,
-                             isReplySheetPresented: $isReplySheetPresented)
+                             isReplySheetPresented: $isReplySheetPresented,
+                             isTranslationPresented: $isTranslationPresented)
                 } label: {
                     Image(systemName: "ellipsis")
                 }
@@ -239,6 +256,7 @@ struct Thread: View {
                 } message: {
                     Text("Flag \"\(item.title.orEmpty)\" by \(item.by.orEmpty)?")
                 }
+                .translationPresentation(isPresented: $isTranslationPresented, text: item.text.orEmpty)
             }
         }
         .sensoryFeedback(.success, trigger: vm.status.isCompleted)
