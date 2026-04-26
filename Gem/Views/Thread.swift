@@ -170,11 +170,6 @@ struct Thread: View {
                 }
                 
                 Spacer().frame(height: 60)
-                if vm.status == Status.completed {
-                    Text(Constants.happyFace)
-                        .foregroundColor(.gray)
-                        .padding(.bottom, 40)
-                }
             }
             .onAppear {
                 self.scrollViewProxy = proxy
