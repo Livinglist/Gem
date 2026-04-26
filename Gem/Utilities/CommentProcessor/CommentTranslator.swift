@@ -22,8 +22,9 @@ class CommentTranslator: CommentProcessor {
             Task {
                 for await comment in comments {
                     let translated = await translate(comment)
-                    continuation.yield(translated) // forward immediately
+                    continuation.yield(translated)
                 }
+                continuation.finish()
             }
         }
     }

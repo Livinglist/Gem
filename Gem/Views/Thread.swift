@@ -33,6 +33,7 @@ struct Thread: View {
     var body: some View {
         mainItemView
             .sensoryFeedback(.impact(flexibility: .solid), trigger: isSearchPresented) { $1 }
+            .sensoryFeedback(.success, trigger: vm.translationStatus) { _, status in status == .completed }
             .onChange(of: vm.scrollTo) { _, id in
                 if settings.isAutoScrollEnabled, let id, vm.comments.first?.id != id {
                     withAnimation {

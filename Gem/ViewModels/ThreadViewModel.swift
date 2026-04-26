@@ -406,11 +406,8 @@ import Translation
                     }
                 }
             }
-            
-            await MainActor.run {
-                withAnimation {
-                    translationStatus = .completed
-                }
+            withAnimation {
+                translationStatus = .completed
             }
         }
     }
