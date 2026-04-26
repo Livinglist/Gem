@@ -12,6 +12,7 @@ fileprivate extension String {
     static let appOpenCounterKey = "appOpenCounter"
     static let isAutoScrollEnabledKey = "isAutoScrollEnabled"
     static let isTranslationEnabledKey = "isTranslationEnabled"
+    static let translationTargetKey = "translationTarget"
 }
 
 enum DownloadFrequency: TimeInterval, Equatable, CaseIterable {
@@ -93,6 +94,26 @@ enum FetchMode: Int, Equatable, CaseIterable {
             UserDefaults.standard.setValue(defaultFetchMode.rawValue, forKey: .defaultFetchModeKey)
         }
     }
+    var translationTarget: Locale.Language = .init(languageCode: .spanish) {
+        didSet {
+            UserDefaults.standard.setValue(translationTarget.languageCode?.identifier, forKey: .translationTargetKey)
+            
+            CommentTranslator.cache.removeAllObjects()
+        }
+    }
+    
+    let supportedLanguages: [Locale.Language] = [
+        .init(languageCode: .english),
+        .init(languageCode: .spanish),
+        .init(languageCode: .french),
+        .init(languageCode: .german),
+        .init(languageCode: .japanese),
+        .init(languageCode: .korean),
+        .init(languageCode: .chinese),
+        .init(languageCode: .arabic),
+        .init(languageCode: .portuguese),
+        .init(languageCode: .italian),
+    ]
     
     static let shared: SettingsViewModel = .init()
     
@@ -108,6 +129,8 @@ enum FetchMode: Int, Equatable, CaseIterable {
         useCellularData = UserDefaults.standard.bool(forKey: .useCellularDataKey)
         isAutoScrollEnabled = (UserDefaults.standard.object(forKey: .isAutoScrollEnabledKey) as? Bool) ?? true
         isTranslationEnabled = (UserDefaults.standard.object(forKey: .isTranslationEnabledKey) as? Bool) ?? false
+        let targetLanguageIdentifier = UserDefaults.standard.object(forKey: .translationTargetKey) as? String
+        translationTarget = targetLanguageIdentifier == nil ? .init(languageCode: .spanish) : .init(identifier: targetLanguageIdentifier!)
         
         let downloadFrequencyRawValue = UserDefaults.standard.double(forKey: .downloadFrequencyKey)
         if let downloadFrequency = DownloadFrequency(rawValue: downloadFrequencyRawValue) {

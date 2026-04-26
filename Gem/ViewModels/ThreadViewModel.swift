@@ -387,8 +387,8 @@ import Translation
     
     func translate() {
         guard item != nil else { return }
-        targetLanguage = Locale.Language(identifier: "zh")
         translationStatus = .inProgress
+        targetLanguage = SettingsViewModel.shared.translationTarget
         guard let translator = CommentTranslator(targetLanguage: targetLanguage) else { return }
         factory = .init(processors: [
             translator,
@@ -406,8 +406,10 @@ import Translation
                     }
                 }
             }
-            withAnimation {
-                translationStatus = .completed
+            await MainActor.run {
+                withAnimation {
+                    translationStatus = .completed
+                }
             }
         }
     }
@@ -428,6 +430,11 @@ import Translation
                     withAnimation {
                         comments.append(comment)
                     }
+                }
+            }
+            await MainActor.run {
+                withAnimation {
+                    translationStatus = .completed
                 }
             }
         }

@@ -1,4 +1,5 @@
 import SwiftUI
+import Translation
 import HackerNewsKit
 
 struct Settings: View {
@@ -53,6 +54,15 @@ struct Settings: View {
                 Toggle(isOn: $vm.isTranslationEnabled) {
                     Text("Translation")
                 }
+                .tint(.accent)
+                Picker("Target Language", selection: $vm.translationTarget) {
+                    ForEach(vm.supportedLanguages, id: \.self) { language in
+                        Text(Locale.current.localizedString(forLanguageCode: language.languageCode?.identifier ?? "") ?? "Unknown")
+                            .tag(language)
+                    }
+                }
+                .disabled(!vm.isTranslationEnabled)
+                .pickerStyle(.menu)
                 .tint(.accent)
             }
             
@@ -118,5 +128,27 @@ struct Settings: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Settings")
+        .onChange(of: vm.isTranslationEnabled) { _, isTranslationEnabled in
+            if isTranslationEnabled {
+                let config = TranslationSession.Configuration(source: .englishUS, target: vm.translationTarget)
+                if let source = config.source, let target = config.target {
+                    let session = TranslationSession(installedSource: source, target: target)
+                    Task {
+                        try? await session.prepareTranslation()
+                    }
+                }
+            }
+        }
+        .onChange(of: vm.translationTarget) { _, translationTarget in
+            if vm.isTranslationEnabled {
+                let config = TranslationSession.Configuration(source: .englishUS, target: translationTarget)
+                if let source = config.source, let target = config.target {
+                    let session = TranslationSession(installedSource: source, target: target)
+                    Task {
+                        try? await session.prepareTranslation()
+                    }
+                }
+            }
+        }
     }
 }

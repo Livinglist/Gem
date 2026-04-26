@@ -1,7 +1,9 @@
 import HackerNewsKit
 import Translation
 
-private let cache = NSCache<NSNumber, NSString>()
+extension CommentTranslator {
+    static let cache = NSCache<NSNumber, NSString>()
+}
 
 class CommentTranslator: CommentProcessor {
     let targetLanguage: Locale.Language
@@ -30,13 +32,14 @@ class CommentTranslator: CommentProcessor {
     }
     
     private func translate(_ comment: Comment) async -> Comment {
+        try? await session.prepareTranslation()
         let cacheKey = NSNumber(integerLiteral: comment.id)
-        if let cachedText = cache.object(forKey: cacheKey) {
+        if let cachedText = Self.cache.object(forKey: cacheKey) {
             return comment.copyWith(text: String(cachedText))
         }
         guard let response = try? await session.translate(comment.text.orEmpty) else { return comment }
         let translatedText = response.targetText
-        cache.setObject(NSString(string: translatedText), forKey: cacheKey)
+        Self.cache.setObject(NSString(string: translatedText), forKey: cacheKey)
         return comment.copyWith(text: response.targetText)
     }
 }
