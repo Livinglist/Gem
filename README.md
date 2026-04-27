@@ -15,7 +15,8 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
 - [x] Launch Hacker News thread link from system share sheet
 - [x] [Notification on new replies](#pins-favorites-and-replies)
 - [x] [Offline mode](#offline-mode)
-- [x] [New comments highlighting](#in-thread-search-new-comments-and-exchange-indicator) since last visit.
+- [x] [New comments highlighting](#in-thread-search-new-comments-and-exchange-indicator) since last visit
+- [x] Translation
 
 ## Home
 <p align="center">

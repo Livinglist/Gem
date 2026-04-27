@@ -4,76 +4,33 @@ import Combine
 import SwiftUI
 import Alamofire
 import HackerNewsKit
-
-fileprivate typealias SearchConditionTester = (Comment) -> Bool
-
-fileprivate extension ModelContainer {
-    static let threadCache: ModelContainer? = {
-        let storageUrl = URL.cachesDirectory.appending(path: "cache.sqlite")
-        let config = ModelConfiguration("ThreadCache", url: storageUrl, cloudKitDatabase: .none)
-        return try? ModelContainer(for: ThreadCacheModel.self, configurations: config)
-    }()
-}
-
-extension ThreadViewModel {
-    fileprivate class ThreadCache {
-        @ObservationIgnored private let container: ModelContainer?
-        let parentId: Int
-        var fetchedComments = Set<Int>()
-        
-        fileprivate init(parentId: Int) {
-            self.parentId = parentId
-            self.container = .threadCache
-            
-            Task {
-                await initializeCache()
-            }
-        }
-        
-        func initializeCache() async {
-            let id = parentId
-            let comments = await Task.detached(priority: .userInitiated) {
-                guard let container = await ModelContainer.threadCache else { return Set<Int>() }
-                let context = ModelContext(container)
-                var descriptor = FetchDescriptor<ThreadCacheModel>(
-                    predicate: #Predicate { $0.parentId == id }
-                )
-                descriptor.fetchLimit = 1
-                let models = try? context.fetch(descriptor)
-                return Set(models?.first?.commentIds ?? [])
-            }.value
-            self.fetchedComments = comments
-        }
-        
-        func cacheCommentIds(_ comments: [Comment]) async {
-            let ids = comments.map { $0.id }
-            await Task.detached(priority: .userInitiated) {
-                guard let container = await ModelContainer.threadCache else { return }
-                let context = ModelContext(container)
-                let model = ThreadCacheModel(ids, parentId: self.parentId)
-                context.insert(model)
-                try? context.save()
-            }.value
-            self.fetchedComments = Set<Int>(ids)
-        }
-        
-        func markNewComments(_ comments: [Comment]) -> [Comment] {
-            let updatedComments = fetchedComments.isEmpty ? comments : comments.map { $0.copyWith(isNew: !fetchedComments.contains($0.id) ) }
-            Task {
-                await cacheCommentIds(comments)
-            }
-            return updatedComments
-        }
-    }
-}
+import Translation
 
 @MainActor
 @Observable class ThreadViewModel {
     var comments: [Comment] = .init()
+    @ObservationIgnored var buffer: [Comment] = .init()
     var searchResults: [Int] = .init()
     var status: Status = .idle
     var item: (any Item)?
     var loadingItemId: Int?
+    var scrollTo: Int?
+    @ObservationIgnored var streamTask: Task<Void, Never>?
+    
+    // MARK: - Translation
+    var isTranslationEnabled: Bool = false {
+        didSet {
+            if isTranslationEnabled {
+                translate()
+            } else {
+                untranslate()
+            }
+        }
+    }
+    var targetLanguage: Locale.Language = .englishUS
+    var translationStatus: Status = .idle
+    
+    // MARK: - In-thread Search Options
     var isNewSelected: Bool = false {
         didSet {
             searchInThread(inThreadSearchQuery)
@@ -95,18 +52,28 @@ extension ThreadViewModel {
             }
         }
     }
-    var scrollTo: Int?
     
+    @ObservationIgnored
+    private var factory: CommentFactory = .init(processors: [])
     private var commentsCache = NSCache<NSNumber, CommentCollection>()
-    private let threadCache: ThreadCache
     
     init(_ item: any Item) {
         self.item = item
-        self.threadCache = ThreadCache(parentId: item.id)
+        if item is Story {
+            factory = .init(processors: [
+                NewCommentMarker(parentId: item.id),
+                MarkdownParser(language: .englishUS)
+            ])
+        } else {
+            factory = .init(processors: [
+                MarkdownParser(language: .englishUS)
+            ])
+        }
     }
     
     /// Load child comments of a comment.
     func loadKids(of cmt: Comment) async {
+        guard translationStatus != .inProgress else { return }
         if let parentIndex = comments.firstIndex(of: cmt),
            let kids = cmt.kids,
            let level = cmt.level,
@@ -122,16 +89,30 @@ extension ThreadViewModel {
                 comments = OfflineRepository.shared.fetchComments(of: id)
             }
             
+            var buffer = [Comment]()
+            for await entry in factory.process(comments) {
+                let comment = entry.1
+                buffer.append(comment)
+            }
+            
             withAnimation {
                 self.loadingItemId = nil
                 self.loadedCommentIds.insert(cmt.id)
-                self.comments.insert(contentsOf: comments, at: parentIndex + 1)
+                self.comments.insert(contentsOf: buffer, at: parentIndex + 1)
             }
         }
     }
     
     func refresh() async -> Void {
         guard let item = self.item, !status.isLoading else { return }
+        isTranslationEnabled = false
+        streamTask?.cancel()
+        var processors: [CommentProcessor] = []
+        if let story = item as? Story {
+            processors.append(NewCommentMarker(parentId: story.id))
+        }
+        processors.append(MarkdownParser(language: targetLanguage))
+        factory = .init(processors: processors)
         let id = item.id
         var commentsBuffer = [Comment]()
         
@@ -140,12 +121,13 @@ extension ThreadViewModel {
         }
         
         defer {
-            // Pre-parse markdown text
-            commentsBuffer.forEach { _ = MarkdownParser.shared.markdown(id: $0.id, text: $0.text.orEmpty) }
-            
             HapticsManager.shared.stop()
             self.status = .completed
-            self.comments = threadCache.markNewComments(commentsBuffer)
+            self.comments = commentsBuffer
+        }
+        
+        if !isRecursivelyFetching {
+            loadedCommentIds = Set<Int>()
         }
         
         withAnimation {
@@ -167,17 +149,23 @@ extension ThreadViewModel {
                     do {
                         commentsBuffer = try await StoryRepository.shared.fetchCommentsRecursively(of: item, from: source)
                     } catch {
-                        let hasCache = getFromCache()
-                        if !hasCache {
-                            if let comments = try? await StoryRepository.shared.fetchCommentsRecursively(of: item, from: source == .API ? .web : .API) {
-                                commentsBuffer = comments
-                            }
+                        if let comments = try? await StoryRepository.shared.fetchCommentsRecursively(of: item, from: source == .API ? .web : .API) {
+                            commentsBuffer = comments
+                        } else {
+                            _ =  getFromCache()
                         }
                     }
                 } else {
                     commentsBuffer = await StoryRepository.shared.fetchComments(ids: kids).map { $0.copyWith(level: 0) }
                 }
             }
+        }
+        
+        buffer = commentsBuffer
+        for await entry in factory.process(commentsBuffer) {
+            let index = entry.0
+            let comment = entry.1
+            commentsBuffer[index] = comment
         }
     }
     
@@ -210,7 +198,7 @@ extension ThreadViewModel {
     func collapse(cmt: Comment) {
         Task { [self] in
             guard status.isCompleted else { return }
-            var commentsBuffer = Array(comments)
+            var commentsBuffer = comments
             let updatedComment = cmt.copyWith(isCollapsed: true)
             let parentIndex = commentsBuffer.firstIndex { $0.id == cmt.id }
             let parentLevel = cmt.level
@@ -251,7 +239,7 @@ extension ThreadViewModel {
     func uncollapse(cmt: Comment) {
         Task { [self] in
             guard status.isCompleted else { return }
-            var commentsBuffer = Array(comments)
+            var commentsBuffer = comments
             func sendUpdates() async {
                 await MainActor.run { [commentsBuffer] in
                     withAnimation(.snappy.speed(200)) {
@@ -390,22 +378,85 @@ extension ThreadViewModel {
     }
     
     func searchInThread(_ text: String) {
-        var results = [Int]()
-        let text = text.trimmingCharacters(in: .whitespaces)
-        let isByOpConditionSatisfied: SearchConditionTester = isByOpSelected ? { $0.by.orEmpty.isNotEmpty && $0.by == self.item?.by.orEmpty } : { _ in true }
-        let isNewConditionSatisfied: SearchConditionTester = isNewSelected ? { $0.isNew ?? false } : { _ in true }
-        let isSearchQueryHit: SearchConditionTester = text.isEmpty ? { _ in self.isNewSelected || self.isByOpSelected } : { $0.text.orEmpty.localizedCaseInsensitiveContains(text) || $0.by.orEmpty.lowercased().contains(text.lowercased()) }
-        for index in 0..<comments.count {
-            let comment = comments[index]
-            if isByOpConditionSatisfied(comment) && isNewConditionSatisfied(comment) && isSearchQueryHit(comment) {
-                results.append(index)
+        Task {
+            var results = [Int]()
+            let text = text.trimmingCharacters(in: .whitespaces)
+            let isByOpConditionSatisfied: SearchConditionTester = isByOpSelected ? { $0.by.orEmpty.isNotEmpty && $0.by == self.item?.by.orEmpty } : { _ in true }
+            let isNewConditionSatisfied: SearchConditionTester = isNewSelected ? { $0.isNew ?? false } : { _ in true }
+            let isSearchQueryHit: SearchConditionTester = text.isEmpty ? { _ in self.isNewSelected || self.isByOpSelected } : { $0.text.orEmpty.localizedCaseInsensitiveContains(text) || $0.by.orEmpty.lowercased().contains(text.lowercased()) }
+            for index in 0..<comments.count {
+                let comment = comments[index]
+                if isByOpConditionSatisfied(comment) && isNewConditionSatisfied(comment) && isSearchQueryHit(comment) {
+                    results.append(index)
+                }
+            }
+            
+            await MainActor.run {
+                withAnimation {
+                    self.searchResults = results
+                    self.inThreadSearchQuery = text
+                }
             }
         }
-        self.searchResults = results
-        self.inThreadSearchQuery = text
+    }
+    
+    func translate() {
+        guard item != nil else { return }
+        translationStatus = .inProgress
+        targetLanguage = SettingsViewModel.shared.translationTarget
+        guard let translator = CommentTranslator(targetLanguage: targetLanguage) else { return }
+        factory = .init(processors: [
+            translator,
+            MarkdownParser(language: targetLanguage)
+        ])
+        buffer = comments
+        streamTask = Task {
+            for await entry in factory.process(buffer) {
+                let index = entry.0
+                let currentComment = comments[index]
+                let comment = entry.1.copyWith(isCollapsed: currentComment.isCollapsed, isHidden: currentComment.isHidden)
+                await MainActor.run {
+                    withAnimation {
+                        comments.replaceSubrange(index..<index+1, with: [comment])
+                    }
+                }
+            }
+            await MainActor.run {
+                withAnimation {
+                    translationStatus = .completed
+                }
+            }
+        }
+    }
+    
+    func untranslate() {
+        guard item != nil else { return }
+        targetLanguage = .englishUS
+        factory = .init(processors: [
+            MarkdownParser(language: .englishUS)
+        ])
+        let buffer = buffer
+        streamTask = Task {
+            for await entry in factory.process(buffer) {
+                let index = entry.0
+                let currentComment = comments[index]
+                let comment = entry.1.copyWith(isCollapsed: currentComment.isCollapsed, isHidden: currentComment.isHidden)
+                await MainActor.run {
+                    withAnimation {
+                        comments.replaceSubrange(index..<index+1, with: [comment])
+                    }
+                }
+            }
+            await MainActor.run {
+                withAnimation {
+                    translationStatus = .completed
+                }
+            }
+        }
     }
     
     deinit {
+        streamTask?.cancel()
         DispatchQueue.main.async {
             HapticsManager.shared.stop()
         }

@@ -2,6 +2,7 @@ import LinkPresentation
 import SwiftUI
 import UniformTypeIdentifiers
 import HackerNewsKit
+import Translation
 
 struct ItemRow: View {
     let item: any Item
@@ -15,6 +16,7 @@ struct ItemRow: View {
     @State private var activeURL: IdentifiableURL?
     @State private var isReplySheetPresented: Bool = .init()
     @State private var isFlagDialogPresented: Bool = .init()
+    @State private var isTranslationPresented: Bool = .init()
     @GestureState private var isDetectingPress: Bool = .init()
     @Binding private var actionPerformed: Action
     
@@ -87,10 +89,12 @@ struct ItemRow: View {
                                     Menu {
                                         ItemMenu(item: item,
                                                  showViewInSeperateThreadOption: false,
+                                                 showTranslation: false,
                                                  actionPerformed: $actionPerformed,
                                                  activeURL: $activeURL,
                                                  isFlagDialogPresented: $isFlagDialogPresented,
-                                                 isReplySheetPresented: $isReplySheetPresented)
+                                                 isReplySheetPresented: $isReplySheetPresented,
+                                                 isTranslationPresented: $isTranslationPresented)
                                     } label: {
                                         Label(String(), systemImage: "ellipsis")
                                             .labelStyle(.iconOnly)

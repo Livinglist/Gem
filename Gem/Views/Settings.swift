@@ -1,4 +1,5 @@
 import SwiftUI
+import Translation
 import HackerNewsKit
 
 struct Settings: View {
@@ -15,7 +16,7 @@ struct Settings: View {
         let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "0"
         return "Version \(version) (\(build))"
     }
-
+    
     var body: some View {
         List {
             Section {
@@ -47,6 +48,22 @@ struct Settings: View {
                 .tint(.accent)
             } footer: {
                 Text("Automatically scroll to next comment after collapsing a thread.")
+            }
+            
+            Section {
+                Toggle(isOn: $vm.isTranslationEnabled) {
+                    Text("Translation")
+                }
+                .tint(.accent)
+                Picker("Target Language", selection: $vm.translationTarget) {
+                    ForEach(vm.supportedLanguages, id: \.self) { language in
+                        Text(Locale.current.localizedString(forLanguageCode: language.languageCode?.identifier ?? "") ?? "Unknown")
+                            .tag(language)
+                    }
+                }
+                .disabled(!vm.isTranslationEnabled)
+                .pickerStyle(.menu)
+                .tint(.accent)
             }
             
             Section {
@@ -111,5 +128,17 @@ struct Settings: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Settings")
+        .translationTask(vm.translationConfig) { session in
+            Task { @MainActor in
+                if vm.isTranslationEnabled {
+                    try? await session.prepareTranslation()
+                    if await !session.isReady {
+                        vm.translationTarget = .init(languageCode: .spanish)
+                        vm.isTranslationEnabled = false
+                    }
+                }
+            }
+        }
+        .sensoryFeedback(.selection, trigger: vm.translationTarget)
     }
 }

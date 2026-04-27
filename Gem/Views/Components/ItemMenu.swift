@@ -5,10 +5,12 @@ struct ItemMenu: View {
     let auth = Authentication.shared
     let item: any Item
     let showViewInSeperateThreadOption: Bool
+    let showTranslation: Bool
     @Binding var actionPerformed: Action
     @Binding var activeURL: IdentifiableURL?
     @Binding var isFlagDialogPresented: Bool
     @Binding var isReplySheetPresented: Bool
+    @Binding var isTranslationPresented: Bool
     
     var body: some View {
         VStack {
@@ -33,7 +35,15 @@ struct ItemMenu: View {
             ShareMenu(item: item)
             if let text = item.text, text.isNotEmpty {
                 CopyButton(text: text, actionPerformed: $actionPerformed)
+                if showTranslation {
+                    Button {
+                        isTranslationPresented = true
+                    } label: {
+                        Label("Translate", systemImage: "globe")
+                    }
+                }
             }
+            Divider()
             Button {
                 onViewOnHackerNewsTap(item: item)
             } label: {

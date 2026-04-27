@@ -1,4 +1,5 @@
 import Foundation
+import Translation
 import HackerNewsKit
 import Combine
 
@@ -10,7 +11,9 @@ fileprivate extension String {
     static let defaultStoryTypeKey = "defaultStoryType"
     static let defaultFetchModeKey = "defaultFetchMode"
     static let appOpenCounterKey = "appOpenCounter"
-    static let autoScrollOnCollapseKey = "autoScrollOnCollapse"
+    static let isAutoScrollEnabledKey = "isAutoScrollEnabled"
+    static let isTranslationEnabledKey = "isTranslationEnabled"
+    static let translationTargetKey = "translationTarget"
 }
 
 enum DownloadFrequency: TimeInterval, Equatable, CaseIterable {
@@ -64,7 +67,7 @@ enum FetchMode: Int, Equatable, CaseIterable {
     }
     var isAutoScrollEnabled: Bool = .init() {
         didSet {
-            UserDefaults.standard.set(isAutoScrollEnabled, forKey: .autoScrollOnCollapseKey)
+            UserDefaults.standard.set(isAutoScrollEnabled, forKey: .isAutoScrollEnabledKey)
         }
     }
     var appOpenCounter: Int = 0 {
@@ -88,6 +91,36 @@ enum FetchMode: Int, Equatable, CaseIterable {
         }
     }
     
+    // MARK: - Translation
+    var isTranslationEnabled: Bool = .init() {
+        didSet {
+            UserDefaults.standard.set(isTranslationEnabled, forKey: .isTranslationEnabledKey)
+            let config = TranslationSession.Configuration(source: .englishUS, target: translationTarget)
+            translationConfig = config
+        }
+    }
+    var translationTarget: Locale.Language = .init(languageCode: .spanish) {
+        didSet {
+            UserDefaults.standard.setValue(translationTarget.languageCode?.identifier, forKey: .translationTargetKey)
+            CommentTranslator.cache.removeAllObjects()
+            let config = TranslationSession.Configuration(source: .englishUS, target: translationTarget)
+            translationConfig = config
+        }
+    }
+    var translationConfig: TranslationSession.Configuration?
+    
+    let supportedLanguages: [Locale.Language] = [
+        .init(languageCode: .spanish),
+        .init(languageCode: .french),
+        .init(languageCode: .german),
+        .init(languageCode: .japanese),
+        .init(languageCode: .korean),
+        .init(languageCode: .chinese),
+        .init(languageCode: .arabic),
+        .init(languageCode: .portuguese),
+        .init(languageCode: .italian),
+    ]
+    
     static let shared: SettingsViewModel = .init()
     
     private init() {
@@ -100,7 +133,10 @@ enum FetchMode: Int, Equatable, CaseIterable {
         appOpenCounter = UserDefaults.standard.integer(forKey: .appOpenCounterKey)
         isAutomaticDownloadEnabled = UserDefaults.standard.bool(forKey: .isAutomaticDownloadEnabledKey)
         useCellularData = UserDefaults.standard.bool(forKey: .useCellularDataKey)
-        isAutoScrollEnabled = (UserDefaults.standard.object(forKey: .autoScrollOnCollapseKey) as? Bool) ?? true
+        isAutoScrollEnabled = (UserDefaults.standard.object(forKey: .isAutoScrollEnabledKey) as? Bool) ?? true
+        isTranslationEnabled = (UserDefaults.standard.object(forKey: .isTranslationEnabledKey) as? Bool) ?? false
+        let targetLanguageIdentifier = UserDefaults.standard.object(forKey: .translationTargetKey) as? String
+        translationTarget = targetLanguageIdentifier == nil ? .init(languageCode: .spanish) : .init(identifier: targetLanguageIdentifier!)
         
         let downloadFrequencyRawValue = UserDefaults.standard.double(forKey: .downloadFrequencyKey)
         if let downloadFrequency = DownloadFrequency(rawValue: downloadFrequencyRawValue) {
