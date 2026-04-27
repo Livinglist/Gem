@@ -136,7 +136,7 @@ enum FetchMode: Int, Equatable, CaseIterable {
         isAutoScrollEnabled = (UserDefaults.standard.object(forKey: .isAutoScrollEnabledKey) as? Bool) ?? true
         isTranslationEnabled = (UserDefaults.standard.object(forKey: .isTranslationEnabledKey) as? Bool) ?? false
         let targetLanguageIdentifier = UserDefaults.standard.object(forKey: .translationTargetKey) as? String
-        translationTarget = targetLanguageIdentifier == nil ? .init(languageCode: .spanish) : .init(languageCode: .japanese)//.init(identifier: targetLanguageIdentifier!)
+        translationTarget = targetLanguageIdentifier == nil ? .init(languageCode: .spanish) : .init(identifier: targetLanguageIdentifier!)
         
         let downloadFrequencyRawValue = UserDefaults.standard.double(forKey: .downloadFrequencyKey)
         if let downloadFrequency = DownloadFrequency(rawValue: downloadFrequencyRawValue) {
