@@ -63,7 +63,7 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
   <img width="200" src="Resources/Screenshots/side_menu_not_logged_in.png">
   <img width="200" src="Resources/Screenshots/side_menu_login_dialog.png">
   <img width="200" src="Resources/Screenshots/agree_to_hn_guidelines_dialog.png">
-  <img width="200" src="Resources/Screenshots/submissions.png">
+  <img width="200" src="Resources/Screenshots/about_livinglist.png">
 </p>
 
 ## Offline mode
