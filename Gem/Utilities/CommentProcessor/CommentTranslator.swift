@@ -37,12 +37,12 @@ class CommentTranslator: CommentProcessor {
     }
     
     private func translate(_ comment: Comment) async -> Comment {
-        try? await session.prepareTranslation()
+        try! await session.prepareTranslation()
         let cacheKey = NSNumber(integerLiteral: comment.id)
         if let cachedText = Self.cache.object(forKey: cacheKey) {
             return comment.copyWith(text: String(cachedText))
         }
-        guard let response = try? await session.translate(comment.text.orEmpty) else { return comment }
+        let response = try! await session.translate(comment.text.orEmpty) //else { return comment }
         let translatedText = response.targetText
         Self.cache.setObject(NSString(string: translatedText), forKey: cacheKey)
         return comment.copyWith(text: response.targetText)
