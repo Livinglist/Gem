@@ -104,17 +104,15 @@ import Translation
     }
     
     func refresh() async -> Void {
+        guard let item = self.item, !status.isLoading else { return }
+        isTranslationEnabled = false
+        streamTask?.cancel()
         var processors: [CommentProcessor] = []
         if let story = item as? Story {
             processors.append(NewCommentMarker(parentId: story.id))
         }
-        if isTranslationEnabled, let translator = CommentTranslator(targetLanguage: targetLanguage) {
-            processors.append(translator)
-        }
         processors.append(MarkdownParser(language: targetLanguage))
         factory = .init(processors: processors)
-        
-        guard let item = self.item, !status.isLoading else { return }
         let id = item.id
         var commentsBuffer = [Comment]()
         
@@ -126,6 +124,10 @@ import Translation
             HapticsManager.shared.stop()
             self.status = .completed
             self.comments = commentsBuffer
+        }
+        
+        if !isRecursivelyFetching {
+            loadedCommentIds = Set<Int>()
         }
         
         withAnimation {

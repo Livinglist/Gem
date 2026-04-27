@@ -11,10 +11,10 @@ class CommentTranslator: CommentProcessor {
     
     init?(targetLanguage: Locale.Language) {
         self.targetLanguage = targetLanguage
-        var config = TranslationSession.Configuration(source: .englishUS, target: targetLanguage)
-        if #available(iOS 26.4, *) {
-            config.preferredStrategy = .lowLatency
-        }
+        let config = TranslationSession.Configuration(source: .englishUS, target: targetLanguage)
+//        if #available(iOS 26.4, *) {
+//            config.preferredStrategy = .lowLatency
+//        }
         if let source = config.source, let target = config.target {
             self.session = TranslationSession(installedSource: source, target: target)
         } else {

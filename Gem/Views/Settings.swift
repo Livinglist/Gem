@@ -131,7 +131,14 @@ struct Settings: View {
         .translationTask(vm.translationConfig) { session in
             Task { @MainActor in
                 if vm.isTranslationEnabled {
-                    try! await session.prepareTranslation()
+                    do {
+                        try await session.prepareTranslation()
+                        if await !session.isReady {
+                            vm.translationTarget = .init(languageCode: .spanish)
+                        }
+                    } catch {
+                        print("err \(error)")
+                    }
                 }
             }
         }
