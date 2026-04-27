@@ -109,7 +109,8 @@ struct SideMenu: View {
                 Spacer()
                 
                 Button {
-                    isSettingsPresented = true
+                    onDismiss(nil)
+                    Router.shared.to(.settings)
                 } label: {
                     Label("Settings", systemImage: "gearshape")
                         .labelStyle(.iconOnly)
