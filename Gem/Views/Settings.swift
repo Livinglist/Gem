@@ -137,29 +137,19 @@ struct Settings: View {
             if isTranslationEnabled {
                 let config = TranslationSession.Configuration(source: .englishUS, target: vm.translationTarget)
                 configuration = config
-                if let source = config.source, let target = config.target {
-                    let session = TranslationSession(installedSource: source, target: target)
-                    Task {
-                        try! await session.prepareTranslation()
-                    }
-                }
             }
         }
         .onChange(of: vm.translationTarget) { _, translationTarget in
             if vm.isTranslationEnabled {
                 let config = TranslationSession.Configuration(source: .englishUS, target: translationTarget)
                 configuration = config
-                if let source = config.source, let target = config.target {
-                    let session = TranslationSession(installedSource: source, target: target)
-                    Task {
-                        try! await session.prepareTranslation()
-                    }
-                }
             }
         }
         .translationTask(configuration) { session in
-            if vm.isTranslationEnabled {
-                try! await session.prepareTranslation()
+            Task { @MainActor in
+                if vm.isTranslationEnabled {
+                    try! await session.prepareTranslation()
+                }
             }
         }
         .sensoryFeedback(.selection, trigger: vm.translationTarget)
