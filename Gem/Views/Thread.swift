@@ -143,7 +143,7 @@ struct Thread: View {
                     .padding(.horizontal)
                 if vm.status == .inProgress {
                     ASCIISpinner().padding(.top, 100)
-                } else if vm.comments.count > 200 {
+                } else if vm.comments.count > 100 {
                     LazyVStack(spacing: 0) {
                         ForEach(vm.comments, id: \.id) { comment in
                             if comment.isHidden ?? true {

@@ -11,7 +11,10 @@ class CommentTranslator: CommentProcessor {
     
     init?(targetLanguage: Locale.Language) {
         self.targetLanguage = targetLanguage
-        let config = TranslationSession.Configuration(source: .englishUS, target: targetLanguage)
+        var config = TranslationSession.Configuration(source: .englishUS, target: targetLanguage)
+        if #available(iOS 26.4, *) {
+            config.preferredStrategy = .lowLatency
+        }
         if let source = config.source, let target = config.target {
             self.session = TranslationSession(installedSource: source, target: target)
         } else {
@@ -19,12 +22,14 @@ class CommentTranslator: CommentProcessor {
         }
     }
     
-    func process(_ comments: AsyncStream<Comment>) -> AsyncStream<Comment> {
+    func process(_ comments: AsyncStream<(Int, Comment)>) -> AsyncStream<(Int, Comment)> {
         AsyncStream { continuation in
             Task {
-                for await comment in comments {
+                for await entry in comments {
+                    let index = entry.0
+                    let comment = entry.1
                     let translated = await translate(comment)
-                    continuation.yield(translated)
+                    continuation.yield((index, translated))
                 }
                 continuation.finish()
             }

@@ -1,5 +1,5 @@
 import HackerNewsKit
 
 protocol CommentProcessor {
-    func process(_ comments: AsyncStream<Comment>) -> AsyncStream<Comment>
+    func process(_ comments: AsyncStream<(Int, Comment)>) -> AsyncStream<(Int, Comment)>
 }

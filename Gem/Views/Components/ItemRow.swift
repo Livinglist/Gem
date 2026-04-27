@@ -156,7 +156,6 @@ struct ItemRow: View {
                 )
             }
         }
-        .translationPresentation(isPresented: $isTranslationPresented, text: item.text.orEmpty)
     }
     
     private func removePin() {

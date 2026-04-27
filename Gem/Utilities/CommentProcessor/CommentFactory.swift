@@ -11,10 +11,13 @@ class CommentFactory {
         processors.append(processor)
     }
     
-    func process(_ comments: [Comment]) -> AsyncStream<Comment> {
+    func process(_ comments: [Comment]) -> AsyncStream<(Int, Comment)> {
         // Wrap the initial array as a stream
-        var stream = AsyncStream<Comment> { continuation in
-            comments.forEach { continuation.yield($0) }
+        var stream = AsyncStream<(Int, Comment)> { continuation in
+            for (index, comment) in comments.enumerated() {
+                continuation.yield((index, comment))
+            }
+            
             continuation.finish()
         }
         

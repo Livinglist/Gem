@@ -16,7 +16,12 @@ struct Settings: View {
         let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "0"
         return "Version \(version) (\(build))"
     }
-
+    
+    @State private var configuration = TranslationSession.Configuration(
+        source: Locale.Language(identifier: "pt_BR"),
+        target: Locale.Language(identifier: "ko_KR")
+    )
+    
     var body: some View {
         List {
             Section {
@@ -131,10 +136,11 @@ struct Settings: View {
         .onChange(of: vm.isTranslationEnabled) { _, isTranslationEnabled in
             if isTranslationEnabled {
                 let config = TranslationSession.Configuration(source: .englishUS, target: vm.translationTarget)
+                configuration = config
                 if let source = config.source, let target = config.target {
                     let session = TranslationSession(installedSource: source, target: target)
                     Task {
-                        try? await session.prepareTranslation()
+                        try! await session.prepareTranslation()
                     }
                 }
             }
@@ -142,12 +148,18 @@ struct Settings: View {
         .onChange(of: vm.translationTarget) { _, translationTarget in
             if vm.isTranslationEnabled {
                 let config = TranslationSession.Configuration(source: .englishUS, target: translationTarget)
+                configuration = config
                 if let source = config.source, let target = config.target {
                     let session = TranslationSession(installedSource: source, target: target)
                     Task {
-                        try? await session.prepareTranslation()
+                        try! await session.prepareTranslation()
                     }
                 }
+            }
+        }
+        .translationTask(configuration) { session in
+            if vm.isTranslationEnabled {
+                try! await session.prepareTranslation()
             }
         }
         .sensoryFeedback(.selection, trigger: vm.translationTarget)

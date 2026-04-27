@@ -73,6 +73,7 @@ import Translation
     
     /// Load child comments of a comment.
     func loadKids(of cmt: Comment) async {
+        guard translationStatus != .inProgress else { return }
         if let parentIndex = comments.firstIndex(of: cmt),
            let kids = cmt.kids,
            let level = cmt.level,
@@ -88,10 +89,16 @@ import Translation
                 comments = OfflineRepository.shared.fetchComments(of: id)
             }
             
+            var buffer = [Comment]()
+            for await entry in factory.process(comments) {
+                let comment = entry.1
+                buffer.append(comment)
+            }
+            
             withAnimation {
                 self.loadingItemId = nil
                 self.loadedCommentIds.insert(cmt.id)
-                self.comments.insert(contentsOf: comments, at: parentIndex + 1)
+                self.comments.insert(contentsOf: buffer, at: parentIndex + 1)
             }
         }
     }
@@ -140,11 +147,10 @@ import Translation
                     do {
                         commentsBuffer = try await StoryRepository.shared.fetchCommentsRecursively(of: item, from: source)
                     } catch {
-                        let hasCache = getFromCache()
-                        if !hasCache {
-                            if let comments = try? await StoryRepository.shared.fetchCommentsRecursively(of: item, from: source == .API ? .web : .API) {
-                                commentsBuffer = comments
-                            }
+                        if let comments = try? await StoryRepository.shared.fetchCommentsRecursively(of: item, from: source == .API ? .web : .API) {
+                            commentsBuffer = comments
+                        } else {
+                            _ =  getFromCache()
                         }
                     }
                 } else {
@@ -154,10 +160,10 @@ import Translation
         }
         
         buffer = commentsBuffer
-        for await comment in factory.process(commentsBuffer) {
-            if let index = commentsBuffer.firstIndex(where: { $0.id == comment.id }) {
-                commentsBuffer[index] = comment
-            }
+        for await entry in factory.process(commentsBuffer) {
+            let index = entry.0
+            let comment = entry.1
+            commentsBuffer[index] = comment
         }
     }
     
@@ -189,8 +195,8 @@ import Translation
     
     func collapse(cmt: Comment) {
         Task { [self] in
-            guard status.isCompleted && translationStatus != .inProgress else { return }
-            var commentsBuffer = Array(comments)
+            guard status.isCompleted else { return }
+            var commentsBuffer = comments
             let updatedComment = cmt.copyWith(isCollapsed: true)
             let parentIndex = commentsBuffer.firstIndex { $0.id == cmt.id }
             let parentLevel = cmt.level
@@ -230,8 +236,8 @@ import Translation
     
     func uncollapse(cmt: Comment) {
         Task { [self] in
-            guard status.isCompleted && translationStatus != .inProgress else { return }
-            var commentsBuffer = Array(comments)
+            guard status.isCompleted else { return }
+            var commentsBuffer = comments
             func sendUpdates() async {
                 await MainActor.run { [commentsBuffer] in
                     withAnimation(.snappy.speed(200)) {
@@ -370,21 +376,25 @@ import Translation
     }
     
     func searchInThread(_ text: String) {
-        var results = [Int]()
-        let text = text.trimmingCharacters(in: .whitespaces)
-        let isByOpConditionSatisfied: SearchConditionTester = isByOpSelected ? { $0.by.orEmpty.isNotEmpty && $0.by == self.item?.by.orEmpty } : { _ in true }
-        let isNewConditionSatisfied: SearchConditionTester = isNewSelected ? { $0.isNew ?? false } : { _ in true }
-        let isSearchQueryHit: SearchConditionTester = text.isEmpty ? { _ in self.isNewSelected || self.isByOpSelected } : { $0.text.orEmpty.localizedCaseInsensitiveContains(text) || $0.by.orEmpty.lowercased().contains(text.lowercased()) }
-        for index in 0..<comments.count {
-            let comment = comments[index]
-            if isByOpConditionSatisfied(comment) && isNewConditionSatisfied(comment) && isSearchQueryHit(comment) {
-                results.append(index)
+        Task {
+            var results = [Int]()
+            let text = text.trimmingCharacters(in: .whitespaces)
+            let isByOpConditionSatisfied: SearchConditionTester = isByOpSelected ? { $0.by.orEmpty.isNotEmpty && $0.by == self.item?.by.orEmpty } : { _ in true }
+            let isNewConditionSatisfied: SearchConditionTester = isNewSelected ? { $0.isNew ?? false } : { _ in true }
+            let isSearchQueryHit: SearchConditionTester = text.isEmpty ? { _ in self.isNewSelected || self.isByOpSelected } : { $0.text.orEmpty.localizedCaseInsensitiveContains(text) || $0.by.orEmpty.lowercased().contains(text.lowercased()) }
+            for index in 0..<comments.count {
+                let comment = comments[index]
+                if isByOpConditionSatisfied(comment) && isNewConditionSatisfied(comment) && isSearchQueryHit(comment) {
+                    results.append(index)
+                }
             }
-        }
-        
-        withAnimation {
-            self.searchResults = results
-            self.inThreadSearchQuery = text
+            
+            await MainActor.run {
+                withAnimation {
+                    self.searchResults = results
+                    self.inThreadSearchQuery = text
+                }
+            }
         }
     }
     
@@ -398,14 +408,14 @@ import Translation
             MarkdownParser(language: targetLanguage)
         ])
         buffer = comments
-        withAnimation {
-            comments = []
-        }
         streamTask = Task {
-            for await comment in factory.process(buffer) {
+            for await entry in factory.process(buffer) {
+                let index = entry.0
+                let currentComment = comments[index]
+                let comment = entry.1.copyWith(isCollapsed: currentComment.isCollapsed, isHidden: currentComment.isHidden)
                 await MainActor.run {
                     withAnimation {
-                        comments.append(comment)
+                        comments.replaceSubrange(index..<index+1, with: [comment])
                     }
                 }
             }
@@ -424,14 +434,14 @@ import Translation
             MarkdownParser(language: .englishUS)
         ])
         let buffer = buffer
-        withAnimation {
-            comments = []
-        }
-        Task {
-            for await comment in factory.process(buffer) {
+        streamTask = Task {
+            for await entry in factory.process(buffer) {
+                let index = entry.0
+                let currentComment = comments[index]
+                let comment = entry.1.copyWith(isCollapsed: currentComment.isCollapsed, isHidden: currentComment.isHidden)
                 await MainActor.run {
                     withAnimation {
-                        comments.append(comment)
+                        comments.replaceSubrange(index..<index+1, with: [comment])
                     }
                 }
             }

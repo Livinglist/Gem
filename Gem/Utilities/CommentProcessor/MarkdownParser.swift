@@ -46,12 +46,13 @@ class MarkdownParser: CommentProcessor {
         return result
     }
     
-    func process(_ comments: AsyncStream<Comment>) -> AsyncStream<Comment> {
+    func process(_ comments: AsyncStream<(Int, Comment)>) -> AsyncStream<(Int, Comment)> {
         return AsyncStream { continuation in
             Task {
-                for await comment in comments {
+                for await entry in comments {
+                    let comment = entry.1
                     _ = markdown(id: comment.id, text: comment.text.orEmpty)
-                    continuation.yield(comment)
+                    continuation.yield(entry)
                 }
                 continuation.finish()
             }
