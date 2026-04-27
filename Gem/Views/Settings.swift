@@ -17,11 +17,6 @@ struct Settings: View {
         return "Version \(version) (\(build))"
     }
     
-    @State private var configuration = TranslationSession.Configuration(
-        source: Locale.Language(identifier: "pt_BR"),
-        target: Locale.Language(identifier: "ko_KR")
-    )
-    
     var body: some View {
         List {
             Section {
@@ -133,19 +128,7 @@ struct Settings: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Settings")
-        .onChange(of: vm.isTranslationEnabled) { _, isTranslationEnabled in
-            if isTranslationEnabled {
-                let config = TranslationSession.Configuration(source: .englishUS, target: vm.translationTarget)
-                configuration = config
-            }
-        }
-        .onChange(of: vm.translationTarget) { _, translationTarget in
-            if vm.isTranslationEnabled {
-                let config = TranslationSession.Configuration(source: .englishUS, target: translationTarget)
-                configuration = config
-            }
-        }
-        .translationTask(configuration) { session in
+        .translationTask(vm.translationConfig) { session in
             Task { @MainActor in
                 if vm.isTranslationEnabled {
                     try! await session.prepareTranslation()

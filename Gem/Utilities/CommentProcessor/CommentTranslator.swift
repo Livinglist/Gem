@@ -12,9 +12,9 @@ class CommentTranslator: CommentProcessor {
     init?(targetLanguage: Locale.Language) {
         self.targetLanguage = targetLanguage
         var config = TranslationSession.Configuration(source: .englishUS, target: targetLanguage)
-//        if #available(iOS 26.4, *) {
-//            config.preferredStrategy = .lowLatency
-//        }
+        if #available(iOS 26.4, *) {
+            config.preferredStrategy = .lowLatency
+        }
         if let source = config.source, let target = config.target {
             self.session = TranslationSession(installedSource: source, target: target)
         } else {
@@ -37,12 +37,11 @@ class CommentTranslator: CommentProcessor {
     }
     
     private func translate(_ comment: Comment) async -> Comment {
-        try! await session.prepareTranslation()
         let cacheKey = NSNumber(integerLiteral: comment.id)
         if let cachedText = Self.cache.object(forKey: cacheKey) {
             return comment.copyWith(text: String(cachedText))
         }
-        let response = try! await session.translate(comment.text.orEmpty) //else { return comment }
+        guard let response = try? await session.translate(comment.text.orEmpty) else { return comment }
         let translatedText = response.targetText
         Self.cache.setObject(NSString(string: translatedText), forKey: cacheKey)
         return comment.copyWith(text: response.targetText)

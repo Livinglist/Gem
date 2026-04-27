@@ -1,4 +1,5 @@
 import Foundation
+import Translation
 import HackerNewsKit
 import Combine
 
@@ -69,11 +70,6 @@ enum FetchMode: Int, Equatable, CaseIterable {
             UserDefaults.standard.set(isAutoScrollEnabled, forKey: .isAutoScrollEnabledKey)
         }
     }
-    var isTranslationEnabled: Bool = .init() {
-        didSet {
-            UserDefaults.standard.set(isTranslationEnabled, forKey: .isTranslationEnabledKey)
-        }
-    }
     var appOpenCounter: Int = 0 {
         didSet {
             UserDefaults.standard.setValue(appOpenCounter, forKey: .appOpenCounterKey)
@@ -94,16 +90,26 @@ enum FetchMode: Int, Equatable, CaseIterable {
             UserDefaults.standard.setValue(defaultFetchMode.rawValue, forKey: .defaultFetchModeKey)
         }
     }
+    
+    // MARK: - Translation
+    var isTranslationEnabled: Bool = .init() {
+        didSet {
+            UserDefaults.standard.set(isTranslationEnabled, forKey: .isTranslationEnabledKey)
+            let config = TranslationSession.Configuration(source: .englishUS, target: translationTarget)
+            translationConfig = config
+        }
+    }
     var translationTarget: Locale.Language = .init(languageCode: .spanish) {
         didSet {
             UserDefaults.standard.setValue(translationTarget.languageCode?.identifier, forKey: .translationTargetKey)
-            
             CommentTranslator.cache.removeAllObjects()
+            let config = TranslationSession.Configuration(source: .englishUS, target: translationTarget)
+            translationConfig = config
         }
     }
+    var translationConfig: TranslationSession.Configuration?
     
     let supportedLanguages: [Locale.Language] = [
-        .init(languageCode: .english),
         .init(languageCode: .spanish),
         .init(languageCode: .french),
         .init(languageCode: .german),
