@@ -194,6 +194,11 @@ import Translation
             let index = entry.0
             let comment = entry.1
             commentsBuffer[index] = comment
+            
+            if isTranslationEnabled {
+                print(index)
+                comments.append(comment)
+            }
         }
     }
     
@@ -383,7 +388,7 @@ import Translation
     }
     
     func translate() {
-        guard item != nil else { return }
+        guard item != nil && status.isCompleted else { return }
         translationStatus = .inProgress
         targetLanguage = SettingsViewModel.shared.translationTarget
         guard let translator = CommentTranslator(targetLanguage: targetLanguage) else { return }
@@ -412,7 +417,7 @@ import Translation
     }
     
     func untranslate() {
-        guard item != nil else { return }
+        guard item != nil && status.isCompleted else { return }
         targetLanguage = .englishUS
         factory = .init(processors: [
             MarkdownParser(language: .englishUS)
