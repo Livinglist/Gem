@@ -40,9 +40,7 @@ struct Replies: View {
         .navigationTitle(Text("Replies"))
         .listStyle(.plain)
         .refreshable {
-            Task {
-                await vm.refresh()
-            }
+            await vm.refresh()
         }
         .onChange(of: auth.loggedIn) { _, loggedIn in
             if loggedIn {

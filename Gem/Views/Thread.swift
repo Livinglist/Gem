@@ -261,9 +261,7 @@ struct Thread: View {
         .navigationTitle(item is Story ? item.title.orEmpty : "Comment by \(item.by.orEmpty)")
         .navigationBarTitleDisplayMode(.inline)
         .refreshable {
-            Task {
-                await vm.refresh()
-            }
+            await vm.refresh()
         }
     }
     
