@@ -96,7 +96,6 @@ struct Settings: View {
                     url = IdentifiableURL(url: githubIssuesUrl)
                 } label: {
                     Label("Bug Report", systemImage: "doc.text.below.ecg")
-                        .contentShape(Rectangle())
                 }
                 .foregroundStyle(.accent)
                 .brightness(0.2)
@@ -104,7 +103,6 @@ struct Settings: View {
                     url = IdentifiableURL(url: githubIssuesUrl)
                 } label: {
                     Label("Feature Request", systemImage: "star.bubble")
-                        .contentShape(Rectangle())
                 }
                 .foregroundStyle(.accent)
                 .brightness(0.2)
@@ -112,7 +110,6 @@ struct Settings: View {
                     openURL(appStoreReviewUrl)
                 } label: {
                     Label("Rate Gem :)", systemImage: "pencil.and.outline")
-                        .contentShape(Rectangle())
                 }
                 .foregroundStyle(.accent)
                 .brightness(0.2)
@@ -122,7 +119,6 @@ struct Settings: View {
                         isLogsPresented = true
                     } label: {
                         Label("Logs", systemImage: "tree")
-                            .contentShape(Rectangle())
                     }
                     .foregroundStyle(.accent)
                     .brightness(0.2)
@@ -132,7 +128,6 @@ struct Settings: View {
                     url = IdentifiableURL(url: githubRepoUrl)
                 } label: {
                     Label("Source Code", systemImage: "chevron.left.forwardslash.chevron.right")
-                        .contentShape(Rectangle())
                 }
                 .simultaneousGesture(
                     LongPressGesture(minimumDuration: 0.5)
