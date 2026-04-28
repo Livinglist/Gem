@@ -64,7 +64,9 @@ struct Favorites: View {
         .navigationTitle(Text("Favorites"))
         .listStyle(.plain)
         .refreshable {
-            await vm.refresh()
+            Task {
+                await vm.refresh()
+            }
         }
         .onChange(of: auth.loggedIn) { _, loggedIn in
             if loggedIn {
