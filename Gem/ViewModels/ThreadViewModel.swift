@@ -196,7 +196,7 @@ import Translation
             commentsBuffer[index] = comment
             
             if isTranslationEnabled {
-                print(index)
+                status = .backgroundLoading
                 comments.append(comment)
             }
         }

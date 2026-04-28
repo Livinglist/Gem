@@ -196,7 +196,9 @@ struct Thread: View {
             if settings.isTranslationEnabled {
                 ToolbarItem {
                     Button {
-                        vm.isTranslationEnabled.toggle()
+                        if vm.status.isCompleted {
+                            vm.isTranslationEnabled.toggle()
+                        }
                     } label: {
                         Image(systemName: "character.bubble")
                             .symbolEffect(.variableColor, isActive: vm.translationStatus.isLoading)
