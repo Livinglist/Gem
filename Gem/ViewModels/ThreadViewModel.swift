@@ -125,7 +125,7 @@ import Translation
         }
     }
     
-    func refresh() async -> Void {
+    func refresh() async {
         guard let item = self.item, !status.isLoading else { return }
         var commentsBuffer = [Comment]()
         defer {
