@@ -1,6 +1,7 @@
 import SwiftData
 import Foundation
 import HackerNewsKit
+import Logging
 
 fileprivate extension ModelContainer {
     static let threadCache: ModelContainer? = {
@@ -33,8 +34,13 @@ class NewCommentMarker: CommentProcessor {
                 predicate: #Predicate { $0.parentId == id }
             )
             descriptor.fetchLimit = 1
-            let models = try? context.fetch(descriptor)
-            return Set(models?.first?.commentIds ?? [])
+            do {
+                let models = try context.fetch(descriptor)
+                return Set(models.first?.commentIds ?? [])
+            } catch {
+                await Logger.shared.error("Error fetching comments IDs cache:", error: error)
+            }
+            return Set()
         }.value
         self.fetchedComments = comments
     }
@@ -46,9 +52,12 @@ class NewCommentMarker: CommentProcessor {
             let context = ModelContext(container)
             let model = ThreadCacheModel(ids, parentId: self.parentId)
             context.insert(model)
-            try? context.save()
+            do {
+                try context.save()
+            } catch {
+                await Logger.shared.error("Error saving comments IDs:", error: error)
+            }
         }.value
-        self.fetchedComments = Set<Int>(ids)
     }
     
     func process(_ comments: AsyncStream<(Int, Comment)>) -> AsyncStream<(Int, Comment)> {

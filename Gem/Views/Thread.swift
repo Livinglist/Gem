@@ -14,6 +14,7 @@ struct Thread: View {
     @State private var isTranslationPresented: Bool = .init()
     @State private var isSearchPresented: Bool = .init()
     @State private var actionPerformed: Action = .none
+    @State private var task: Task<Void, Never>?
     
     let settings: SettingsViewModel = .shared
     
@@ -196,7 +197,9 @@ struct Thread: View {
             if settings.isTranslationEnabled {
                 ToolbarItem {
                     Button {
-                        vm.isTranslationEnabled.toggle()
+                        if vm.status.isCompleted {
+                            vm.isTranslationEnabled.toggle()
+                        }
                     } label: {
                         Image(systemName: "character.bubble")
                             .symbolEffect(.variableColor, isActive: vm.translationStatus.isLoading)
@@ -259,9 +262,12 @@ struct Thread: View {
         .navigationTitle(item is Story ? item.title.orEmpty : "Comment by \(item.by.orEmpty)")
         .navigationBarTitleDisplayMode(.inline)
         .refreshable {
-            Task {
+            self.task = Task {
                 await vm.refresh()
             }
+        }
+        .onDisappear {
+            self.task?.cancel()
         }
     }
     

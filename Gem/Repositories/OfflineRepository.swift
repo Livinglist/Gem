@@ -5,8 +5,22 @@ import Foundation
 import SwiftUI
 import SwiftData
 import HackerNewsKit
+import Logging
 
-/// 
+fileprivate extension ModelContainer {
+    static let offlineRepositoryContainer: ModelContainer? = {
+        let storageUrl = URL.cachesDirectory.appending(path: "offline.sqlite")
+        let config = ModelConfiguration("OfflineRepositoryContainer", url: storageUrl, cloudKitDatabase: .none)
+        do {
+            return try ModelContainer(for: StoryCollection.self, CommentCollection.self, configurations: config)
+        } catch {
+            Logger.shared.error("Error getting offline container:", error: error)
+        }
+        return nil
+    }()
+}
+
+///
 /// For accessing cached stories and comments when the device is offline.
 ///
 @MainActor
@@ -30,9 +44,10 @@ import HackerNewsKit
     var isInMemory = false
     
     private let storyRepository = StoryRepository(session: Session())
-    private let container = try! ModelContainer(for: StoryCollection.self, CommentCollection.self)
     private let downloadOrder = [StoryType.top, .ask, .best]
     private let lastDownloadAtKey = "lastDownloadedAt"
+    
+    private var container: ModelContainer? = .offlineRepositoryContainer
     private var stories = [StoryType: [Story]]()
     private var comments = [Int: [Comment]]()
     private var networkStatusSubscription: AnyCancellable?
@@ -52,6 +67,7 @@ import HackerNewsKit
     }
     
     public func loadIntoMemory() {
+        guard let container else { return }
         let context = container.mainContext
         
         // Fetch all cached stories.
@@ -83,7 +99,7 @@ import HackerNewsKit
         do {
             try BGTaskScheduler.shared.submit(downloadTask)
         } catch {
-            debugPrint("Unable to submit task: \(error.localizedDescription)")
+            Logger.shared.error("Unable to submit task:", error: error)
         }
     }
     
@@ -94,6 +110,8 @@ import HackerNewsKit
     }
 
     public func downloadAllStories(isTriggerdByUser: Bool) async -> Void {
+        guard let container else { return }
+        let context = container.mainContext
         let settings = SettingsViewModel.shared
 
         /// Initiate download process if:
@@ -106,7 +124,6 @@ import HackerNewsKit
         
         UserDefaults.standard.set(Date.now, forKey: lastDownloadAtKey)
         
-        let context = container.mainContext
         var completedStoryId = Set<Int>()
         
         if isTriggerdByUser {
@@ -149,6 +166,7 @@ import HackerNewsKit
     }
     
     private func downloadChildComments(of item: any Item, level: Int) async -> Void {
+        guard let container else { return }
         let context = container.mainContext
         let comments = await fetchComments(ids: item.kids ?? [Int]()).map { $0.copyWith(level: level) }
         context.insert(CommentCollection(comments, parentId: item.id))

@@ -129,6 +129,7 @@
 		E1DB64DC2F9DCE9E006EFBA7 /* CommentFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1DB64DB2F9DCE9E006EFBA7 /* CommentFactory.swift */; };
 		E1DB64DE2F9DCF34006EFBA7 /* MarkdownParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1DB64DD2F9DCF34006EFBA7 /* MarkdownParser.swift */; };
 		E1DB64E02F9DD41C006EFBA7 /* CommentTranslator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1DB64DF2F9DD412006EFBA7 /* CommentTranslator.swift */; };
+		E1DB64E42FA04CE0006EFBA7 /* Logs.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1DB64E32FA04CDB006EFBA7 /* Logs.swift */; };
 		E1E241812F97604D0093A7E5 /* SubmissionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E241802F97604D0093A7E5 /* SubmissionsViewModel.swift */; };
 		E5DAC21F2F8F159B00EB1354 /* SideMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5DAC21E2F8F159600EB1354 /* SideMenu.swift */; };
 		E5DAC2212F8F19F500EB1354 /* Replies.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5DAC2202F8F19F200EB1354 /* Replies.swift */; };
@@ -341,6 +342,7 @@
 		E1DB64DB2F9DCE9E006EFBA7 /* CommentFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentFactory.swift; sourceTree = "<group>"; };
 		E1DB64DD2F9DCF34006EFBA7 /* MarkdownParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownParser.swift; sourceTree = "<group>"; };
 		E1DB64DF2F9DD412006EFBA7 /* CommentTranslator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTranslator.swift; sourceTree = "<group>"; };
+		E1DB64E32FA04CDB006EFBA7 /* Logs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logs.swift; sourceTree = "<group>"; };
 		E1E2417B2F96E6050093A7E5 /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
 		E1E2417C2F96EDDF0093A7E5 /* app_store_badge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = app_store_badge.png; sourceTree = "<group>"; };
 		E1E2417D2F96EDDF0093A7E5 /* github_badge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = github_badge.png; sourceTree = "<group>"; };
@@ -577,6 +579,7 @@
 		E131BD572F8DB98F00F7E034 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				E1DB64E32FA04CDB006EFBA7 /* Logs.swift */,
 				E131BD502F8DB98F00F7E034 /* Favorites.swift */,
 				E131BD512F8DB98F00F7E034 /* Home.swift */,
 				E131BD522F8DB98F00F7E034 /* Pins.swift */,
@@ -957,6 +960,7 @@
 				E131BD6E2F8DB98F00F7E034 /* SearchViewModel.swift in Sources */,
 				E1A752FB2F9B3D56004DB084 /* ThreadCacheModel.swift in Sources */,
 				E131BD6F2F8DB98F00F7E034 /* SettingsViewModel.swift in Sources */,
+				E1DB64E42FA04CE0006EFBA7 /* Logs.swift in Sources */,
 				E131BD702F8DB98F00F7E034 /* StoryViewModel.swift in Sources */,
 				E131BD722F8DB98F00F7E034 /* Action.swift in Sources */,
 				E131BD732F8DB98F00F7E034 /* CommentCollection.swift in Sources */,
@@ -1238,7 +1242,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiaqi.gem;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -1282,7 +1286,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiaqi.gem;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

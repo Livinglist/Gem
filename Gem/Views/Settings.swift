@@ -6,6 +6,7 @@ struct Settings: View {
     @Environment(\.openURL) private var openURL
     @Bindable var vm = SettingsViewModel.shared
     @State var url: IdentifiableURL?
+    @State var isLogsPresented: Bool = false
     
     private let githubRepoUrl = URL(string: "https://github.com/Livinglist/Gem")!
     private let githubIssuesUrl = URL(string: "https://github.com/Livinglist/Gem/issues")!
@@ -112,11 +113,28 @@ struct Settings: View {
                 }
                 .foregroundStyle(.accent)
                 .brightness(0.2)
+                
+                if vm.isDevModeEnabled {
+                    Button {
+                        isLogsPresented = true
+                    } label: {
+                        Label("Logs", systemImage: "tree")
+                    }
+                    .foregroundStyle(.accent)
+                    .brightness(0.2)
+                }
+                
                 Button {
                     url = IdentifiableURL(url: githubRepoUrl)
                 } label: {
                     Label("Source Code", systemImage: "chevron.left.forwardslash.chevron.right")
                 }
+                .simultaneousGesture(
+                    LongPressGesture(minimumDuration: 0.5)
+                        .onEnded { _ in
+                            vm.isDevModeEnabled.toggle()
+                        }
+                )
                 .foregroundStyle(.accent)
                 .brightness(0.2)
             } footer: {
@@ -125,6 +143,9 @@ struct Settings: View {
         }
         .sheet(item: $url) { url in
             SafariView(url: url.url)
+        }
+        .sheet(isPresented: $isLogsPresented) {
+            Logs()
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Settings")
@@ -139,6 +160,7 @@ struct Settings: View {
                 }
             }
         }
+        .sensoryFeedback(.impact(weight: .heavy), trigger: vm.isDevModeEnabled)
         .sensoryFeedback(.selection, trigger: vm.translationTarget)
     }
 }
