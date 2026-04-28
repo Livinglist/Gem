@@ -196,6 +196,7 @@ import Translation
             commentsBuffer[index] = comment
             
             if isTranslationEnabled {
+                HapticsManager.shared.stop()
                 status = .backgroundLoading
                 comments.append(comment)
             }
