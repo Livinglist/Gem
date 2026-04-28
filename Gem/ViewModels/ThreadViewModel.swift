@@ -132,6 +132,7 @@ import Translation
             HapticsManager.shared.stop()
             saveToCache()
             self.status = .completed
+            self.translationStatus = .completed
             self.comments = commentsBuffer
         }
         
@@ -198,6 +199,7 @@ import Translation
             if isTranslationEnabled {
                 HapticsManager.shared.stop()
                 status = .backgroundLoading
+                translationStatus = .inProgress
                 comments.append(comment)
             }
         }
