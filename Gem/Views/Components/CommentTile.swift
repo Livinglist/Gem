@@ -159,8 +159,8 @@ struct CommentTile: View {
                 .onTapGesture {
                     if isCollapsed {
                         HapticFeedbackService.shared.ultralight()
-                        withAnimation {
-                            vm.uncollapse(cmt: comment)
+                        Task {
+                            await vm.uncollapse(cmt: comment)
                         }
                     }
                 }

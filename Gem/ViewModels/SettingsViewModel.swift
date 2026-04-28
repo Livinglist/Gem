@@ -1,4 +1,6 @@
 import Foundation
+import InMemoryLogging
+import Logging
 import Translation
 import HackerNewsKit
 import Combine
@@ -14,6 +16,7 @@ fileprivate extension String {
     static let isAutoScrollEnabledKey = "isAutoScrollEnabled"
     static let isTranslationEnabledKey = "isTranslationEnabled"
     static let translationTargetKey = "translationTarget"
+    static let isDevModeEnabledKey = "isDevModeEnabled"
 }
 
 enum DownloadFrequency: TimeInterval, Equatable, CaseIterable {
@@ -90,6 +93,12 @@ enum FetchMode: Int, Equatable, CaseIterable {
             UserDefaults.standard.setValue(defaultFetchMode.rawValue, forKey: .defaultFetchModeKey)
         }
     }
+    var isDevModeEnabled: Bool = .init() {
+        didSet {
+            UserDefaults.standard.set(isDevModeEnabled, forKey: .isDevModeEnabledKey)
+            setUpLogger()
+        }
+    }
     
     // MARK: - Translation
     var isTranslationEnabled: Bool = .init() {
@@ -134,6 +143,7 @@ enum FetchMode: Int, Equatable, CaseIterable {
         isAutomaticDownloadEnabled = UserDefaults.standard.bool(forKey: .isAutomaticDownloadEnabledKey)
         useCellularData = UserDefaults.standard.bool(forKey: .useCellularDataKey)
         isAutoScrollEnabled = (UserDefaults.standard.object(forKey: .isAutoScrollEnabledKey) as? Bool) ?? true
+        isDevModeEnabled = (UserDefaults.standard.object(forKey: .isDevModeEnabledKey) as? Bool) ?? false
         isTranslationEnabled = (UserDefaults.standard.object(forKey: .isTranslationEnabledKey) as? Bool) ?? false
         let targetLanguageIdentifier = UserDefaults.standard.object(forKey: .translationTargetKey) as? String
         translationTarget = targetLanguageIdentifier == nil ? .init(languageCode: .spanish) : .init(identifier: targetLanguageIdentifier!)
@@ -162,5 +172,15 @@ enum FetchMode: Int, Equatable, CaseIterable {
     func unblock(_ id: String) -> Void {
         blocklist.remove(id)
         UserDefaults.standard.set(Array(blocklist), forKey: .blockListKey)
+    }
+}
+
+extension SettingsViewModel {
+    private func setUpLogger() {
+        if isDevModeEnabled {
+            Logger.enableInMemoryLogHandler()
+        } else {
+            Logger.disableInMemoryLogHandler()
+        }
     }
 }

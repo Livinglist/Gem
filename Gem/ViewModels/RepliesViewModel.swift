@@ -15,7 +15,7 @@ private extension Calendar {
 @Observable class RepliesViewModel {
     private let auth: Authentication = .shared
     private let repo: StoryRepository = .shared
-    @ObservationIgnored private let modelConfig = ModelConfiguration("RepliesViewModel2")
+    @ObservationIgnored private let modelConfig = ModelConfiguration("RepliesViewModel")
     @ObservationIgnored private var container: ModelContainer?
     var fetchedComments = [Comment]()
     var newReplies = [Comment]()
@@ -125,8 +125,8 @@ private extension Calendar {
         self.status = .completed
         saveToCache()
         
-        logger.info("All replies fetched: \(updatedFetchedReplies.count)")
-        logger.info("New replies fetched: \(newReplies.count)")
+        Logger.shared.info("All replies fetched: \(updatedFetchedReplies.count)")
+        Logger.shared.info("New replies fetched: \(newReplies.count)")
     }
     
     func markAsRead(comment: Comment) {

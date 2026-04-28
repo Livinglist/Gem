@@ -260,7 +260,7 @@ struct Home: View {
         .task(priority: .background) {
             try? await Task.sleep(until: .now + .seconds(2))
             let appOpenCounter = settings.appOpenCounter
-            logger.info("Requesting review counter: \(appOpenCounter)")
+            Logger.shared.info("Requesting review counter: \(appOpenCounter)")
             if appOpenCounter == appStoreReviewReuqestTrigger {
                 requestReview()
                 settings.appOpenCounter = appStoreReviewReuqestTrigger + 1
