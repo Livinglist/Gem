@@ -400,6 +400,7 @@ import Translation
             MarkdownParser(language: targetLanguage)
         ])
         buffer = comments
+        streamTask?.cancel()
         streamTask = Task {
             for await entry in factory.process(buffer) {
                 let index = entry.0
@@ -426,6 +427,7 @@ import Translation
             MarkdownParser(language: .englishUS)
         ])
         let buffer = buffer
+        streamTask?.cancel()
         streamTask = Task {
             for await entry in factory.process(buffer) {
                 let index = entry.0
