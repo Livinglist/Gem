@@ -232,6 +232,13 @@ import Translation
             let parentLevel = cmt.level
             func sendUpdates() async {
                 await MainActor.run { [commentsBuffer] in
+                    
+#if DEBUG
+                    if comments.count != commentsBuffer.count {
+                        fatalError("Unexpected data corruption...")
+                    }
+#endif
+                    
                     withAnimation(.snappy.speed(200)) {
                         self.comments = commentsBuffer
                     }
@@ -269,6 +276,13 @@ import Translation
         var commentsBuffer = comments
         func sendUpdates() async {
             await MainActor.run { [commentsBuffer] in
+                
+#if DEBUG
+                    if comments.count != commentsBuffer.count {
+                        fatalError("Unexpected data corruption...")
+                    }
+#endif
+                
                 withAnimation(.snappy.speed(200)) {
                     self.comments = commentsBuffer
                 }
