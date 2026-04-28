@@ -403,7 +403,7 @@ import Translation
         streamTask?.cancel()
         streamTask = Task {
             for await entry in factory.process(buffer) {
-                if streamTask.isCancelled { return }
+                if streamTask?.isCancelled ?? true { return }
                 let index = entry.0
                 let currentComment = comments[index]
                 let comment = entry.1.copyWith(isCollapsed: currentComment.isCollapsed, isHidden: currentComment.isHidden)
@@ -431,7 +431,7 @@ import Translation
         streamTask?.cancel()
         streamTask = Task {
             for await entry in factory.process(buffer) {
-                if streamTask.isCancelled { return }
+                if streamTask?.isCancelled ?? true { return }
                 let index = entry.0
                 let currentComment = comments[index]
                 let comment = entry.1.copyWith(isCollapsed: currentComment.isCollapsed, isHidden: currentComment.isHidden)
