@@ -2,7 +2,7 @@ import Foundation
 import HackerNewsKit
 
 extension String {
-    var isNotEmpty: Bool {
+    nonisolated var isNotEmpty: Bool {
         !isEmpty
     }
     
@@ -41,7 +41,7 @@ extension String {
 }
 
 extension Optional where Wrapped == String {
-    var orEmpty: String {
+    nonisolated var orEmpty: String {
         guard let unwrapped = self else {
             return ""
         }

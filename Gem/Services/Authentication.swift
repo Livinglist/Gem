@@ -22,21 +22,17 @@ import HackerNewsKit
             
             let user = await AuthRepository.shared.fetchUser(username) ?? User(id: username)
             
-            DispatchQueue.main.async {
-                self.user = user
-            }
+            self.user = user
         }
     }
     
     func logIn(username: String, password: String, shouldRememberMe: Bool) async -> Bool {
         let loggedIn = await AuthRepository.shared.logIn(username: username, password: password, shouldRememberMe: shouldRememberMe)
         
-        DispatchQueue.main.async {
-            self.loggedIn = loggedIn
-            
-            if loggedIn {
-                self.username = username
-            }
+        self.loggedIn = loggedIn
+        
+        if loggedIn {
+            self.username = username
         }
         
         return loggedIn

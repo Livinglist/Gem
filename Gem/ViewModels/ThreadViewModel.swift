@@ -368,12 +368,17 @@ import Translation
     }
     
     func searchInThread(_ text: String) {
-        Task {
-            var results = [Int]()
+        let item = self.item
+        let comments = self.comments
+        let isByOpSelected = self.isByOpSelected
+        let isNewSelected = self.isNewSelected
+        var results = [Int]()
+        Task.detached(priority: .userInitiated) { [self] in
+            
             let text = text.trimmingCharacters(in: .whitespaces)
-            let isByOpConditionSatisfied: SearchConditionTester = isByOpSelected ? { $0.by.orEmpty.isNotEmpty && $0.by == self.item?.by.orEmpty } : { _ in true }
+            let isByOpConditionSatisfied: SearchConditionTester = isByOpSelected ? { $0.by.orEmpty.isNotEmpty && $0.by == item?.by.orEmpty } : { _ in true }
             let isNewConditionSatisfied: SearchConditionTester = isNewSelected ? { $0.isNew ?? false } : { _ in true }
-            let isSearchQueryHit: SearchConditionTester = text.isEmpty ? { _ in self.isNewSelected || self.isByOpSelected } : { $0.text.orEmpty.localizedCaseInsensitiveContains(text) || $0.by.orEmpty.lowercased().contains(text.lowercased()) }
+            let isSearchQueryHit: SearchConditionTester = text.isEmpty ? { _ in isNewSelected || isByOpSelected } : { $0.text.orEmpty.localizedCaseInsensitiveContains(text) || $0.by.orEmpty.lowercased().contains(text.lowercased()) }
             for index in 0..<comments.count {
                 let comment = comments[index]
                 if isByOpConditionSatisfied(comment) && isNewConditionSatisfied(comment) && isSearchQueryHit(comment) {
@@ -407,16 +412,12 @@ import Translation
                 let index = entry.0
                 let currentComment = comments[index]
                 let comment = entry.1.copyWith(isCollapsed: currentComment.isCollapsed, isHidden: currentComment.isHidden)
-                await MainActor.run {
-                    withAnimation {
-                        comments[index] = comment
-                    }
+                withAnimation {
+                    comments[index] = comment
                 }
             }
-            await MainActor.run {
-                withAnimation {
-                    translationStatus = .completed
-                }
+            withAnimation {
+                translationStatus = .completed
             }
         }
     }
@@ -435,16 +436,12 @@ import Translation
                 let index = entry.0
                 let currentComment = comments[index]
                 let comment = entry.1.copyWith(isCollapsed: currentComment.isCollapsed, isHidden: currentComment.isHidden)
-                await MainActor.run {
-                    withAnimation {
-                        comments[index] = comment
-                    }
+                withAnimation {
+                    comments[index] = comment
                 }
             }
-            await MainActor.run {
-                withAnimation {
-                    translationStatus = .completed
-                }
+            withAnimation {
+                translationStatus = .completed
             }
         }
     }

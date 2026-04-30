@@ -32,7 +32,7 @@ private extension Calendar {
         let models = try? context.fetch(descriptor)
         fetchedComments = models?.first?.fetchedReplies ?? []
         newReplies = models?.first?.newReplies ?? []
-        Task(priority: .background) {
+        Task.detached(priority: .background) { [self] in
             await fetchAllReplies()
         }
         observeAuthState()
@@ -45,7 +45,7 @@ private extension Calendar {
             DispatchQueue.main.async { [weak self] in
                 if let isLoggedIn = self?.auth.loggedIn {                    
                     if isLoggedIn {
-                        Task(priority: .background) {
+                        Task.detached(priority: .background) {
                             await self?.fetchAllReplies()
                         }
                     } else {

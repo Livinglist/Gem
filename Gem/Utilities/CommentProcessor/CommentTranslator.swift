@@ -24,7 +24,7 @@ class CommentTranslator: CommentProcessor {
     
     func process(_ comments: AsyncStream<(Int, Comment)>) -> AsyncStream<(Int, Comment)> {
         AsyncStream { continuation in
-            Task {
+            Task.detached(priority: .userInitiated) { [self] in
                 for await entry in comments {
                     let index = entry.0
                     let comment = entry.1

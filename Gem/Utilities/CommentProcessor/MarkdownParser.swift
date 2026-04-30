@@ -48,10 +48,10 @@ class MarkdownParser: CommentProcessor {
     
     func process(_ comments: AsyncStream<(Int, Comment)>) -> AsyncStream<(Int, Comment)> {
         return AsyncStream { continuation in
-            Task {
+            Task.detached(priority: .userInitiated) { [self] in
                 for await entry in comments {
                     let comment = entry.1
-                    _ = markdown(id: comment.id, text: comment.text.orEmpty)
+                    _ = await markdown(id: comment.id, text: comment.text.orEmpty)
                     continuation.yield(entry)
                 }
                 continuation.finish()
