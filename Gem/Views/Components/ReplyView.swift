@@ -26,6 +26,15 @@ struct ReplyView: View {
         self.draggable = draggable
     }
     
+    var isEditing: Bool {
+        let auth = Authentication.shared
+        return replyingTo is Comment && auth.username.orEmpty.isNotEmpty && replyingTo.by.orEmpty == auth.username
+    }
+    
+    var navigationTitle: String {
+        isEditing ? "Editing" : "Replying to \(replyingTo.by.orEmpty)"
+    }
+    
     @ViewBuilder
     var mainView: some View {
         VStack(spacing: 0) {
@@ -45,6 +54,11 @@ struct ReplyView: View {
                 .padding(.top, 80)
             Spacer()
         }
+        .onAppear {
+            if isEditing {
+                text = replyingTo.text.orEmpty
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button("Cancel", role: .cancel) {
@@ -56,17 +70,27 @@ struct ReplyView: View {
                 Button {
                     guard text.trimmingCharacters(in: .whitespaces).isNotEmpty else { return }
                     Task {
-                        let res = await auth.reply(to: replyingTo.id, with: text)
-                        
-                        if res {
-                            actionPerformed?.wrappedValue = .reply
+                        if isEditing {
+                            let res = await auth.edit(replyingTo.id, with: text)
+                            
+                            if res {
+                                actionPerformed?.wrappedValue = .edit
+                            } else {
+                                actionPerformed?.wrappedValue = .failure
+                            }
                         } else {
-                            actionPerformed?.wrappedValue = .failure
+                            let res = await auth.reply(to: replyingTo.id, with: text)
+                            
+                            if res {
+                                actionPerformed?.wrappedValue = .reply
+                            } else {
+                                actionPerformed?.wrappedValue = .failure
+                            }
                         }
                     }
                     self.presentationMode.wrappedValue.dismiss()
                 } label: {
-                    Label("Submit", systemImage: "")
+                    Label(isEditing ? "Update" : "Submit", systemImage: "")
                         .labelStyle(.titleOnly)
                         .foregroundStyle(.foreground.opacity(0.7))
                         .padding(.horizontal, 6)
@@ -93,11 +117,11 @@ struct ReplyView: View {
             .presentationDetents(heights, selection: $presentationDetent)
             .presentationBackgroundInteraction(.enabled)
             .interactiveDismissDisabled()
-            .navigationTitle("Replying to \(replyingTo.by ?? "")")
+            .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
         } else {
             mainView
-                .navigationTitle("Replying to \(replyingTo.by ?? "")")
+                .navigationTitle(navigationTitle)
                 .navigationBarTitleDisplayMode(.inline)
         }
     }

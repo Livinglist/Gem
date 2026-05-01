@@ -1,6 +1,12 @@
 import SwiftUI
 import HackerNewsKit
 
+extension Label where Title == Text, Icon == Image {
+    init(_ action: Action) {
+        self.init(action.label, systemImage: action.icon)
+    }
+}
+
 struct ItemMenu: View {
     let auth = Authentication.shared
     let item: any Item
@@ -22,12 +28,22 @@ struct ItemMenu: View {
             ControlGroup {
                 FavButton(item: item, actionPerformed: $actionPerformed)
                 PinButton(item: item, actionPerformed: $actionPerformed)
-                Button {
-                    onReplyTap(item: item)
-                } label: {
-                    Label(Action.reply.label, systemImage: Action.reply.icon)
+                if item is Comment,
+                   let user = auth.user,
+                   user.id.orEmpty.isNotEmpty, user.id == item.by {
+                    Button {
+                        onReplyTap(item: item)
+                    } label: {
+                        Label(.edit)
+                    }
+                } else {
+                    Button {
+                        onReplyTap(item: item)
+                    } label: {
+                        Label(.reply)
+                    }
+                    .disabled(!auth.loggedIn || item.isJob)
                 }
-                .disabled(!auth.loggedIn || item.isJob)
             }
             Divider()
             FlagButton(id: item.id, showFlagDialog: $isFlagDialogPresented)

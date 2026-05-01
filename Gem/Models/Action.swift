@@ -13,6 +13,7 @@ enum Action: Equatable {
     case unblock
     case login
     case reply
+    case edit
     case copy
     case lazyFetching
     case eagerFetching
@@ -31,6 +32,7 @@ enum Action: Equatable {
              .unblock,
              .login,
              .reply,
+             .edit,
              .copy,
              .lazyFetching,
              .eagerFetching:
@@ -66,6 +68,8 @@ enum Action: Equatable {
             return "Log in"
         case .reply:
             return "Reply"
+        case .edit:
+            return "Edit"
         case .copy:
             return "Copy"
         case .failure:
@@ -103,6 +107,8 @@ enum Action: Equatable {
             return "person"
         case .reply:
             return "plus.message"
+        case .edit:
+            return "long.text.page.and.pencil"
         case .copy:
             return "doc.on.doc"
         case .failure:
@@ -142,6 +148,8 @@ enum Action: Equatable {
             return "person.badge.shield.checkmark.fill"
         case .reply:
             return "arrowshape.turn.up.left.circle.fill"
+        case .edit:
+            return "long.text.page.and.pencil.fill"
         case .copy:
             return "doc.on.doc.fill"
         case .failure:
@@ -180,6 +188,8 @@ enum Action: Equatable {
             return "Welcome"
         case .reply:
             return "Replied"
+        case .edit:
+            return "Edited"
         case .copy:
             return "Copied"
         case .failure:

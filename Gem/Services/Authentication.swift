@@ -1,4 +1,5 @@
 import Combine
+import Logging
 import Foundation
 import HackerNewsKit
 
@@ -11,6 +12,7 @@ import HackerNewsKit
     static let shared: Authentication = .init()
     
     private init() {
+        Logger.shared.info("Initializing auth state...")
         let loggedIn = AuthRepository.shared.loggedIn
         let username = AuthRepository.shared.username
 
@@ -19,24 +21,19 @@ import HackerNewsKit
 
         Task {
             guard let username = username else { return }
-            
             let user = await AuthRepository.shared.fetchUser(username) ?? User(id: username)
-            
-            DispatchQueue.main.async {
-                self.user = user
-            }
+            self.user = user
+            Logger.shared.info("Logged in as \(user.id.orEmpty)")
         }
     }
     
     func logIn(username: String, password: String, shouldRememberMe: Bool) async -> Bool {
         let loggedIn = await AuthRepository.shared.logIn(username: username, password: password, shouldRememberMe: shouldRememberMe)
         
-        DispatchQueue.main.async {
-            self.loggedIn = loggedIn
-            
-            if loggedIn {
-                self.username = username
-            }
+        self.loggedIn = loggedIn
+        
+        if loggedIn {
+            self.username = username
         }
         
         return loggedIn
@@ -76,5 +73,9 @@ import HackerNewsKit
     
     func reply(to id: Int, with text: String) async -> Bool {
         return await AuthRepository.shared.reply(to: id, with: text)
+    }
+    
+    func edit(_ id: Int, with text: String) async -> Bool {
+        return await AuthRepository.shared.edit(id, with: text)
     }
 }

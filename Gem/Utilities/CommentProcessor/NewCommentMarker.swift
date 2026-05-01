@@ -62,17 +62,21 @@ class NewCommentMarker: CommentProcessor {
     
     func process(_ comments: AsyncStream<(Int, Comment)>) -> AsyncStream<(Int, Comment)> {
         return AsyncStream { continuation in
-            Task {
+            let task = Task.detached(priority: .userInitiated) { [self] in
                 var allComments = [Comment]()
                 for await entry in comments {
                     let index = entry.0
                     let comment = entry.1
-                    let updatedComment = fetchedComments.isEmpty ? comment : comment.copyWith(isNew: !fetchedComments.contains(comment.id))
+                    let updatedComment = await fetchedComments.isEmpty ? comment : comment.copyWith(isNew: !fetchedComments.contains(comment.id))
                     allComments.append(updatedComment)
                     continuation.yield((index, updatedComment))
                 }
                 await cacheCommentIds(allComments)
                 continuation.finish()
+            }
+            
+            continuation.onTermination = { _ in
+                task.cancel()
             }
         }
     }

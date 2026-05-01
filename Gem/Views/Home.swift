@@ -225,7 +225,7 @@ struct Home: View {
                     let vector = CGVector(dx: value.location.x - value.startLocation.x, dy: value.location.y - value.startLocation.y)
                     let radians = atan2(vector.dy, vector.dx)
                     let angle = radians * 180 / .pi
-                    guard -20...20 ~= angle || 160...180 ~= angle else { return }
+                    guard dragOffset != 0 || ( -10...10 ~= angle || 160...180 ~= angle) else { return }
                     
                     // If menu is closed, only allow dragging from the left edge (positive)
                     // If menu is open, only allow dragging to the left (negative)
@@ -239,7 +239,7 @@ struct Home: View {
                     let vector = CGVector(dx: value.location.x - value.startLocation.x, dy: value.location.y - value.startLocation.y)
                     let radians = atan2(vector.dy, vector.dx)
                     let angle = radians * 180 / .pi
-                    guard -20...20 ~= angle || 160...180 ~= angle else {
+                    guard dragOffset != 0 || (-10...10 ~= angle || 160...180 ~= angle) else {
                         withAnimation {
                             dragOffset = 0
                         }

@@ -1,6 +1,7 @@
 import Foundation
 import Alamofire
 import Security
+import SwiftSoup
 
 public class AuthRepository {
     public static let shared: AuthRepository = .init()
@@ -159,7 +160,7 @@ public class AuthRepository {
             "id": id,
             "how": "up",
         ]
-    
+        
         return await performPost(data: parameters, path: "/vote")
     }
     
@@ -222,16 +223,84 @@ public class AuthRepository {
         return await performPost(data: parameters, path: "/comment")
     }
     
-    private func performPost(data: [String: Any], path: String) async -> Bool {
+    public func edit(_ id: Int, with text: String) async -> Bool {
+        guard let username = self.username, let password = self.password else {
+            return false
+        }
+        guard let response = try? await getFormResponse(username: username,
+                                                        password: password,
+                                                        path: "/edit",
+                                                        id: id) else { return false }
+        guard let url = URL(string: baseUrl),
+              let cookies = HTTPCookieStorage.shared.cookies(for: url)
+        else { return false }
+
+        let headers = HTTPCookie.requestHeaderFields(with: cookies)
+        guard let cookieString = headers["Cookie"] else { return false }
+        guard let html = response.value,
+              let hmac = Self.getHiddenFormValues(from: html, key: "hmac") else { return false }
+        let parameters: [String: Any] = [
+            "text": text,
+            "id": id,
+            "hmac": hmac,
+        ]
+        return await performPost(data: parameters, path: "/xedit", cookie: cookieString)
+    }
+}
+
+private extension AuthRepository {
+    private func getFormResponse(
+        username: String,
+        password: String,
+        path: String,
+        id: Int? = nil
+    ) async throws -> DataResponse<String, AFError>? {
+        guard let id, let url = URL(string: "\(baseUrl)\(path)?id=\(id)") else { throw URLError(.badURL) }
+        let params: [String: Any] = [
+            "acct": username,
+            "pw": password,
+            "id": id,
+        ]
+        let response = await AF.request(url,
+                                        method: .post,
+                                        parameters: params)
+            .serializingString()
+            .response
+        return response
+    }
+    
+    private func performPost(data: [String: Any], path: String, cookie: String? = nil) async -> Bool {
         HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+        var headers = [
+            HTTPHeader(name: "content-type", value: "application/x-www-form-urlencoded")
+        ]
+        if let cookie {
+            headers.append(HTTPHeader(name: "cookie", value: cookie))
+        }
         let request = AF.request("\(baseUrl)\(path)",
                                  method: .post,
                                  parameters: data,
-                                 headers: HTTPHeaders([
-                                    HTTPHeader(name: "content-type", value: "application/x-www-form-urlencoded")
-                                 ]))
+                                 headers: HTTPHeaders(headers))
         let res = await request.serializingString().response
         guard let statusCode = res.response?.statusCode, statusCode == 200 else { return false }
         return true
+    }
+    
+    static func getHiddenFormValues(from input: String, key: String) -> String? {
+        guard let body = try? SwiftSoup.parse(input).body(),
+              let form = try? body.getElementsByTag("form").first()
+        else { return nil }
+        
+        if let hiddenInputs = try? form.select("input[type=hidden]") {
+            for element in hiddenInputs {
+                if let name = try? element.attr("name"),
+                   let value = try? element.attr("value"),
+                   !name.isEmpty && name == key {
+                    return value
+                }
+            }
+        }
+        
+        return nil
     }
 }

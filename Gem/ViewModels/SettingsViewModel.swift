@@ -5,6 +5,16 @@ import Translation
 import HackerNewsKit
 import Combine
 
+extension SettingsViewModel {
+    var isTranslationAvailable: Bool {
+#if targetEnvironment(simulator)
+        return true
+#else
+        return isTranslationEnabled
+#endif
+    }
+}
+
 fileprivate extension String {
     static let blockListKey = "blockListKey"
     static let isAutomaticDownloadEnabledKey = "isAutomaticDownloadEnabled"
@@ -146,8 +156,13 @@ enum FetchMode: Int, Equatable, CaseIterable {
         isDevModeEnabled = (UserDefaults.standard.object(forKey: .isDevModeEnabledKey) as? Bool) ?? false
         isTranslationEnabled = (UserDefaults.standard.object(forKey: .isTranslationEnabledKey) as? Bool) ?? false
         let targetLanguageIdentifier = UserDefaults.standard.object(forKey: .translationTargetKey) as? String
-        translationTarget = targetLanguageIdentifier == nil ? .init(languageCode: .spanish) : .init(identifier: targetLanguageIdentifier!)
         
+#if targetEnvironment(simulator)
+        translationTarget = .init(languageCode: .chinese)
+#else
+        translationTarget = targetLanguageIdentifier == nil ? .init(languageCode: .spanish) : .init(identifier: targetLanguageIdentifier!)
+#endif
+
         let downloadFrequencyRawValue = UserDefaults.standard.double(forKey: .downloadFrequencyKey)
         if let downloadFrequency = DownloadFrequency(rawValue: downloadFrequencyRawValue) {
             self.downloadFrequency = downloadFrequency
