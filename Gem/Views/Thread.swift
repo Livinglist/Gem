@@ -14,6 +14,7 @@ struct Thread: View {
     @State private var isTranslationPresented: Bool = .init()
     @State private var isSearchPresented: Bool = .init()
     @State private var actionPerformed: Action = .none
+    @State private var commentTapped: Comment? = nil
     
     let settings: SettingsViewModel = .shared
     
@@ -32,6 +33,7 @@ struct Thread: View {
     
     var body: some View {
         mainItemView
+            .sensoryFeedback(.selection, trigger: commentTapped)
             .sensoryFeedback(.impact(flexibility: .solid), trigger: isSearchPresented) { $1 }
             .sensoryFeedback(.success, trigger: vm.translationStatus) { _, status in status == .completed }
             .onChange(of: vm.scrollTo) { _, id in
@@ -81,6 +83,15 @@ struct Thread: View {
                 }
                 return .handled
             })
+            .task(id: commentTapped) {
+                if let commentTapped, let isCollapsed = commentTapped.isCollapsed {
+                    if isCollapsed {
+                        await vm.uncollapse(cmt: commentTapped)
+                    } else {
+                        await vm.collapse(cmt: commentTapped)
+                    }
+                }
+            }
     }
     
     @ViewBuilder
@@ -152,6 +163,9 @@ struct Thread: View {
                             } else {
                                 CommentTile(comment: comment, vm: vm, actionPerformed: $actionPerformed)
                                     .id(comment.id)
+                                    .onTapGesture {
+                                        commentTapped = comment
+                                    }
                             }
                         }
                     }
@@ -164,6 +178,9 @@ struct Thread: View {
                             } else {
                                 CommentTile(comment: comment, vm: vm, actionPerformed: $actionPerformed)
                                     .id(comment.id)
+                                    .onTapGesture {
+                                        commentTapped = comment
+                                    }
                             }
                         }
                     }
