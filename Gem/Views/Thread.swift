@@ -33,6 +33,7 @@ struct Thread: View {
     
     var body: some View {
         mainItemView
+            .sensoryFeedback(.selection, trigger: commentTapped)
             .sensoryFeedback(.impact(flexibility: .solid), trigger: isSearchPresented) { $1 }
             .sensoryFeedback(.success, trigger: vm.translationStatus) { _, status in status == .completed }
             .onChange(of: vm.scrollTo) { _, id in
