@@ -62,7 +62,7 @@ class NewCommentMarker: CommentProcessor {
     
     func process(_ comments: AsyncStream<(Int, Comment)>) -> AsyncStream<(Int, Comment)> {
         return AsyncStream { continuation in
-            Task.detached(priority: .userInitiated) { [self] in
+            let task = Task.detached(priority: .userInitiated) { [self] in
                 var allComments = [Comment]()
                 for await entry in comments {
                     let index = entry.0
@@ -73,6 +73,10 @@ class NewCommentMarker: CommentProcessor {
                 }
                 await cacheCommentIds(allComments)
                 continuation.finish()
+            }
+            
+            continuation.onTermination = { _ in
+                task.cancel()
             }
         }
     }

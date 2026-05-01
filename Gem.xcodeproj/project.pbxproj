@@ -175,6 +175,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		129873242FA49A21003C6345 /* thread_translation_in_thread_original.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_translation_in_thread_original.png; sourceTree = "<group>"; };
+		129873252FA49A21003C6345 /* thread_translation_in_thread_translated.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_translation_in_thread_translated.png; sourceTree = "<group>"; };
+		129873262FA49A21003C6345 /* thread_translation_root_translated.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_translation_root_translated.png; sourceTree = "<group>"; };
+		129873272FA49A21003C6345 /* thread_translation_root_original.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_translation_root_original.png; sourceTree = "<group>"; };
 		E11F308B2F907A1700E1B1FB /* RecentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentsView.swift; sourceTree = "<group>"; };
 		E11F308D2F907D0E00E1B1FB /* StoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryModel.swift; sourceTree = "<group>"; };
 		E11F30902F90BE6B00E1B1FB /* PinsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinsViewModel.swift; sourceTree = "<group>"; };
@@ -642,10 +646,6 @@
 		E1898BFC2F96BB4D00288592 /* Screenshots */ = {
 			isa = PBXGroup;
 			children = (
-				E1A752FC2F9B5FB4004DB084 /* thread_exchange_indicator.png */,
-				E1A752FD2F9B5FB4004DB084 /* thread_main_view.png */,
-				E1A752FE2F9B5FB4004DB084 /* thread_new_comment_indicator.png */,
-				E1A752FF2F9B5FB4004DB084 /* thread_new_comments.png */,
 				E1898BD12F96BB4D00288592 /* about_livinglist.png */,
 				E1898BD22F96BB4D00288592 /* agree_to_hn_guidelines_dialog.png */,
 				E1898BD32F96BB4D00288592 /* comment_thread.png */,
@@ -688,6 +688,14 @@
 				E1898BF82F96BB4D00288592 /* thread_comment_context_menu.png */,
 				E1898BF92F96BB4D00288592 /* thread_deep.png */,
 				E1898BFA2F96BB4D00288592 /* thread_deep_alt.png */,
+				E1A752FC2F9B5FB4004DB084 /* thread_exchange_indicator.png */,
+				E1A752FD2F9B5FB4004DB084 /* thread_main_view.png */,
+				E1A752FE2F9B5FB4004DB084 /* thread_new_comment_indicator.png */,
+				E1A752FF2F9B5FB4004DB084 /* thread_new_comments.png */,
+				129873242FA49A21003C6345 /* thread_translation_in_thread_original.png */,
+				129873252FA49A21003C6345 /* thread_translation_in_thread_translated.png */,
+				129873262FA49A21003C6345 /* thread_translation_root_translated.png */,
+				129873272FA49A21003C6345 /* thread_translation_root_original.png */,
 				E1898BFB2F96BB4D00288592 /* thread_with_url.png */,
 			);
 			path = Screenshots;

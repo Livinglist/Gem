@@ -72,7 +72,9 @@ import Translation
     private var factory: CommentFactory = .init(processors: [])
     /// The factory processing task.
     @ObservationIgnored
-    private var streamTask: Task<Void, Never>?
+    var streamTask: Task<Void, Never>?
+    @ObservationIgnored
+    var refreshTask: Task<Void, Never>?
     
     // MARK: - Cache
     /// Comments cache to fall back to when all resorts exhausted...
@@ -446,7 +448,15 @@ import Translation
         }
     }
     
+    func cleanUp() {
+        streamTask?.cancel()
+        DispatchQueue.main.async {
+            HapticsManager.shared.stop()
+        }
+    }
+    
     deinit {
+        refreshTask?.cancel()
         streamTask?.cancel()
         DispatchQueue.main.async {
             HapticsManager.shared.stop()
