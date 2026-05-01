@@ -83,8 +83,8 @@ struct Thread: View {
                 return .handled
             })
             .task(id: commentTapped) {
-                if let commentTapped {
-                    if commentTapped.isCollapsed ?? false {
+                if let commentTapped, let isCollapsed = commentTapped.isCollapsed {
+                    if isCollapsed {
                         await vm.uncollapse(cmt: commentTapped)
                     } else {
                         await vm.collapse(cmt: commentTapped)
