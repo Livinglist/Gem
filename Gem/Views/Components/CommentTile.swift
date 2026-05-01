@@ -107,14 +107,6 @@ struct CommentTile: View {
                             .foregroundColor(getColor(level: level))
                     } else {
                         CommentTextView(comment: comment, language: vm.targetLanguage)
-                            .onTapGesture {
-                                if !isCollapsed {
-                                    HapticFeedbackService.shared.ultralight()
-                                    withAnimation {
-                                        vm.collapse(cmt: comment)
-                                    }
-                                }
-                            }
                     }
                     if vm.loadingItemId == comment.id {
                         ASCIISpinner(size: 24)
@@ -155,14 +147,6 @@ struct CommentTile: View {
                         .padding(6)
                         .frame(width: 360, height: 150, alignment: .topLeading)
                         .environment(auth)
-                }
-                .onTapGesture {
-                    if isCollapsed {
-                        HapticFeedbackService.shared.ultralight()
-                        Task {
-                            await vm.uncollapse(cmt: comment)
-                        }
-                    }
                 }
                 Spacer()
             }

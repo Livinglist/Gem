@@ -14,6 +14,7 @@ struct Thread: View {
     @State private var isTranslationPresented: Bool = .init()
     @State private var isSearchPresented: Bool = .init()
     @State private var actionPerformed: Action = .none
+    @State private var commentTapped: Comment? = nil
     
     let settings: SettingsViewModel = .shared
     
@@ -81,6 +82,15 @@ struct Thread: View {
                 }
                 return .handled
             })
+            .task(id: commentTapped) {
+                if let commentTapped {
+                    if commentTapped.isCollapsed ?? false {
+                        await vm.uncollapse(cmt: commentTapped)
+                    } else {
+                        await vm.collapse(cmt: commentTapped)
+                    }
+                }
+            }
     }
     
     @ViewBuilder
@@ -152,6 +162,9 @@ struct Thread: View {
                             } else {
                                 CommentTile(comment: comment, vm: vm, actionPerformed: $actionPerformed)
                                     .id(comment.id)
+                                    .onTapGesture {
+                                        commentTapped = comment
+                                    }
                             }
                         }
                     }
@@ -164,6 +177,9 @@ struct Thread: View {
                             } else {
                                 CommentTile(comment: comment, vm: vm, actionPerformed: $actionPerformed)
                                     .id(comment.id)
+                                    .onTapGesture {
+                                        commentTapped = comment
+                                    }
                             }
                         }
                     }

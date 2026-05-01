@@ -233,52 +233,50 @@ import Translation
         Router.shared.to(parent)
     }
     
-    func collapse(cmt: Comment) {
+    func collapse(cmt: Comment) async {
         guard status.isCompleted else { return }
         var commentsBuffer = comments
-        Task { [self] in
-            let updatedComment = cmt.copyWith(isCollapsed: true)
-            let parentIndex = commentsBuffer.firstIndex { $0.id == cmt.id }
-            let parentLevel = cmt.level
-            func sendUpdates() async {
-                await MainActor.run { [commentsBuffer] in
-                    
+        let updatedComment = cmt.copyWith(isCollapsed: true)
+        let parentIndex = commentsBuffer.firstIndex { $0.id == cmt.id }
+        let parentLevel = cmt.level
+        func sendUpdates() async {
+            await MainActor.run { [commentsBuffer] in
+                
 #if DEBUG
-                    if comments.count != commentsBuffer.count {
-                        fatalError("Unexpected data corruption...")
-                    }
-#endif
-                    
-                    withAnimation(.snappy.speed(200)) {
-                        self.comments = commentsBuffer
-                    }
-                    self.scrollTo = cmt.id
+                if comments.count != commentsBuffer.count {
+                    fatalError("Unexpected data corruption...")
                 }
+#endif
+                
+                withAnimation(.snappy.speed(200)) {
+                    self.comments = commentsBuffer
+                }
+                self.scrollTo = cmt.id
             }
-            guard let parentIndex, let parentLevel else { return }
-            commentsBuffer[parentIndex] = updatedComment
-            var index = parentIndex + 1
-            guard index < commentsBuffer.count else {
-                await sendUpdates()
-                return
-            }
-            var nextComment = commentsBuffer[index]
-            var nextCommentLevel: Int = nextComment.level ?? 0
-            guard nextCommentLevel > parentLevel else {
-                await sendUpdates()
-                return
-            }
-            repeat {
-                let updatedComment = nextComment.copyWith(isHidden: true)
-                commentsBuffer[index] = updatedComment
-                index = index + 1
-                guard index < commentsBuffer.count else { break }
-                nextComment = commentsBuffer[index]
-                nextCommentLevel = nextComment.level ?? 0
-            } while (nextCommentLevel > parentLevel)
-            
-            await sendUpdates()
         }
+        guard let parentIndex, let parentLevel else { return }
+        commentsBuffer[parentIndex] = updatedComment
+        var index = parentIndex + 1
+        guard index < commentsBuffer.count else {
+            await sendUpdates()
+            return
+        }
+        var nextComment = commentsBuffer[index]
+        var nextCommentLevel: Int = nextComment.level ?? 0
+        guard nextCommentLevel > parentLevel else {
+            await sendUpdates()
+            return
+        }
+        repeat {
+            let updatedComment = nextComment.copyWith(isHidden: true)
+            commentsBuffer[index] = updatedComment
+            index = index + 1
+            guard index < commentsBuffer.count else { break }
+            nextComment = commentsBuffer[index]
+            nextCommentLevel = nextComment.level ?? 0
+        } while (nextCommentLevel > parentLevel)
+        
+        await sendUpdates()
     }
     
     func uncollapse(cmt: Comment) async {
