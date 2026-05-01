@@ -178,7 +178,7 @@
 		129873242FA49A21003C6345 /* thread_translation_in_thread_original.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_translation_in_thread_original.png; sourceTree = "<group>"; };
 		129873252FA49A21003C6345 /* thread_translation_in_thread_translated.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_translation_in_thread_translated.png; sourceTree = "<group>"; };
 		129873262FA49A21003C6345 /* thread_translation_root_translated.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_translation_root_translated.png; sourceTree = "<group>"; };
-		129873272FA49A21003C6345 /* thread_translation_root_original.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_translation_root_original.png; sourceTree = "<group>"; };
+		129873282FA49D0E003C6345 /* thread_translation_root_original.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_translation_root_original.png; sourceTree = "<group>"; };
 		E11F308B2F907A1700E1B1FB /* RecentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentsView.swift; sourceTree = "<group>"; };
 		E11F308D2F907D0E00E1B1FB /* StoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryModel.swift; sourceTree = "<group>"; };
 		E11F30902F90BE6B00E1B1FB /* PinsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinsViewModel.swift; sourceTree = "<group>"; };
@@ -694,8 +694,8 @@
 				E1A752FF2F9B5FB4004DB084 /* thread_new_comments.png */,
 				129873242FA49A21003C6345 /* thread_translation_in_thread_original.png */,
 				129873252FA49A21003C6345 /* thread_translation_in_thread_translated.png */,
+				129873282FA49D0E003C6345 /* thread_translation_root_original.png */,
 				129873262FA49A21003C6345 /* thread_translation_root_translated.png */,
-				129873272FA49A21003C6345 /* thread_translation_root_original.png */,
 				E1898BFB2F96BB4D00288592 /* thread_with_url.png */,
 			);
 			path = Screenshots;
