@@ -8,7 +8,7 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
 [<img src="Resources/app_store_badge.png" height="50">](https://apps.apple.com/us/app/gem/id6762153947?platform=iphone) 
 
 - [x] Log in using [Hacker News](https://news.ycombinator.com/) account
-- [x] [Thread Translation](#translation)
+- [x] [Thread Translation](#thread-translation)
 - [x] [Reply, vote, or flag](#thread)
 - [x] [Hacker News account favorites sync](#pins-favorites-and-replies)
 - [x] [Hacker News search](#search) 
@@ -34,7 +34,7 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
   <img width="200" src="Resources/Screenshots/comment_thread.png">
 </p>
 
-## Translation
+## Thread translation
 <p align="center">
   <img width="200" src="Resources/Screenshots/thread_translation_root_original.png">
   <img width="200" src="Resources/Screenshots/thread_translation_root_translated.png">
