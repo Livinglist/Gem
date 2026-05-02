@@ -80,6 +80,10 @@ public struct Comment: Item, Equatable {
     }
     
     public static func == (lhs: Comment, rhs: Comment) -> Bool {
-        return lhs.id == rhs.id && lhs.isCollapsed == rhs.isCollapsed && lhs.isHidden == rhs.isHidden && lhs.text == rhs.text
+        return lhs.id == rhs.id && 
+               lhs.isCollapsed == rhs.isCollapsed && 
+               lhs.isHidden == rhs.isHidden && 
+               lhs.isNew == rhs.isNew &&
+               lhs.text == rhs.text
     }
 }
