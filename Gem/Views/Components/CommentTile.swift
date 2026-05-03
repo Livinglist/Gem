@@ -3,6 +3,29 @@ import WebKit
 import HackerNewsKit
 import Translation
 
+extension CommentTile {
+    struct CommentCollapsedView: View {
+        let comment: Comment
+        let level: Int
+        
+        var body: some View {
+            VStack {
+                Text(comment.text.orEmpty.prefix(100))
+                    .lineLimit(1)
+                    .font(.body)
+                    .foregroundStyle(.foreground.opacity(0.4))
+                    .textSelection(.enabled)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 4)
+                    .padding(.bottom, 8)
+                Text("Collapsed")
+                    .font(.footnote.weight(.bold))
+                    .foregroundColor(getColor(level: level))
+            }
+        }
+    }
+}
+
 struct CommentTile: View {
     @Environment(Authentication.self) var auth
     var vm: ThreadViewModel
@@ -94,17 +117,7 @@ struct CommentTile: View {
                                 isRoot: false,
                                 index: index).padding(.bottom, 4)
                     if allowActions && isCollapsed {
-                        Text(comment.text.orEmpty.prefix(100))
-                            .lineLimit(1)
-                            .font(.body)
-                            .foregroundStyle(.foreground.opacity(0.4))
-                            .textSelection(.enabled)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 4)
-                            .padding(.bottom, 8)
-                        Text("Collapsed")
-                            .font(.footnote.weight(.bold))
-                            .foregroundColor(getColor(level: level))
+                        CommentCollapsedView(comment: comment, level: level)
                     } else {
                         CommentTextView(comment: comment, language: vm.targetLanguage)
                     }

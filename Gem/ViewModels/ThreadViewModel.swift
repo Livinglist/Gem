@@ -327,10 +327,12 @@ import Translation
             selectionGenerator.selectionChanged()
         }
         
-        withAnimation(.snappy.speed(200)) {
+        withAnimation(.snappy(duration: 0.3)) {
             self.comments = commentsBuffer
-            
-            if let scrollTo, SettingsViewModel.shared.isAutoScrollEnabled {
+        }
+        
+        if let scrollTo, SettingsViewModel.shared.isAutoScrollEnabled {
+            withAnimation {
                 self.scrollViewProxy?.scrollTo(scrollTo.id, anchor: .top)
             }
         }
