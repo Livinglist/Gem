@@ -7,7 +7,7 @@
                 "Time": 0,
                 "EventParameters": [
                     {
-                        "ParameterValue": 0.3,
+                        "ParameterValue": 0.4,
                         "ParameterID": "HapticIntensity"
                     },
                     {
@@ -24,7 +24,7 @@
                 "Time": 0.015,
                 "EventParameters": [
                     {
-                        "ParameterValue": 0.3,
+                        "ParameterValue": 0.4,
                         "ParameterID": "HapticIntensity"
                     },
                     {
