@@ -7,28 +7,21 @@ import Logging
 struct Home: View {
     @Environment(Authentication.self) var auth
     @Environment(\.requestReview) private var requestReview
-    private var storyVM: StoryViewModel = .shared
     @Bindable private var router: Router = .shared
-    private var offlineRepository: OfflineRepository = .shared
     
-    @State private var isEulaDialogPresented: Bool = .init()
-    @State private var isLoginDialogPresented: Bool = .init()
-    @State private var isAboutSheetPresented: Bool = .init()
     @State private var isUrlSheetPresented: Bool = .init()
     @State private var isAbortDownloadAlertPresented: Bool = .init()
-    
-    @State private var username: String = .init()
-    @State private var password: String = .init()
-    
     @State private var actionPerformed: Action = .none
-    @State private var columnVisibility: NavigationSplitViewVisibility = .doubleColumn
     @State private var showSlideOutMenu: Bool = false
     @State private var dragOffset: Double = 0
     @State private var selectedMenuItem: MenuItem = .home
+    @State private var url: IdentifiableURL? = nil
+    private var storyVM: StoryViewModel = .shared
+    private var offlineRepository: OfflineRepository = .shared
+    
     private let settings: SettingsViewModel = .shared
     private let appStoreReviewReuqestTrigger = 10
     private let menuWidth: CGFloat = 300
-    private static var handledUrl: URL? = nil
     
     var sideMenuScale: CGFloat {
         let baseScaleFactor = 0.95
@@ -162,12 +155,9 @@ struct Home: View {
                             Text("Confirm")
                         }
                     }
-                    .sheet(isPresented: $isAboutSheetPresented, content: {
-                        SafariView(url: Constants.githubUrl)
-                    })
-                    .sheet(isPresented: $isUrlSheetPresented, content: {
-                        SafariView(url: Self.handledUrl!)
-                    })
+                    .sheet(item: $url) { url in
+                        SafariView(url: url.url)
+                    }
                     .onOpenURL(perform: { url in
                         if let id = url.absoluteString.itemId {
                             Task {
@@ -187,8 +177,7 @@ struct Home: View {
                             Task {
                                 let item = await StoryRepository.shared.fetchItem(id)
                                 guard let item = item else {
-                                    Self.handledUrl = url
-                                    isUrlSheetPresented = true
+                                    self.url = IdentifiableURL(url: url)
                                     return
                                 }
                                 
@@ -196,8 +185,7 @@ struct Home: View {
                             }
                             return .handled
                         } else {
-                            Self.handledUrl = url
-                            isUrlSheetPresented = true
+                            self.url = IdentifiableURL(url: url)
                             return .handled
                         }
                     })

@@ -33,23 +33,22 @@ import HackerNewsKit
     func fetchStories(status: Status = .inProgress) async {
         self.status = status
         self.currentPage = 0
-        self.storyIds = await StoryRepository.shared.fetchStoryIds(from: self.storyType)
         
         if OfflineRepository.shared.isOfflineReading {
             let cachedStories = OfflineRepository.shared.fetchAllStories(from: storyType)
-            self.status = .completed
             withAnimation {
+                self.status = .completed
                 self.stories = cachedStories
             }
         } else {
+            self.storyIds = await StoryRepository.shared.fetchStoryIds(from: self.storyType)
             var stories = [Story]()
             let range = 0..<min(pageSize, storyIds.count)
             await StoryRepository.shared.fetchStories(ids: Array(storyIds[range])) { story in
                 stories.append(story)
             }
-            
-            self.status = .completed
             withAnimation {
+                self.status = .completed
                 self.stories = stories
             }
         }

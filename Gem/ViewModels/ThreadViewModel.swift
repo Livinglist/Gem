@@ -21,9 +21,6 @@ import Translation
     /// The loading state of comments.
     var status: Status = .idle
     
-    /// The ID of comment that the scroll view on thread screen is about to scroll to.
-    var scrollTo: Int?
-    
     // MARK: - Translation
     var isTranslationEnabled: Bool = false {
         didSet {
@@ -80,6 +77,11 @@ import Translation
     /// Comments cache to fall back to when all resorts exhausted...
     @ObservationIgnored
     private var commentsCache = NSCache<NSNumber, CommentCollection>()
+    
+    @ObservationIgnored
+    var scrollViewProxy: ScrollViewProxy? = nil
+    
+    private let selectionGenerator = UISelectionFeedbackGenerator()
     
     init(_ item: any Item) {
         self.item = item
@@ -225,46 +227,27 @@ import Translation
         }
     }
     
-    func goToParent() async {
-        guard let parentId = item?.parent,
-              let parent = await StoryRepository.shared.fetchItem(parentId)
-        else { return }
-        
-        Router.shared.to(parent)
-    }
-    
     func collapse(cmt: Comment) async {
         guard status.isCompleted else { return }
         var commentsBuffer = comments
         let updatedComment = cmt.copyWith(isCollapsed: true)
         let parentIndex = commentsBuffer.firstIndex { $0.id == cmt.id }
         let parentLevel = cmt.level
-        func sendUpdates() async {
-            await MainActor.run { [commentsBuffer] in
-                
-#if DEBUG
-                if comments.count != commentsBuffer.count {
-                    fatalError("Unexpected data corruption...")
-                }
-#endif
-                
-                withAnimation(.snappy.speed(200)) {
-                    self.comments = commentsBuffer
-                }
-                self.scrollTo = cmt.id
-            }
-        }
         guard let parentIndex, let parentLevel else { return }
         commentsBuffer[parentIndex] = updatedComment
         var index = parentIndex + 1
         guard index < commentsBuffer.count else {
-            await sendUpdates()
+            await sendUpdates(commentsBuffer: commentsBuffer,
+                              hasKids: false,
+                              scrollTo: cmt)
             return
         }
         var nextComment = commentsBuffer[index]
         var nextCommentLevel: Int = nextComment.level ?? 0
         guard nextCommentLevel > parentLevel else {
-            await sendUpdates()
+            await sendUpdates(commentsBuffer: commentsBuffer,
+                              hasKids: false,
+                              scrollTo: cmt)
             return
         }
         repeat {
@@ -276,26 +259,13 @@ import Translation
             nextCommentLevel = nextComment.level ?? 0
         } while (nextCommentLevel > parentLevel)
         
-        await sendUpdates()
+        await sendUpdates(commentsBuffer: commentsBuffer,
+                          scrollTo: cmt)
     }
     
     func uncollapse(cmt: Comment) async {
         guard status.isCompleted else { return }
         var commentsBuffer = comments
-        func sendUpdates() async {
-            await MainActor.run { [commentsBuffer] in
-                
-#if DEBUG
-                    if comments.count != commentsBuffer.count {
-                        fatalError("Unexpected data corruption...")
-                    }
-#endif
-                
-                withAnimation(.snappy.speed(200)) {
-                    self.comments = commentsBuffer
-                }
-            }
-        }
         let updatedComment = cmt.copyWith(isCollapsed: false)
         let parentIndex = commentsBuffer.firstIndex { $0.id == cmt.id }
         let parentLevel = cmt.level
@@ -303,13 +273,13 @@ import Translation
         commentsBuffer[parentIndex] = updatedComment
         var index = parentIndex + 1
         guard index < commentsBuffer.count else {
-            await sendUpdates()
+            await sendUpdates(commentsBuffer: commentsBuffer, hasKids: false)
             return
         }
         var nextComment = commentsBuffer[index]
         var nextCommentLevel: Int = nextComment.level ?? 0
         guard nextCommentLevel > parentLevel else {
-            await sendUpdates()
+            await sendUpdates(commentsBuffer: commentsBuffer, hasKids: false)
             return
         }
         
@@ -322,7 +292,7 @@ import Translation
                 repeat {
                     index = index + 1
                     guard index < commentsBuffer.count else {
-                        await sendUpdates()
+                        await sendUpdates(commentsBuffer: commentsBuffer)
                         return
                     }
                     nextComment = commentsBuffer[index]
@@ -333,7 +303,7 @@ import Translation
             else {
                 index = index + 1
                 guard index < commentsBuffer.count else {
-                    await sendUpdates()
+                    await sendUpdates(commentsBuffer: commentsBuffer)
                     return
                 }
                 nextComment = commentsBuffer[index]
@@ -341,7 +311,29 @@ import Translation
             }
         } while (nextCommentLevel > parentLevel)
         
-        await sendUpdates()
+        await sendUpdates(commentsBuffer: commentsBuffer)
+    }
+    
+    private func sendUpdates(commentsBuffer: [Comment], hasKids: Bool = true, scrollTo: Comment? = nil) async {
+#if DEBUG
+        if comments.count != commentsBuffer.count {
+            fatalError("Unexpected data corruption...")
+        }
+#endif
+        
+        if hasKids {
+            HapticsManager.shared.boing()
+        } else {
+            selectionGenerator.selectionChanged()
+        }
+        
+        withAnimation(.snappy.speed(200)) {
+            self.comments = commentsBuffer
+            
+            if let scrollTo, SettingsViewModel.shared.isAutoScrollEnabled {
+                self.scrollViewProxy?.scrollTo(scrollTo.id, anchor: .top)
+            }
+        }
     }
     
     func uncollapseRoot(of index: Int) async {
