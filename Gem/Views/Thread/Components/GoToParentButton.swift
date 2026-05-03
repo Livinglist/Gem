@@ -20,7 +20,7 @@ extension Thread {
         }
         
         private func goToParent() async {
-            guard let updatedComment = await StoryRepository.shared.fetchComment(comment.id),
+            guard let updatedComment = comment.parent == -1 ? await StoryRepository.shared.fetchComment(comment.id) : comment,
                   let parentId = updatedComment.parent,
                   let parent = await StoryRepository.shared.fetchItem(parentId)
             else { return }
