@@ -327,7 +327,7 @@ import Translation
             selectionGenerator.selectionChanged()
         }
         
-        withAnimation(.snappy(duration: 0.3)) {
+        withAnimation(.snappy(duration: 0.28, extraBounce: 0.05)) {
             self.comments = commentsBuffer
         }
         
