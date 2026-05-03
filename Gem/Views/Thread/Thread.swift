@@ -7,7 +7,6 @@ struct Thread: View {
     @Environment(Authentication.self) var auth
     @State private var vm: ThreadViewModel
     @StateObject private var debounceObject: DebounceObject = .init()
-    @State private var scrollViewProxy: ScrollViewProxy? = nil
     @State private var activeURL: IdentifiableURL? = nil
     @State private var isReplySheetPresented: Bool = .init()
     @State private var isFlagDialogPresented: Bool = .init()
@@ -33,24 +32,15 @@ struct Thread: View {
     
     var body: some View {
         mainItemView
-            .sensoryFeedback(.selection, trigger: commentTapped)
+            //.sensoryFeedback(.selection, trigger: commentTapped) { $1 != nil }
             .sensoryFeedback(.impact(flexibility: .solid), trigger: isSearchPresented) { $1 }
             .sensoryFeedback(.success, trigger: vm.translationStatus) { _, status in status == .completed }
-            .onChange(of: vm.scrollTo) { _, id in
-                if settings.isAutoScrollEnabled, let id, vm.comments.first?.id != id {
-                    withAnimation {
-                        scrollViewProxy?.scrollTo(id, anchor: .top)
-                    }
-                    vm.scrollTo = nil
-                }
-            }
             .withToast(actionPerformed: $actionPerformed)
             .sheet(isPresented: $isSearchPresented) {
                 NavigationStack {
                     InThreadSearchSheet(debounceObject: debounceObject,
-                                      isSearchPresented: $isSearchPresented,
-                                      vm: vm,
-                                      scrollViewProxy: scrollViewProxy)
+                                        isSearchPresented: $isSearchPresented,
+                                        vm: vm)
                 }
             }
             .sheet(item: $activeURL) { url in
@@ -90,6 +80,7 @@ struct Thread: View {
                     } else {
                         await vm.collapse(cmt: commentTapped)
                     }
+                    self.commentTapped = nil
                 }
             }
     }
@@ -104,52 +95,7 @@ struct Thread: View {
                             index: nil)
                 .padding(.leading, 6)
                 .padding(.top, 6)
-                if item is Story {
-                    if let url = URL(string: item.url.orEmpty) {
-                        VStack(spacing: 0) {
-                            ZStack {
-                                LinkPreview(url: url,
-                                            title: item.title.orEmpty)
-                                .onTapGesture {
-                                    if activeURL == nil {
-                                        activeURL = IdentifiableURL(url: url)
-                                    } else {
-                                        Router.shared.to(.url(url))
-                                    }
-                                }
-                            }
-                            if item.text.orEmpty.isNotEmpty {
-                                Text(item.text.orEmpty.markdowned)
-                                    .tint(.accent)
-                                    .font(.body)
-                                    .padding(.horizontal, 10)
-                                    .padding(.top, 6)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                        }
-                    } else {
-                        VStack(spacing: 0) {
-                            Text(item.title.orEmpty)
-                                .font(.system(.title3, design: .serif))
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, 12)
-                            Text(item.text.orEmpty.markdowned)
-                                .tint(.accent)
-                                .font(.body)
-                                .padding(.horizontal, 10)
-                                .padding(.top, 6)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                    }
-                } else if item is Comment {
-                    VStack(spacing: 0) {
-                        Text(item.text.orEmpty.markdowned)
-                            .tint(.accent)
-                            .font(.body)
-                            .padding(.horizontal, 10)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
+                RootItemView(item: vm.item ?? item, activeURL: $activeURL)
                 Divider()
                     .padding(.horizontal)
                 if vm.status == .inProgress {
@@ -166,6 +112,10 @@ struct Thread: View {
                                     .onTapGesture {
                                         commentTapped = comment
                                     }
+                                    .transition(.asymmetric(
+                                        insertion: .move(edge: .trailing),
+                                        removal: .move(edge: .trailing)
+                                    ))
                             }
                         }
                     }
@@ -181,6 +131,10 @@ struct Thread: View {
                                     .onTapGesture {
                                         commentTapped = comment
                                     }
+                                    .transition(.asymmetric(
+                                        insertion: .move(edge: .trailing),
+                                        removal: .move(edge: .trailing)
+                                    ))
                             }
                         }
                     }
@@ -189,22 +143,17 @@ struct Thread: View {
                 Spacer().frame(height: 60)
             }
             .onAppear {
-                self.scrollViewProxy = proxy
+                vm.scrollViewProxy = proxy
             }
         }
         .toolbar {
             ToolbarItem(placement: .title) {
                 Text("")
             }
-            if item is Comment {
+            
+            if let comment = vm.item as? Comment {
                 ToolbarItem {
-                    Button {
-                        Task {
-                            await vm.goToParent()
-                        }
-                    } label: {
-                        Image(systemName: "figure.stairs")
-                    }
+                    GoToParentButton(comment: comment)
                 }
             }
             
@@ -224,7 +173,7 @@ struct Thread: View {
                 }
                 ToolbarSpacer(.fixed)
             }
-
+            
             ToolbarItem {
                 Button {
                     isSearchPresented = true

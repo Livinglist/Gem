@@ -6,7 +6,6 @@ extension Thread {
         @ObservedObject var debounceObject: DebounceObject
         @Binding var isSearchPresented: Bool
         var vm: ThreadViewModel
-        let scrollViewProxy: ScrollViewProxy?
         
         @FocusState private var isSearchFocused: Bool
         
@@ -35,13 +34,13 @@ extension Thread {
                                     await vm.uncollapseRoot(of: index)
                                     
                                     withAnimation {
-                                        scrollViewProxy?.scrollTo(comment.id, anchor: .top)
+                                        vm.scrollViewProxy?.scrollTo(comment.id, anchor: .top)
                                     }
                                     
                                     try? await Task.sleep(until: .now + .seconds(1))
                                     
                                     withAnimation {
-                                        scrollViewProxy?.scrollTo(comment.id, anchor: .top)
+                                        vm.scrollViewProxy?.scrollTo(comment.id, anchor: .top)
                                     }
                                 }
                             }

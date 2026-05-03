@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		126015902FA7376100C8E507 /* GoToParentButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1260158F2FA7376100C8E507 /* GoToParentButton.swift */; };
+		126015932FA737F000C8E507 /* RootItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 126015922FA737ED00C8E507 /* RootItemView.swift */; };
+		126015952FA73DE300C8E507 /* boing.ahap in Resources */ = {isa = PBXBuildFile; fileRef = 126015942FA73DE300C8E507 /* boing.ahap */; };
 		E10D834C2F8D97BD00E0CBC5 /* HackerNewsKit in Frameworks */ = {isa = PBXBuildFile; productRef = E10D834B2F8D97BD00E0CBC5 /* HackerNewsKit */; };
 		E11F308C2F907A1D00E1B1FB /* RecentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F308B2F907A1700E1B1FB /* RecentsView.swift */; };
 		E11F308E2F907D1000E1B1FB /* StoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F308D2F907D0E00E1B1FB /* StoryModel.swift */; };
@@ -175,6 +178,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1260158F2FA7376100C8E507 /* GoToParentButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoToParentButton.swift; sourceTree = "<group>"; };
+		126015922FA737ED00C8E507 /* RootItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootItemView.swift; sourceTree = "<group>"; };
+		126015942FA73DE300C8E507 /* boing.ahap */ = {isa = PBXFileReference; lastKnownFileType = text; path = boing.ahap; sourceTree = "<group>"; };
 		129873242FA49A21003C6345 /* thread_translation_in_thread_original.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_translation_in_thread_original.png; sourceTree = "<group>"; };
 		129873252FA49A21003C6345 /* thread_translation_in_thread_translated.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_translation_in_thread_translated.png; sourceTree = "<group>"; };
 		129873262FA49A21003C6345 /* thread_translation_root_translated.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_translation_root_translated.png; sourceTree = "<group>"; };
@@ -392,6 +398,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1260158E2FA7375400C8E507 /* Thread */ = {
+			isa = PBXGroup;
+			children = (
+				126015912FA7377600C8E507 /* Components */,
+				E131BD562F8DB98F00F7E034 /* Thread.swift */,
+			);
+			path = Thread;
+			sourceTree = "<group>";
+		};
+		126015912FA7377600C8E507 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				1260158F2FA7376100C8E507 /* GoToParentButton.swift */,
+				E131BD412F8DB98F00F7E034 /* LinkPreview.swift */,
+				126015922FA737ED00C8E507 /* RootItemView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		E11F30822F90772900E1B1FB /* Repositories */ = {
 			isa = PBXGroup;
 			children = (
@@ -546,7 +571,6 @@
 				E1AB28AE2F92046F00A8B707 /* InThreadSearchSheet.swift */,
 				E1AB28AC2F91FFE400A8B707 /* ItemMenu.swift */,
 				E131BD402F8DB98F00F7E034 /* ItemRow.swift */,
-				E131BD412F8DB98F00F7E034 /* LinkPreview.swift */,
 				E131BD422F8DB98F00F7E034 /* LoadingIndicator.swift */,
 				E1AB28A42F91AE1500A8B707 /* NameRowView.swift */,
 				E131BD432F8DB98F00F7E034 /* ReplyView.swift */,
@@ -583,18 +607,18 @@
 		E131BD572F8DB98F00F7E034 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				E1DB64E32FA04CDB006EFBA7 /* Logs.swift */,
 				E131BD502F8DB98F00F7E034 /* Favorites.swift */,
 				E131BD512F8DB98F00F7E034 /* Home.swift */,
+				E1DB64E32FA04CDB006EFBA7 /* Logs.swift */,
 				E131BD522F8DB98F00F7E034 /* Pins.swift */,
 				E131BD532F8DB98F00F7E034 /* Profile.swift */,
 				E5DAC2202F8F19F200EB1354 /* Replies.swift */,
 				E131BD542F8DB98F00F7E034 /* Settings.swift */,
 				E5DAC2222F8F1A2C00EB1354 /* Stories.swift */,
 				E131BD552F8DB98F00F7E034 /* Submissions.swift */,
-				E131BD562F8DB98F00F7E034 /* Thread.swift */,
 				E131BD4A2F8DB98F00F7E034 /* Components */,
 				E131BD4F2F8DB98F00F7E034 /* Search */,
+				1260158E2FA7375400C8E507 /* Thread */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -704,6 +728,7 @@
 		E1AB28B82F92B76200A8B707 /* Haptics */ = {
 			isa = PBXGroup;
 			children = (
+				126015942FA73DE300C8E507 /* boing.ahap */,
 				E1AB28B72F92B76200A8B707 /* heartbeats.ahap */,
 			);
 			path = Haptics;
@@ -908,6 +933,7 @@
 			isa = PBXResourcesBuildPhase;
 			files = (
 				E1ACB6FA2F8F11EF00382813 /* Gem App Icon.icon in Resources */,
+				126015952FA73DE300C8E507 /* boing.ahap in Resources */,
 				E131BDA22F8DB98F00F7E034 /* Assets.xcassets in Resources */,
 				E1AB28B92F92B76200A8B707 /* heartbeats.ahap in Resources */,
 			);
@@ -1007,12 +1033,14 @@
 				E131BD8C2F8DB98F00F7E034 /* LinkPreview.swift in Sources */,
 				E1AB28BB2F92BD4400A8B707 /* ASCIISpinner.swift in Sources */,
 				E5DAC2212F8F19F500EB1354 /* Replies.swift in Sources */,
+				126015932FA737F000C8E507 /* RootItemView.swift in Sources */,
 				E131BD8D2F8DB98F00F7E034 /* LoadingIndicator.swift in Sources */,
 				E11F308C2F907A1D00E1B1FB /* RecentsView.swift in Sources */,
 				E131BD8E2F8DB98F00F7E034 /* ReplyView.swift in Sources */,
 				E131BD8F2F8DB98F00F7E034 /* SafariView.swift in Sources */,
 				E131BD902F8DB98F00F7E034 /* ScaleButtonStyle.swift in Sources */,
 				E131BD912F8DB98F00F7E034 /* ShareMenu.swift in Sources */,
+				126015902FA7376100C8E507 /* GoToParentButton.swift in Sources */,
 				E131BD922F8DB98F00F7E034 /* TextView.swift in Sources */,
 				E131BD932F8DB98F00F7E034 /* ToastContainer.swift in Sources */,
 				E131BD942F8DB98F00F7E034 /* WebView.swift in Sources */,
@@ -1250,7 +1278,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiaqi.gem;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -1294,7 +1322,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiaqi.gem;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1329,7 +1357,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jiaqi.gem.share-extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1360,7 +1388,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jiaqi.gem.share-extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1394,7 +1422,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jiaqi.gem.action-extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1428,7 +1456,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jiaqi.gem.action-extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1461,7 +1489,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jiaqi.gem.home-widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1494,7 +1522,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jiaqi.gem.home-widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

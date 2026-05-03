@@ -4,6 +4,7 @@ import UIKit
 class HapticsManager {
     private var engine: CHHapticEngine?
     private var player: CHHapticAdvancedPatternPlayer?
+    private var boingPlayer: CHHapticAdvancedPatternPlayer?
     
     static let shared = HapticsManager()
 
@@ -20,6 +21,7 @@ class HapticsManager {
         engine?.stoppedHandler = { [weak self] _ in
             self?.engine = nil
             self?.player = nil
+            self?.boingPlayer = nil
             self?.setupEngine()
         }
         try? engine?.start()
@@ -42,8 +44,24 @@ class HapticsManager {
                 let pattern = try CHHapticPattern(contentsOf: URL(fileURLWithPath: path))
                 player = try engine?.makeAdvancedPlayer(with: pattern)
                 player?.loopEnabled = true
-                player?.loopEnd = 2
                 try player?.start(atTime: CHHapticTimeImmediate)
+            }
+        } catch {
+            setupEngine()
+        }
+    }
+    
+    func boing() {
+        do {
+            if let boingPlayer {
+                try boingPlayer.start(atTime: CHHapticTimeImmediate)
+            } else {
+                guard let path = Bundle.main.path(forResource: "boing", ofType: "ahap") else {
+                    return
+                }
+                let pattern = try CHHapticPattern(contentsOf: URL(fileURLWithPath: path))
+                boingPlayer = try engine?.makeAdvancedPlayer(with: pattern)
+                try boingPlayer?.start(atTime: CHHapticTimeImmediate)
             }
         } catch {
             setupEngine()
