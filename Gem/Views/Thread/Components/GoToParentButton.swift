@@ -5,7 +5,7 @@ extension Thread {
     struct GoToParentButton: View {
         @State var isParentLoading = false
         
-        let item: any Item
+        let comment: Comment
         
         var body: some View {
             Button {
@@ -20,7 +20,8 @@ extension Thread {
         }
         
         private func goToParent() async {
-            guard let parentId = item.parent,
+            guard let updatedComment = await StoryRepository.shared.fetchComment(comment.id),
+                  let parentId = updatedComment.parent,
                   let parent = await StoryRepository.shared.fetchItem(parentId)
             else { return }
             isParentLoading = false

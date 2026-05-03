@@ -135,9 +135,11 @@ import Translation
         defer {
             HapticsManager.shared.stop()
             saveToCache()
-            self.status = .completed
-            self.translationStatus = .completed
-            self.comments = commentsBuffer
+            withAnimation {
+                self.status = .completed
+                self.translationStatus = .completed
+                self.comments = commentsBuffer
+            }
         }
         
         // Cancel any existing task

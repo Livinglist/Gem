@@ -151,9 +151,9 @@ struct Thread: View {
                 Text("")
             }
             
-            if let item = vm.item, item is Comment {
+            if let comment = vm.item as? Comment {
                 ToolbarItem {
-                    GoToParentButton(item: item)
+                    GoToParentButton(comment: comment)
                 }
             }
             
