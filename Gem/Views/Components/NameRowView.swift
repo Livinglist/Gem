@@ -2,6 +2,7 @@ import SwiftUI
 import HackerNewsKit
 
 struct NameRowView: View {
+    @Environment(\.colorScheme) var colorScheme
     @State var timeDisplay: TimeDisplay = .timeAgo
     let item: any Item
     let isOP: Bool
@@ -37,7 +38,7 @@ struct NameRowView: View {
                 if comment.isNew ?? false {
                     Text("\(Image(systemName: "sparkles"))")
                         .borderedFootnote()
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(colorScheme == .dark ? .orange : .black)
                 }
                 if comment.isReply ?? false {
                     Text("\(Image(systemName: "arrow.2.squarepath"))")
