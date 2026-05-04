@@ -76,13 +76,13 @@ struct Stories: View {
                                 vm.storyType = storyType
                             }
                         } label: {
-                            Label("\(storyType.label.capitalized)", systemImage: storyType.icon)
+                            Label("\(storyType.label)", systemImage: storyType.icon)
                         }
                         .disabled(offlineRepository.isOfflineReading && !storyType.isDownloadable)
                     }
                 } label: {
                     HStack {
-                        Text(vm.storyType.label.capitalized)
+                        Text(vm.storyType.label)
                             .font(.headline)
                             .foregroundStyle(.foreground)
                         Image(systemName: "chevron.down")
@@ -90,7 +90,7 @@ struct Stories: View {
                             .scaledToFit()
                             .frame(height: 8)
                     }
-                    .frame(minWidth: 80, alignment: .center)
+                    .frame(minWidth: 100, alignment: .center)
                 }
             }
         }

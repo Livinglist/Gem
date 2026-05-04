@@ -23,23 +23,27 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
   <img width="200" src="Resources/Screenshots/home_side_menu.png">
   <img width="200" src="Resources/Screenshots/home_top.png">
   <img width="200" src="Resources/Screenshots/home_story_type_menu.png">
-  <img width="200" src="Resources/Screenshots/home_offline_mode_menu.png">
+  <img width="200" src="Resources/Screenshots/home_show_hn_action_menu.png">
   <img width="200" src="Resources/Screenshots/home_side_menu_light.png">
   <img width="200" src="Resources/Screenshots/home_top_light.png">
   <img width="200" src="Resources/Screenshots/home_story_type_menu_light.png">
-  <img width="200" src="Resources/Screenshots/home_offline_mode_menu_light.png">
+  <img width="200" src="Resources/Screenshots/home_show_hn_action_menu_light.png">
 </p>
 
 ## Thread
 <p align="center">
   <img width="200" src="Resources/Screenshots/thread.png">
   <img width="200" src="Resources/Screenshots/thread_comment_context_menu.png">
+  <img width="200" src="Resources/Screenshots/thread_replying_to.png">
   <img width="200" src="Resources/Screenshots/thread_deep.png">
-  <img width="200" src="Resources/Screenshots/comment_thread.png">
   <img width="200" src="Resources/Screenshots/thread_light.png">
   <img width="200" src="Resources/Screenshots/thread_comment_context_menu_light.png">
+  <img width="200" src="Resources/Screenshots/thread_replying_to_light.png">
   <img width="200" src="Resources/Screenshots/thread_deep_light.png">
-  <img width="200" src="Resources/Screenshots/comment_thread_light.png">
+  <img width="200" src="Resources/Screenshots/thread_eager.png">
+  <img width="200" src="Resources/Screenshots/thread_eager_light.png">
+  <img width="200" src="Resources/Screenshots/thread_lazy.png">
+  <img width="200" src="Resources/Screenshots/thread_lazy_light.png">
 </p>
 
 ## Thread translation

@@ -43,7 +43,7 @@ struct ReplyView: View {
                 .padding()
                 .background {
                     RoundedRectangle(cornerRadius: 12)
-                        .glassEffect(.clear, in: .rect(cornerRadius: 12)) // New in iOS 26
+                        .glassEffect(.clear, in: .rect(cornerRadius: 12))
                 }
                 .textFieldStyle(.plain)
                 .padding(.horizontal, 12)

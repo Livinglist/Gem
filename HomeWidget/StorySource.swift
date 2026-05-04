@@ -14,8 +14,8 @@ enum StorySource: String, AppEnum {
         .top: "Top",
         .best: "Best",
         .new: "New",
-        .ask: "Ask",
-        .show: "Show",
+        .ask: "Ask HN",
+        .show: "Show HN",
         .job: "Jobs"
     ]
 }

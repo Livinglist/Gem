@@ -28,10 +28,18 @@ public enum StoryType: String, Equatable, CaseIterable, AppEnum, Codable {
     
     public var label: String {
         switch self {
+        case .top:
+            return "Top"
+        case .best:
+            return "Best"
+        case .new:
+            return "New"
+        case .ask:
+            return "Ask HN"
+        case .show:
+            return "Show HN"
         case .jobs:
-            return "jobs"
-        default:
-            return self.rawValue
+            return "YC Jobs"
         }
     }
     
