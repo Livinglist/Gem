@@ -20,12 +20,12 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
 
 ## Home
 <p align="center">
+  <img width="200" src="Resources/Screenshots/home_side_menu.png">
   <img width="200" src="Resources/Screenshots/home_top.png">
-  <img width="200" src="Resources/Screenshots/home_ask_hn.png">
   <img width="200" src="Resources/Screenshots/home_story_type_menu.png">
   <img width="200" src="Resources/Screenshots/home_offline_mode_menu.png">
+  <img width="200" src="Resources/Screenshots/home_side_menu_light.png">
   <img width="200" src="Resources/Screenshots/home_top_light.png">
-  <img width="200" src="Resources/Screenshots/home_ask_hn_light.png">
   <img width="200" src="Resources/Screenshots/home_story_type_menu_light.png">
   <img width="200" src="Resources/Screenshots/home_offline_mode_menu_light.png">
 </p>
