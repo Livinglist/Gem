@@ -8,7 +8,7 @@ extension Label where Title == Text, Icon == Image {
 }
 
 struct ItemMenu: View {
-    let auth = Authentication.shared
+    let auth = AuthenticationManager.shared
     let item: any Item
     let showViewInSeperateThreadOption: Bool
     let showTranslation: Bool

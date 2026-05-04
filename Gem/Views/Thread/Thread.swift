@@ -4,7 +4,7 @@ import HackerNewsKit
 import Translation
 
 struct Thread: View {
-    @Environment(Authentication.self) var auth
+    @Environment(AuthenticationManager.self) var auth
     @State private var vm: ThreadViewModel
     @StateObject private var debounceObject: DebounceObject = .init()
     @State private var activeURL: IdentifiableURL? = nil

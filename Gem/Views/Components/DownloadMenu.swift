@@ -46,7 +46,6 @@ struct DownloadMenu: View {
             .disabled(offlineRepository.isDownloading || !storyViewModel.isConnectedToNetwork)
         } label: {
             Image(systemName: "square.and.arrow.down.on.square")
-                .glassEffect()
                 .symbolEffect(.bounce, isActive: offlineRepository.isDownloading)
         }
     }

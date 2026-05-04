@@ -2,7 +2,7 @@ import SwiftUI
 import HackerNewsKit
 
 struct ReplyView: View {
-    @Environment(Authentication.self) var auth
+    @Environment(AuthenticationManager.self) var auth
     @Environment(\.presentationMode) private var presentationMode
     @FocusState private var focusState: FocusField?
     @State private var presentationDetent: PresentationDetent = .large
@@ -27,7 +27,7 @@ struct ReplyView: View {
     }
     
     var isEditing: Bool {
-        let auth = Authentication.shared
+        let auth = AuthenticationManager.shared
         return replyingTo is Comment && auth.username.orEmpty.isNotEmpty && replyingTo.by.orEmpty == auth.username
     }
     

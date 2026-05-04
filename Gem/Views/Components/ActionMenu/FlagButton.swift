@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct FlagButton: View {
-    @Environment(Authentication.self) var auth
+    @Environment(AuthenticationManager.self) var auth
     
     let id: Int
     let showFlagDialog: Binding<Bool>

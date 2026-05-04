@@ -24,6 +24,10 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
   <img width="200" src="Resources/Screenshots/home_ask_hn.png">
   <img width="200" src="Resources/Screenshots/home_story_type_menu.png">
   <img width="200" src="Resources/Screenshots/home_offline_mode_menu.png">
+  <img width="200" src="Resources/Screenshots/home_top_light.png">
+  <img width="200" src="Resources/Screenshots/home_ask_hn_light.png">
+  <img width="200" src="Resources/Screenshots/home_story_type_menu_light.png">
+  <img width="200" src="Resources/Screenshots/home_offline_mode_menu_light.png">
 </p>
 
 ## Thread
@@ -32,6 +36,10 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
   <img width="200" src="Resources/Screenshots/thread_comment_context_menu.png">
   <img width="200" src="Resources/Screenshots/thread_deep.png">
   <img width="200" src="Resources/Screenshots/comment_thread.png">
+  <img width="200" src="Resources/Screenshots/thread_light.png">
+  <img width="200" src="Resources/Screenshots/thread_comment_context_menu_light.png">
+  <img width="200" src="Resources/Screenshots/thread_deep_light.png">
+  <img width="200" src="Resources/Screenshots/comment_thread_light.png">
 </p>
 
 ## Thread translation
@@ -72,6 +80,10 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
   <img width="200" src="Resources/Screenshots/side_menu_login_dialog.png">
   <img width="200" src="Resources/Screenshots/agree_to_hn_guidelines_dialog.png">
   <img width="200" src="Resources/Screenshots/about_livinglist.png">
+  <img width="200" src="Resources/Screenshots/side_menu_not_logged_in_light.png">
+  <img width="200" src="Resources/Screenshots/side_menu_login_dialog_light.png">
+  <img width="200" src="Resources/Screenshots/agree_to_hn_guidelines_dialog_light.png">
+  <img width="200" src="Resources/Screenshots/about_livinglist_light.png">
 </p>
 
 ## Offline mode

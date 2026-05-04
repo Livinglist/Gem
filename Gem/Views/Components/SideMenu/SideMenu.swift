@@ -35,7 +35,8 @@ enum MenuItem: String, Hashable, Sendable, CaseIterable {
 }
 
 struct SideMenu: View {
-    @Environment(Authentication.self) var auth
+    @Environment(AuthenticationManager.self) var auth
+    @Environment(\.colorScheme) var colorScheme
     
     let menuWidth: CGFloat
     let onDismiss: (MenuItem?) -> Void
@@ -152,11 +153,20 @@ struct SideMenu: View {
                         .font(.system(size: 24, weight: .semibold, design: .serif))
                         .padding(.leading)
                         .padding(.top, 70)
-                    Image("GemIcon")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                        .padding(.top, 70)
+                    if colorScheme == .dark {
+                        Image("GemIcon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                            .padding(.top, 70)
+                    } else {
+                        Image("GemIcon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                            .padding(.top, 70)
+                            .colorInvert()
+                    }
                 }
                 Spacer()
             }

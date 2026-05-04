@@ -4,16 +4,9 @@ import HackerNewsKit
 import BackgroundTasks
 import Logging
 
-private extension Calendar {
-    func numberOfDaysBetween(_ from: Date, and to: Date) -> Int {
-        let numberOfDays = dateComponents([.day], from: from, to: to)
-        return numberOfDays.day ?? 0
-    }
-}
-
 @MainActor
 @Observable class RepliesViewModel {
-    private let auth: Authentication = .shared
+    private let auth: AuthenticationManager = .shared
     private let repo: StoryRepository = .shared
     @ObservationIgnored private let modelConfig = ModelConfiguration("RepliesViewModel")
     @ObservationIgnored private var container: ModelContainer?
@@ -72,6 +65,13 @@ private extension Calendar {
     func fetchAllReplies() async {
         if status.isLoading { return }
         status = .inProgress
+        
+        defer {
+            withAnimation {
+                self.status = .completed
+            }
+        }
+        
         let lastPushedKey = Constants.AppNotification.lastItemPushedKey
         let lastFetchedKey = Constants.AppNotification.lastFetchedAtKey
         let lastPushedItemId = UserDefaults.standard.integer(forKey: lastPushedKey)
@@ -122,7 +122,6 @@ private extension Calendar {
 
         self.fetchedComments = updatedFetchedReplies
         self.newReplies = newReplies
-        self.status = .completed
         saveToCache()
         
         Logger.shared.info("All replies fetched: \(updatedFetchedReplies.count)")

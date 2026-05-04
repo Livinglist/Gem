@@ -27,7 +27,7 @@ extension CommentTile {
 }
 
 struct CommentTile: View {
-    @Environment(Authentication.self) var auth
+    @Environment(AuthenticationManager.self) var auth
     var vm: ThreadViewModel
     @State private var activeURL: IdentifiableURL?
     @State private var isSafariSheetPresented: Bool = .init()
