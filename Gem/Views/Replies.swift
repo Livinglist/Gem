@@ -2,7 +2,7 @@ import SwiftUI
 import HackerNewsKit
 
 struct Replies: View {
-    @Environment(Authentication.self) private var auth
+    @Environment(AuthenticationManager.self) private var auth
     @State private var vm = RepliesViewModel.shared
     @State private var actionPerformed: Action = .none
     @State private var isMarkAllAsReadAlertPresented = false

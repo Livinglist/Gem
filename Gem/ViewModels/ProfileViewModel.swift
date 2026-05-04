@@ -20,20 +20,20 @@ extension Profile {
         }
 
         var isBlocked: Bool {
-            if let user = self.user, let id = user.id, id != Authentication.shared.username {
+            if let user = self.user, let id = user.id, id != AuthenticationManager.shared.username {
                 return self.settings.blocklist.contains(id)
             }
             return false
         }
 
         func block() {
-            if let user = self.user, let id = user.id, id != Authentication.shared.username {
+            if let user = self.user, let id = user.id, id != AuthenticationManager.shared.username {
                 self.settings.block(id)
             }
         }
 
         func unblock() {
-            if let user = self.user, let id = user.id, id != Authentication.shared.username {
+            if let user = self.user, let id = user.id, id != AuthenticationManager.shared.username {
                 self.settings.unblock(id)
             }
         }

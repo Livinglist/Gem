@@ -12,7 +12,7 @@ import Foundation
     @ObservationIgnored private let modelConfig = ModelConfiguration("FavoritesViewModel")
     @ObservationIgnored private var container: ModelContainer?
     private let repo = StoryRepository.shared
-    private let auth = Authentication.shared
+    private let auth = AuthenticationManager.shared
     private let pageSize = 30
     private var storiesPage = 1
     private var commentsPage = 1

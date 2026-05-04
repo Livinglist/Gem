@@ -2,7 +2,7 @@ import SwiftUI
 import HackerNewsKit
 
 struct Favorites: View {
-    @Environment(Authentication.self) private var auth
+    @Environment(AuthenticationManager.self) private var auth
     @State private var vm = FavoritesViewModel.shared
     @State private var actionPerformed: Action = .none
     

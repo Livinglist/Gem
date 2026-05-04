@@ -1,6 +1,6 @@
 import Foundation
 
-public struct User: Decodable, Equatable {
+public struct User: Codable, Equatable {
     public let id: String?
     public let about: String?
     public let created: Int?

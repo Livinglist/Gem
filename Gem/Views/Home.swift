@@ -5,7 +5,7 @@ import StoreKit
 import Logging
 
 struct Home: View {
-    @Environment(Authentication.self) var auth
+    @Environment(AuthenticationManager.self) var auth
     @Environment(\.requestReview) private var requestReview
     @Bindable private var router: Router = .shared
     

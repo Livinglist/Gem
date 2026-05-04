@@ -15,6 +15,16 @@ extension SettingsViewModel {
     }
 }
 
+extension SettingsViewModel {
+    private func setUpLogger() {
+        if isDevModeEnabled {
+            Logger.enableInMemoryLogHandler()
+        } else {
+            Logger.disableInMemoryLogHandler()
+        }
+    }
+}
+
 fileprivate extension String {
     static let blockListKey = "blockListKey"
     static let isAutomaticDownloadEnabledKey = "isAutomaticDownloadEnabled"
@@ -27,43 +37,6 @@ fileprivate extension String {
     static let isTranslationEnabledKey = "isTranslationEnabled"
     static let translationTargetKey = "translationTarget"
     static let isDevModeEnabledKey = "isDevModeEnabled"
-}
-
-enum DownloadFrequency: TimeInterval, Equatable, CaseIterable {
-    case oneWeek = 604800
-    case oneDay = 86400
-    case halfDay = 43200
-    case fourHours = 14400
-    case oneHour = 3600
-    
-    var label: String {
-        switch self {
-        case .oneWeek: return "Every Week"
-        case .oneDay: return "Every Day"
-        case .halfDay: return "Every 12 Hours"
-        case .fourHours: return "Every 4 Hours"
-        case .oneHour: return "Every One Hour"
-        }
-    }
-}
-
-enum FetchMode: Int, Equatable, CaseIterable {
-    case eager = 0
-    case lazy = 1
-    
-    var label: String {
-        switch self {
-        case .eager: return "Eager"
-        case .lazy: return "Lazy"
-        }
-    }
-    
-    var systemImage: String {
-        switch self {
-        case .eager: return "square.stack"
-        case .lazy: return "square.stack.3d.up"
-        }
-    }
 }
 
 @Observable class SettingsViewModel {
@@ -187,15 +160,5 @@ enum FetchMode: Int, Equatable, CaseIterable {
     func unblock(_ id: String) -> Void {
         blocklist.remove(id)
         UserDefaults.standard.set(Array(blocklist), forKey: .blockListKey)
-    }
-}
-
-extension SettingsViewModel {
-    private func setUpLogger() {
-        if isDevModeEnabled {
-            Logger.enableInMemoryLogHandler()
-        } else {
-            Logger.disableInMemoryLogHandler()
-        }
     }
 }

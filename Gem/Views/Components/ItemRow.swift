@@ -11,7 +11,7 @@ struct ItemRow: View {
     let isNew: Bool
     let addToRecents: Bool
     
-    @Environment(Authentication.self) var auth
+    @Environment(AuthenticationManager.self) var auth
     
     @State private var activeURL: IdentifiableURL?
     @State private var isReplySheetPresented: Bool = .init()

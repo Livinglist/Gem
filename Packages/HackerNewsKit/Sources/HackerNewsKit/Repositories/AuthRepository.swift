@@ -17,19 +17,6 @@ public class AuthRepository {
     
     private init() {}
     
-    public var loggedIn: Bool {
-        var result: AnyObject?
-        _ = SecItemCopyMatching(query, &result)
-        
-        guard let dic = result as? NSDictionary else {
-            return false
-        }
-        
-        let username = dic[kSecAttrAccount] as! String?
-        
-        return username.isNotNullOrEmpty
-    }
-    
     public var username: String? {
         var result: AnyObject?
         _ = SecItemCopyMatching(query, &result)
@@ -119,18 +106,6 @@ public class AuthRepository {
         }
         
         return true
-    }
-    
-    public func fetchUser(_ id: String) async -> User? {
-        let response = await AF.request("\(self.baseUrl)/user/\(id).json").serializingString().response
-        
-        if let data = response.data {
-            let user = try? JSONDecoder().decode(User.self, from: data)
-            
-            return user
-        } else {
-            return nil
-        }
     }
     
     // MARK: - Actions that require authentication

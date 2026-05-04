@@ -4,7 +4,7 @@ import HackerNewsKit
 
 struct Profile: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(Authentication.self) var auth
+    @Environment(AuthenticationManager.self) var auth
     @State var vm: ProfileViewModel = .init()
     @State var isLogoutDialogPresented: Bool = .init()
     @State var isBlockDialogPresented: Bool = .init()

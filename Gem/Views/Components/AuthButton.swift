@@ -2,7 +2,7 @@ import SwiftUI
 import HackerNewsKit
 
 struct AuthButton: View {
-    @Environment(Authentication.self) var auth
+    @Environment(AuthenticationManager.self) var auth
     @Bindable var router = Router.shared
     
     @Binding var isLoginDialogPresented: Bool

@@ -2,7 +2,7 @@ import Combine
 import SwiftUI
 
 struct UpvoteButton: View {
-    @Environment(Authentication.self) var auth
+    @Environment(AuthenticationManager.self) var auth
     
     let id: Int
     let actionPerformed: Binding<Action>
