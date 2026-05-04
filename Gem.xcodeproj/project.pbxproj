@@ -186,6 +186,18 @@
 		121938A12FA83B3B00D6B14A /* FetchMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchMode.swift; sourceTree = "<group>"; };
 		121938A32FA83B4E00D6B14A /* DownloadFrequency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadFrequency.swift; sourceTree = "<group>"; };
 		121938A52FA83BDC00D6B14A /* Calendar+NumOfDays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calendar+NumOfDays.swift"; sourceTree = "<group>"; };
+		121938A72FA84EE600D6B14A /* about_livinglist_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = about_livinglist_light.png; sourceTree = "<group>"; };
+		121938A82FA84EE600D6B14A /* agree_to_hn_guidelines_dialog_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = agree_to_hn_guidelines_dialog_light.png; sourceTree = "<group>"; };
+		121938A92FA84EE600D6B14A /* comment_thread_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = comment_thread_light.png; sourceTree = "<group>"; };
+		121938AA2FA84EE600D6B14A /* home_ask_hn_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_ask_hn_light.png; sourceTree = "<group>"; };
+		121938AB2FA84EE600D6B14A /* home_offline_mode_menu_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_offline_mode_menu_light.png; sourceTree = "<group>"; };
+		121938AC2FA84EE600D6B14A /* home_story_type_menu_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_story_type_menu_light.png; sourceTree = "<group>"; };
+		121938AD2FA84EE600D6B14A /* home_top_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_top_light.png; sourceTree = "<group>"; };
+		121938AE2FA84EE600D6B14A /* side_menu_login_dialog_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = side_menu_login_dialog_light.png; sourceTree = "<group>"; };
+		121938AF2FA84EE600D6B14A /* side_menu_not_logged_in_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = side_menu_not_logged_in_light.png; sourceTree = "<group>"; };
+		121938B02FA84EE600D6B14A /* thread_comment_context_menu_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_comment_context_menu_light.png; sourceTree = "<group>"; };
+		121938B12FA84EE600D6B14A /* thread_deep_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_deep_light.png; sourceTree = "<group>"; };
+		121938B22FA84EE600D6B14A /* thread_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thread_light.png; sourceTree = "<group>"; };
 		1260158F2FA7376100C8E507 /* GoToParentButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoToParentButton.swift; sourceTree = "<group>"; };
 		126015922FA737ED00C8E507 /* RootItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootItemView.swift; sourceTree = "<group>"; };
 		126015942FA73DE300C8E507 /* boing.ahap */ = {isa = PBXFileReference; lastKnownFileType = text; path = boing.ahap; sourceTree = "<group>"; };
@@ -682,6 +694,18 @@
 		E1898BFC2F96BB4D00288592 /* Screenshots */ = {
 			isa = PBXGroup;
 			children = (
+				121938A72FA84EE600D6B14A /* about_livinglist_light.png */,
+				121938A82FA84EE600D6B14A /* agree_to_hn_guidelines_dialog_light.png */,
+				121938A92FA84EE600D6B14A /* comment_thread_light.png */,
+				121938AA2FA84EE600D6B14A /* home_ask_hn_light.png */,
+				121938AB2FA84EE600D6B14A /* home_offline_mode_menu_light.png */,
+				121938AC2FA84EE600D6B14A /* home_story_type_menu_light.png */,
+				121938AD2FA84EE600D6B14A /* home_top_light.png */,
+				121938AE2FA84EE600D6B14A /* side_menu_login_dialog_light.png */,
+				121938AF2FA84EE600D6B14A /* side_menu_not_logged_in_light.png */,
+				121938B02FA84EE600D6B14A /* thread_comment_context_menu_light.png */,
+				121938B12FA84EE600D6B14A /* thread_deep_light.png */,
+				121938B22FA84EE600D6B14A /* thread_light.png */,
 				E1898BD12F96BB4D00288592 /* about_livinglist.png */,
 				E1898BD22F96BB4D00288592 /* agree_to_hn_guidelines_dialog.png */,
 				E1898BD32F96BB4D00288592 /* comment_thread.png */,
