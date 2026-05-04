@@ -23,7 +23,7 @@ struct Settings: View {
             Section {
                 Picker("Default Story Type", selection: $vm.defaultStoryType) {
                     ForEach(StoryType.allCases, id: \.self) { value in
-                        Text(value.label.capitalized)
+                        Text(value.label)
                             .tag(value)
                     }
                 }
