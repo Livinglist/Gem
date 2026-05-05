@@ -1,4 +1,8 @@
-# <img width="64" src="Resources/gem_app_icon_1024.png"> Gem for Hacker News
+<div align="center">
+  <img align="center" width="96" height="96" src="Resources/gem_app_icon_1024.png" />
+</div>
+
+<h1 align="center">Gem for Hacker News</h1>
 
 A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
 
