@@ -21,9 +21,18 @@ extension Thread {
                 }
                 .frame(maxWidth: .infinity)
                 VStack(alignment: .leading, spacing: 0) {
+                    if vm.searchStatus.isCompleted && vm.searchResults.isEmpty {
+                        Text("nothing found...")
+                            .font(.callout)
+                            .foregroundStyle(.gray)
+                            .padding(.top, 200)
+                    }
                     ForEach(vm.searchResults, id: \.self) { index in
                         let comment = vm.comments[index]
-                        CommentTile(comment: comment, vm: vm, allowActions: false, showLevelIndent: false)
+                        CommentTile(comment: comment,
+                                    vm: vm,
+                                    allowActions: false,
+                                    showLevelIndent: false)
                             .padding(4)
                             .allowsHitTesting(false)
                             .contentShape(Rectangle())

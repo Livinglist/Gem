@@ -119,7 +119,9 @@ struct CommentTile: View {
                     if allowActions && isCollapsed {
                         CommentCollapsedView(comment: comment, level: level)
                     } else {
-                        CommentTextView(comment: comment, language: vm.targetLanguage)
+                        CommentTextView(comment: comment,
+                                        language: vm.targetLanguage,
+                                        highlightedText: vm.inThreadSearchQuery)
                     }
                     if vm.loadingItemId == comment.id {
                         ASCIISpinner(size: 24)

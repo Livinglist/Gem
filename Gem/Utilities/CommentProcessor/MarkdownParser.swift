@@ -1,6 +1,7 @@
 import HackerNewsKit
 import Foundation
 import Logging
+import SwiftUI
 
 private var caches: [String: NSCache<NSString, NSAttributedString>] = [:]
 
@@ -13,6 +14,18 @@ class MarkdownParser: CommentProcessor {
     
     init(language: Locale.Language) {
         self.language = language
+    }
+    
+    func markdown(id: Int, text: String, highlighting hightlightedText: String? = nil) -> AttributedString {
+        var attributedString = markdown(id: id, text: text)
+        guard let hightlightedText else { return attributedString }
+        var searchRange = attributedString.startIndex..<attributedString.endIndex
+        while let range = attributedString[searchRange].range(of: hightlightedText, options: .caseInsensitive) {
+            attributedString[range].backgroundColor = .yellow
+            attributedString[range].foregroundColor = .black
+            searchRange = range.upperBound..<attributedString.endIndex
+        }
+        return attributedString
     }
     
     func markdown(id: Int, text: String) -> AttributedString {
