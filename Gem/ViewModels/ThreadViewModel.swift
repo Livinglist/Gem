@@ -395,9 +395,11 @@ import Translation
     }
     
     func translate() {
-        guard item != nil && status.isCompleted else { return }
+        guard item != nil && status.isCompleted,
+              let targetLanguage = SettingsViewModel.shared.translationTarget
+        else { return }
+        self.targetLanguage = targetLanguage
         translationStatus = .inProgress
-        targetLanguage = SettingsViewModel.shared.translationTarget
         guard let translator = CommentTranslator(targetLanguage: targetLanguage) else { return }
         factory = .init(processors: [
             translator,
