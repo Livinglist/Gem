@@ -61,9 +61,9 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
 ## In-thread search and new comments indicator
 <p align="center">
   <img width="200" src="Resources/Screenshots/in_thread_search_sheet.png">
-  <img width="200" src="Resources/Screenshots/in_thread_search_sheet_target_display.png">
+  <img width="200" src="Resources/Screenshots/in_thread_search_target_display.png">
   <img width="200" src="Resources/Screenshots/in_thread_search_sheet_new.png">
-  <img width="200" src="Resources/Screenshots/in_thread_search_sheet_new_display.png">
+  <img width="200" src="Resources/Screenshots/in_thread_search_new_display.png">
 </p>
 
 ## Pins, favorites, and replies
