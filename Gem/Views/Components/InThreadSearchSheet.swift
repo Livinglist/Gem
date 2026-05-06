@@ -31,6 +31,7 @@ extension Thread {
                         let comment = vm.comments[index]
                         CommentTile(comment: comment,
                                     vm: vm,
+                                    highlightedText: vm.inThreadSearchQuery,
                                     allowActions: false,
                                     showLevelIndent: false)
                             .padding(4)
