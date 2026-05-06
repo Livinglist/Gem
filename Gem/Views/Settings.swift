@@ -7,6 +7,9 @@ struct Settings: View {
     @Bindable var vm = SettingsViewModel.shared
     @State var url: IdentifiableURL?
     @State var isLogsPresented: Bool = false
+    @State var isTranslationEnabledBuffer: Bool = false
+    @State var targetLanguageBuffer: Locale.Language
+    @State var translationConfigBuffer: TranslationSession.Configuration?
     
     private let githubRepoUrl = URL(string: "https://github.com/Livinglist/Gem")!
     private let githubIssuesUrl = URL(string: "https://github.com/Livinglist/Gem/issues")!
@@ -16,6 +19,13 @@ struct Settings: View {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
         let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "0"
         return "Version \(version) (\(build))"
+    }
+    
+    init() {
+        let vm = SettingsViewModel.shared
+        self.isTranslationEnabledBuffer = vm.isTranslationEnabled
+        self.targetLanguageBuffer = vm.translationTarget ?? .spanish
+        self.translationConfigBuffer = vm.translationConfig
     }
     
     var body: some View {
@@ -52,17 +62,17 @@ struct Settings: View {
             }
             
             Section {
-                Toggle(isOn: $vm.isTranslationEnabled) {
+                Toggle(isOn: $isTranslationEnabledBuffer) {
                     Text("Translation")
                 }
                 .tint(.accent)
-                Picker("Target Language", selection: $vm.translationTarget) {
+                Picker("Target Language", selection: $targetLanguageBuffer) {
                     ForEach(vm.supportedLanguages, id: \.self) { language in
                         Text(Locale.current.localizedString(forLanguageCode: language.languageCode?.identifier ?? "") ?? "Unknown")
                             .tag(language)
                     }
                 }
-                .disabled(!vm.isTranslationEnabled)
+                .disabled(!isTranslationEnabledBuffer)
                 .pickerStyle(.menu)
                 .tint(.accent)
             }
@@ -149,18 +159,29 @@ struct Settings: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Settings")
-        .translationTask(vm.translationConfig) { session in
-            Task { @MainActor in
-                if vm.isTranslationEnabled {
-                    try? await session.prepareTranslation()
-                    if await !session.isReady {
-                        vm.translationTarget = .init(languageCode: .spanish)
-                        vm.isTranslationEnabled = false
-                    }
+        .onChange(of: targetLanguageBuffer) {
+            translationConfigBuffer = TranslationSession.Configuration(source: .englishUS, target: targetLanguageBuffer)
+        }
+        .onChange(of: isTranslationEnabledBuffer) {
+            if isTranslationEnabledBuffer {
+                translationConfigBuffer = TranslationSession.Configuration(source: .englishUS, target: targetLanguageBuffer)
+            } else {
+                vm.isTranslationEnabled = false
+            }
+        }
+        .translationTask(translationConfigBuffer) { session in
+            if isTranslationEnabledBuffer {
+                try? await session.prepareTranslation()
+                if await session.isReady {
+                    vm.translationTarget = targetLanguageBuffer
+                    vm.isTranslationEnabled = isTranslationEnabledBuffer
+                } else {
+                    isTranslationEnabledBuffer = vm.isTranslationEnabled
+                    targetLanguageBuffer = vm.translationTarget ?? .spanish
                 }
             }
         }
         .sensoryFeedback(.impact(weight: .heavy), trigger: vm.isDevModeEnabled)
-        .sensoryFeedback(.selection, trigger: vm.translationTarget)
+        .sensoryFeedback(.selection, trigger: targetLanguageBuffer)
     }
 }

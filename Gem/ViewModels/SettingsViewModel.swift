@@ -91,12 +91,16 @@ fileprivate extension String {
             translationConfig = config
         }
     }
-    var translationTarget: Locale.Language = .init(languageCode: .spanish) {
+    var translationTarget: Locale.Language? {
         didSet {
-            UserDefaults.standard.setValue(translationTarget.languageCode?.identifier, forKey: .translationTargetKey)
-            CommentTranslator.cache.removeAllObjects()
-            let config = TranslationSession.Configuration(source: .englishUS, target: translationTarget)
-            translationConfig = config
+            if let translationTarget {
+                UserDefaults.standard.setValue(translationTarget.languageCode?.identifier, forKey: .translationTargetKey)
+                CommentTranslator.cache.removeAllObjects()
+                let config = TranslationSession.Configuration(source: .englishUS, target: translationTarget)
+                translationConfig = config
+            } else {
+                UserDefaults.standard.setValue(nil, forKey: .translationTargetKey)
+            }
         }
     }
     var translationConfig: TranslationSession.Configuration?
@@ -133,7 +137,7 @@ fileprivate extension String {
 #if targetEnvironment(simulator)
         translationTarget = .init(languageCode: .chinese)
 #else
-        translationTarget = targetLanguageIdentifier == nil ? .init(languageCode: .spanish) : .init(identifier: targetLanguageIdentifier!)
+        translationTarget = targetLanguageIdentifier == nil ? nil : .init(identifier: targetLanguageIdentifier!)
 #endif
 
         let downloadFrequencyRawValue = UserDefaults.standard.double(forKey: .downloadFrequencyKey)
