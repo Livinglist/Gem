@@ -98,6 +98,8 @@ fileprivate extension String {
                 CommentTranslator.cache.removeAllObjects()
                 let config = TranslationSession.Configuration(source: .englishUS, target: translationTarget)
                 translationConfig = config
+            } else {
+                UserDefaults.standard.setValue(nil, forKey: .translationTargetKey)
             }
         }
     }
