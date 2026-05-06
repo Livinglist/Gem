@@ -20,7 +20,7 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
 - [x] Launch Hacker News thread link from system share sheet
 - [x] [Notification on new replies](#pins-favorites-and-replies)
 - [x] [Offline mode](#offline-mode)
-- [x] [New comments highlighting](#in-thread-search-new-comments-and-exchange-indicator) since last visit
+- [x] [New comments highlighting](#in-thread-search-and-new-comments-indicator) since last visit
 
 ## Home
 <p align="center">
@@ -58,12 +58,12 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
   <img width="200" src="Resources/Screenshots/thread_translation_in_thread_translated.png">
 </p>
 
-## In-thread search, new comments and exchange indicator
+## In-thread search and new comments indicator
 <p align="center">
-  <img width="200" src="Resources/Screenshots/thread_main_view.png">
-  <img width="200" src="Resources/Screenshots/thread_new_comments.png">
-  <img width="200" src="Resources/Screenshots/thread_new_comment_indicator.png">
-  <img width="200" src="Resources/Screenshots/thread_exchange_indicator.png">
+  <img width="200" src="Resources/Screenshots/in_thread_search_sheet.png">
+  <img width="200" src="Resources/Screenshots/in_thread_search_sheet_by_op.png">
+  <img width="200" src="Resources/Screenshots/in_thread_search_sheet_new.png">
+  <img width="200" src="Resources/Screenshots/in_thread_search_new_display.png">
 </p>
 
 ## Pins, favorites, and replies

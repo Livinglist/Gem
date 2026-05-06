@@ -40,6 +40,7 @@ struct CommentTile: View {
     let comment: Comment
     let allowActions: Bool
     let showLevelIndent: Bool
+    let highlightedText: String?
     @Binding var actionPerformed: Action
     
     var index: Int {
@@ -49,6 +50,7 @@ struct CommentTile: View {
     init(comment: Comment,
          vm: ThreadViewModel,
          actionPerformed: Binding<Action>? = nil,
+         highlightedText: String? = nil,
          allowActions: Bool = true,
          showLevelIndent: Bool = true) {
         self.level = comment.level ?? 0
@@ -57,6 +59,7 @@ struct CommentTile: View {
         self._actionPerformed = actionPerformed ?? Binding<Action>(projectedValue: .constant(.none))
         self.allowActions = allowActions
         self.showLevelIndent = showLevelIndent
+        self.highlightedText = highlightedText
     }
     
     var isCollapsed: Bool {
@@ -119,7 +122,9 @@ struct CommentTile: View {
                     if allowActions && isCollapsed {
                         CommentCollapsedView(comment: comment, level: level)
                     } else {
-                        CommentTextView(comment: comment, language: vm.targetLanguage)
+                        CommentTextView(comment: comment,
+                                        language: vm.targetLanguage,
+                                        highlightedText: highlightedText)
                     }
                     if vm.loadingItemId == comment.id {
                         ASCIISpinner(size: 24)

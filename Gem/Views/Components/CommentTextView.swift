@@ -4,12 +4,21 @@ import HackerNewsKit
 struct CommentTextView: View {
     let comment: Comment
     let language: Locale.Language
+    let highlightedText: String?
     
     var isBlocked: Bool {
         if let authorId = comment.by {
             return SettingsViewModel.shared.blocklist.contains(authorId)
         }
         return false
+    }
+    
+    var attributedString: AttributedString {
+        if let highlightedText {
+            return MarkdownParser.shared.markdown(id: comment.id, text: comment.text.orEmpty, highlighting: highlightedText)
+        } else {
+            return MarkdownParser.getCachedAttributedString(id: comment.id, language: language) ?? MarkdownParser.shared.markdown(id: comment.id, text: comment.text.orEmpty)
+        }
     }
     
     var body: some View {
@@ -20,7 +29,7 @@ struct CommentTextView: View {
                 .padding(.top, 6)
         } else if comment.text.isNotNullOrEmpty {
             HStack {
-                Text(MarkdownParser.getCachedAttributedString(id: comment.id, language: language) ?? MarkdownParser.shared.markdown(id: comment.id, text: comment.text.orEmpty))
+                Text(attributedString)
                     .tint(.accent)
                     .font(.body)
                     .textSelection(.enabled)

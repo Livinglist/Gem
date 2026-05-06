@@ -46,8 +46,8 @@ import Translation
         }
     }
     var searchResults: [Int] = .init()
-    @ObservationIgnored
-    private var inThreadSearchQuery = ""
+    var inThreadSearchQuery = ""
+    var searchStatus: Status = .idle
     
     // MARK: - Lazy and recursive fetching
     /// Stores ids of loaded comments, including both root and child comments.
@@ -135,6 +135,8 @@ import Translation
         defer {
             HapticsManager.shared.stop()
             saveToCache()
+            self.inThreadSearchQuery = ""
+            self.searchResults = []
             self.status = .completed
             self.translationStatus = .completed
             self.comments = commentsBuffer
@@ -367,8 +369,10 @@ import Translation
         let isByOpSelected = self.isByOpSelected
         let isNewSelected = self.isNewSelected
         var results = [Int]()
+        withAnimation {
+            self.searchStatus = .inProgress
+        }
         Task.detached(priority: .userInitiated) { [self] in
-            
             let text = text.trimmingCharacters(in: .whitespaces)
             let isByOpConditionSatisfied: SearchConditionTester = isByOpSelected ? { $0.by.orEmpty.isNotEmpty && $0.by == item?.by.orEmpty } : { _ in true }
             let isNewConditionSatisfied: SearchConditionTester = isNewSelected ? { $0.isNew ?? false } : { _ in true }
@@ -384,6 +388,7 @@ import Translation
                 withAnimation {
                     self.searchResults = results
                     self.inThreadSearchQuery = text
+                    self.searchStatus = .completed
                 }
             }
         }
