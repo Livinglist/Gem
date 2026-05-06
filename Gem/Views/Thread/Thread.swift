@@ -100,7 +100,7 @@ struct Thread: View {
                     .padding(.horizontal)
                 if vm.status == .inProgress {
                     ASCIISpinner().padding(.top, 100)
-                } else if vm.comments.count > 100 {
+                } else {
                     LazyVStack(spacing: 0) {
                         ForEach(vm.comments, id: \.id) { comment in
                             if comment.isHidden ?? true {
@@ -119,26 +119,7 @@ struct Thread: View {
                             }
                         }
                     }
-                } else {
-                    VStack(spacing: 0) {
-                        ForEach(vm.comments, id: \.id) { comment in
-                            if comment.isHidden ?? true {
-                                EmptyView()
-                                    .id(comment.id)
-                            } else {
-                                CommentTile(comment: comment, vm: vm, actionPerformed: $actionPerformed)
-                                    .id(comment.id)
-                                    .onTapGesture {
-                                        commentTapped = comment
-                                    }
-                                    .transition(.asymmetric(
-                                        insertion: .move(edge: .trailing),
-                                        removal: .move(edge: .trailing)
-                                    ))
-                            }
-                        }
-                    }
-                }
+                } 
                 
                 Spacer().frame(height: 60)
             }
