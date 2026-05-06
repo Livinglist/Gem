@@ -76,7 +76,6 @@ extension Thread {
             .searchable(text: $debounceObject.text, placement: .toolbar, prompt: "Search in Thread")
             .searchFocused($isSearchFocused)
             .onChange(of: debounceObject.debouncedText) { _, text in
-                if text.isEmpty { return }
                 vm.searchInThread(text)
             }
             .sensoryFeedback(.success, trigger: vm.searchResults)
