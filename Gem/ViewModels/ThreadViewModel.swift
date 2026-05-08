@@ -334,7 +334,8 @@ import Translation
         }
         
         if let scrollTo, SettingsViewModel.shared.isAutoScrollEnabled,
-           scrollTo.id != comments.first?.id && scrollTo.id != comments.last?.id {
+           scrollTo.id != comments.first?.id && scrollTo.id != comments.last?.id, 
+           !scrollTo.isCollapsed && !scrollTo.isHidden {
             withAnimation {
                 self.scrollViewProxy?.scrollTo(scrollTo.id, anchor: .top)
             }
