@@ -333,7 +333,8 @@ import Translation
             self.comments = commentsBuffer
         }
         
-        if let scrollTo, SettingsViewModel.shared.isAutoScrollEnabled {
+        if let scrollTo, SettingsViewModel.shared.isAutoScrollEnabled,
+           scrollTo.id != comments.first?.id && scrollTo.id != comments.last?.id {
             withAnimation {
                 self.scrollViewProxy?.scrollTo(scrollTo.id, anchor: .top)
             }
