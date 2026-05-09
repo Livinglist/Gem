@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		120C14F92FAF27FF0053ED07 /* time_machine.m4v in Resources */ = {isa = PBXBuildFile; fileRef = 120C14F82FAF27DC0053ED07 /* time_machine.m4v */; };
+		120C14FB2FAF28E20053ED07 /* TimeMachineTutorialSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 120C14FA2FAF28E20053ED07 /* TimeMachineTutorialSheet.swift */; };
 		121938A02FA83A6100D6B14A /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1219389F2FA83A5F00D6B14A /* UserModel.swift */; };
 		121938A22FA83B3B00D6B14A /* FetchMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 121938A12FA83B3B00D6B14A /* FetchMode.swift */; };
 		121938A42FA83B4E00D6B14A /* DownloadFrequency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 121938A32FA83B4E00D6B14A /* DownloadFrequency.swift */; };
@@ -182,6 +184,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		120C14F82FAF27DC0053ED07 /* time_machine.m4v */ = {isa = PBXFileReference; lastKnownFileType = file; path = time_machine.m4v; sourceTree = "<group>"; };
+		120C14FA2FAF28E20053ED07 /* TimeMachineTutorialSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeMachineTutorialSheet.swift; sourceTree = "<group>"; };
 		1219389F2FA83A5F00D6B14A /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
 		121938A12FA83B3B00D6B14A /* FetchMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchMode.swift; sourceTree = "<group>"; };
 		121938A32FA83B4E00D6B14A /* DownloadFrequency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadFrequency.swift; sourceTree = "<group>"; };
@@ -430,6 +434,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		120C14F72FAF27CE0053ED07 /* Videos */ = {
+			isa = PBXGroup;
+			children = (
+				120C14F82FAF27DC0053ED07 /* time_machine.m4v */,
+			);
+			path = Videos;
+			sourceTree = "<group>";
+		};
 		1260158E2FA7375400C8E507 /* Thread */ = {
 			isa = PBXGroup;
 			children = (
@@ -442,6 +454,7 @@
 		126015912FA7377600C8E507 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				120C14FA2FAF28E20053ED07 /* TimeMachineTutorialSheet.swift */,
 				1260158F2FA7376100C8E507 /* GoToParentButton.swift */,
 				E131BD412F8DB98F00F7E034 /* LinkPreview.swift */,
 				126015922FA737ED00C8E507 /* RootItemView.swift */,
@@ -837,10 +850,11 @@
 				E1E2417E2F96EEF50093A7E5 /* eula.md */,
 				E1E2417F2F96EEF50093A7E5 /* privacy_policy.md */,
 				E1E2417C2F96EDDF0093A7E5 /* app_store_badge.png */,
-				E1E2417D2F96EDDF0093A7E5 /* github_badge.png */,
 				E1898C282F96BD5600288592 /* gem_app_icon_1024.png */,
-				E1898BFC2F96BB4D00288592 /* Screenshots */,
+				E1E2417D2F96EDDF0093A7E5 /* github_badge.png */,
 				E1AB28B82F92B76200A8B707 /* Haptics */,
+				E1898BFC2F96BB4D00288592 /* Screenshots */,
+				120C14F72FAF27CE0053ED07 /* Videos */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -992,6 +1006,7 @@
 		E1D7A3A92F8D850600D8C934 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
+				120C14F92FAF27FF0053ED07 /* time_machine.m4v in Resources */,
 				E1ACB6FA2F8F11EF00382813 /* Gem App Icon.icon in Resources */,
 				126015952FA73DE300C8E507 /* boing.ahap in Resources */,
 				E131BDA22F8DB98F00F7E034 /* Assets.xcassets in Resources */,
@@ -1044,6 +1059,7 @@
 				E131BD652F8DB98F00F7E034 /* View+ConditionalModifier.swift in Sources */,
 				E131BD662F8DB98F00F7E034 /* View+ContextMenu.swift in Sources */,
 				E1AB28A52F91AE1500A8B707 /* NameRowView.swift in Sources */,
+				120C14FB2FAF28E20053ED07 /* TimeMachineTutorialSheet.swift in Sources */,
 				E1AB28A72F91AE3A00A8B707 /* TimeDisplay.swift in Sources */,
 				E11F30912F90BE6E00E1B1FB /* PinsViewModel.swift in Sources */,
 				E131BD672F8DB98F00F7E034 /* View+GetColor.swift in Sources */,

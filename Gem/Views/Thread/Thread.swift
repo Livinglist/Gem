@@ -138,13 +138,16 @@ struct TimeMachineRow<RowContent: View>: View {
 
 struct Thread: View {
     @Environment(AuthenticationManager.self) var auth
+    @AppStorage("hasSeenTimeMachineTutorial") private var hasSeenTutorial = false
+    
     @State private var vm: ThreadViewModel
     @StateObject private var debounceObject: DebounceObject = .init()
     @State private var activeURL: IdentifiableURL? = nil
-    @State private var isReplySheetPresented: Bool = .init()
-    @State private var isFlagDialogPresented: Bool = .init()
-    @State private var isTranslationPresented: Bool = .init()
-    @State private var isSearchPresented: Bool = .init()
+    @State private var isReplySheetPresented: Bool = false
+    @State private var isFlagDialogPresented: Bool = false
+    @State private var isTranslationPresented: Bool = false
+    @State private var isSearchPresented: Bool = false
+    @State private var isTutorialVideoPresented = false
     @State private var actionPerformed: Action = .none
     @State private var commentTapped: Comment? = nil
     
@@ -168,6 +171,12 @@ struct Thread: View {
             .sensoryFeedback(.impact(flexibility: .solid), trigger: isSearchPresented) { $1 }
             .sensoryFeedback(.success, trigger: vm.translationStatus) { _, status in status == .completed }
             .withToast(actionPerformed: $actionPerformed)
+            .sheet(isPresented: $isTutorialVideoPresented) {
+                TimeMachineTutorialSheet()
+                    .presentationBackground(.black)
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
+            }
             .sheet(isPresented: $isSearchPresented) {
                 NavigationStack {
                     InThreadSearchSheet(debounceObject: debounceObject,
@@ -321,6 +330,18 @@ struct Thread: View {
             }
             
             ToolbarSpacer(.fixed)
+            
+            if !hasSeenTutorial {
+                ToolbarItem {
+                    Button {
+                        hasSeenTutorial = true
+                        isTutorialVideoPresented = true
+                    } label: {
+                        Image(systemName: "lightbulb.max")
+                    }
+                }
+                ToolbarSpacer(.fixed)
+            }
             
             if settings.isTranslationAvailable {
                 ToolbarItem {
