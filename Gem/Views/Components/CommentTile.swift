@@ -38,6 +38,7 @@ struct CommentTile: View {
     
     let level: Int
     let comment: Comment
+    let backgroundColor: Color
     let allowActions: Bool
     let showLevelIndent: Bool
     let highlightedText: String?
@@ -49,12 +50,14 @@ struct CommentTile: View {
     
     init(comment: Comment,
          vm: ThreadViewModel,
+         backgroundColor: Color = Color(UIColor.systemBackground),
          actionPerformed: Binding<Action>? = nil,
          highlightedText: String? = nil,
          allowActions: Bool = true,
          showLevelIndent: Bool = true) {
         self.level = comment.level ?? 0
         self.comment = comment
+        self.backgroundColor = backgroundColor
         self.vm = vm
         self._actionPerformed = actionPerformed ?? Binding<Action>(projectedValue: .constant(.none))
         self.allowActions = allowActions
@@ -80,7 +83,6 @@ struct CommentTile: View {
                             .overlay(Rectangle().frame(width: 1, height: nil, alignment: .leading)
                                 .foregroundColor(getColor(level: i)), alignment: .leading)
                             .padding(.leading, 6)
-                        
                     )
                 }
                 
@@ -148,8 +150,8 @@ struct CommentTile: View {
                         .padding(.top, 6)
                     }
                 }
-                .padding(EdgeInsets(top: 6, leading: 0, bottom: 0, trailing: 0))
-                .background(Color(UIColor.systemBackground))
+                .padding(EdgeInsets(top: 6, leading: showLevelIndent ? 0 : 6, bottom: 0, trailing: 0))
+                .background(backgroundColor)
                 .contextMenu {
                     ItemMenu(item: comment,
                              showViewInSeperateThreadOption: true,
@@ -170,7 +172,7 @@ struct CommentTile: View {
             }
         }
         .frame(alignment: .leading)
-        .padding(.leading, 6)
+        .padding(.leading, showLevelIndent ? 6 : 0)
     }
     
     private func onFlagTap() {

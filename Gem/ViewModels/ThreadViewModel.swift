@@ -85,16 +85,6 @@ import Translation
     
     init(_ item: any Item) {
         self.item = item
-        if item is Story {
-            factory = .init(processors: [
-                NewCommentMarker(parentId: item.id),
-                MarkdownParser(language: .englishUS)
-            ])
-        } else {
-            factory = .init(processors: [
-                MarkdownParser(language: .englishUS)
-            ])
-        }
     }
     
     /// Load child comments of a comment.
@@ -147,7 +137,7 @@ import Translation
         
         // Initialize processors
         var processors: [CommentProcessor] = []
-        if let story = item as? Story {
+        if let story = item as? Story, isRecursivelyFetching {
             processors.append(NewCommentMarker(parentId: story.id))
         }
         if isTranslationEnabled, let translator = CommentTranslator(targetLanguage: targetLanguage) {
@@ -334,7 +324,8 @@ import Translation
         }
         
         if let scrollTo, SettingsViewModel.shared.isAutoScrollEnabled,
-           scrollTo.id != comments.first?.id && scrollTo.id != comments.last?.id {
+           scrollTo.id != comments.first?.id && scrollTo.id != comments.last?.id,
+           !scrollTo.isCollapsed.orFalse && !scrollTo.isHidden.orFalse {
             withAnimation {
                 self.scrollViewProxy?.scrollTo(scrollTo.id, anchor: .top)
             }
