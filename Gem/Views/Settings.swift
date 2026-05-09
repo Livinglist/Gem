@@ -75,6 +75,8 @@ struct Settings: View {
                 .disabled(!isTranslationEnabledBuffer)
                 .pickerStyle(.menu)
                 .tint(.accent)
+            } header: {
+                Text("Thread Translation")
             }
             
             Section {
