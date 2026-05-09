@@ -253,24 +253,20 @@ struct Thread: View {
                                     .onTapGesture {
                                         commentTapped = comment
                                     }
-                                    .transition(.asymmetric(
-                                        insertion: .move(edge: .trailing),
-                                        removal: .move(edge: .trailing)
-                                    ))
                             } else {
                                 TimeMachineRow(
                                     panels: getAncestors(of: comment)
                                 ) {
                                     CommentTile(comment: comment, vm: vm, actionPerformed: $actionPerformed)
-                                        .id(comment.id)
                                         .onTapGesture {
                                             commentTapped = comment
                                         }
-                                        .transition(.asymmetric(
-                                            insertion: .move(edge: .trailing),
-                                            removal: .move(edge: .trailing)
-                                        ))
                                 }
+                                .id(comment.id)
+                                .transition(.asymmetric(
+                                    insertion: .move(edge: .trailing),
+                                    removal: .move(edge: .trailing)
+                                ))
                             }
                         }
                     }
