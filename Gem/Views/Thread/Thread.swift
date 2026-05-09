@@ -62,7 +62,7 @@ struct TimeMachineRow<RowContent: View>: View {
             )
         }
     }
-
+    
     private func applyStickiness(_ raw: CGFloat) -> CGFloat {
         let step = floor(raw)
         let t = raw - step
@@ -72,57 +72,67 @@ struct TimeMachineRow<RowContent: View>: View {
     }
     
     var body: some View {
-        rowContent
-            .frame(maxWidth: .infinity)
-            .background(
-                GeometryReader { geo in
-                    Color.clear.preference(
-                        key: ActivePanelKey.self,
-                        value: isSwiping ? ActivePanelKey.Info(
-                            frame: geo.frame(in: .named("threadScroll")),
-                            panels: panels,
-                            dragProgress: dragProgress,
-                            isSwiping: isSwiping
-                        ) : nil
+        ZStack(alignment: .trailing) {
+            rowContent
+                .frame(maxWidth: .infinity)
+                .background(
+                    GeometryReader { geo in
+                        Color.clear.preference(
+                            key: ActivePanelKey.self,
+                            value: isSwiping ? ActivePanelKey.Info(
+                                frame: geo.frame(in: .named("threadScroll")),
+                                panels: panels,
+                                dragProgress: dragProgress,
+                                isSwiping: isSwiping
+                            ) : nil
+                        )
+                    }
+                )
+            
+            // Invisible right-20% gesture zone
+            GeometryReader { geo in
+                Color.clear
+                    .frame(width: geo.size.width * 0.2)
+                    .contentShape(Rectangle())
+                    .simultaneousGesture(
+                        DragGesture(minimumDistance: 30, coordinateSpace: .local)
+                            .onChanged { value in
+                                if !isHorizontalDrag && !isSwiping {
+                                    guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                                    isHorizontalDrag = true
+                                }
+                                guard isHorizontalDrag, value.translation.width < 0 else { return }
+                                
+                                if !isSwiping {
+                                    isSwiping = true
+                                    dragOriginX = value.translation.width  // snapshot where we actually started
+                                }
+                                
+                                let origin = dragOriginX ?? value.translation.width
+                                let adjusted = max(-(value.translation.width - origin), 0)
+                                let raw = adjusted / dragSensitivity
+                                let clamped = min(raw, CGFloat(panels.count - 1))
+                                dragProgress = applyStickiness(clamped)
+                                
+                                let currentIndex = Int(dragProgress)
+                                if currentIndex != lastHapticIndex {
+                                    haptic.impactOccurred(intensity: 1.0)
+                                    lastHapticIndex = currentIndex
+                                }
+                            }
+                            .onEnded { _ in
+                                dragOriginX = nil
+                                isHorizontalDrag = false
+                                lastHapticIndex = -1
+                                withAnimation(.spring(duration: 0.45, bounce: 0.2)) {
+                                    dragProgress = 0
+                                    isSwiping = false
+                                }
+                            }
                     )
-                }
-            )
-            .simultaneousGesture(
-                DragGesture(minimumDistance: 30, coordinateSpace: .local)
-                    .onChanged { value in
-                        if !isHorizontalDrag && !isSwiping {
-                            guard abs(value.translation.width) > abs(value.translation.height) else { return }
-                            isHorizontalDrag = true
-                        }
-                        guard isHorizontalDrag, value.translation.width < 0 else { return }
-                        
-                        if !isSwiping {
-                            isSwiping = true
-                            dragOriginX = value.translation.width  // snapshot where we actually started
-                        }
-                        
-                        let origin = dragOriginX ?? value.translation.width
-                        let adjusted = max(-(value.translation.width - origin), 0)
-                        let raw = adjusted / dragSensitivity
-                        let clamped = min(raw, CGFloat(panels.count - 1))
-                        dragProgress = applyStickiness(clamped)
-                        
-                        let currentIndex = Int(dragProgress)
-                        if currentIndex != lastHapticIndex {
-                            haptic.impactOccurred(intensity: 1.0)
-                            lastHapticIndex = currentIndex
-                        }
-                    }
-                    .onEnded { _ in
-                        dragOriginX = nil
-                        isHorizontalDrag = false
-                        lastHapticIndex = -1
-                        withAnimation(.spring(duration: 0.45, bounce: 0.2)) {
-                            dragProgress = 0
-                            isSwiping = false
-                        }
-                    }
-            )
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+            }
+        }
     }
 }
 
