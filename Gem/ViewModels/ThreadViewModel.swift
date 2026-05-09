@@ -137,7 +137,9 @@ import Translation
         
         // Initialize processors
         var processors: [CommentProcessor] = []
-        if let story = item as? Story, isRecursivelyFetching {
+        if let story = item as? Story,
+           isRecursivelyFetching,
+           !OfflineRepository.shared.isOfflineReading {
             processors.append(NewCommentMarker(parentId: story.id))
         }
         if isTranslationEnabled, let translator = CommentTranslator(targetLanguage: targetLanguage) {
