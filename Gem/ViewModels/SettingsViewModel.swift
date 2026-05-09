@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import InMemoryLogging
 import Logging
 import Translation
@@ -37,6 +38,7 @@ fileprivate extension String {
     static let isTranslationEnabledKey = "isTranslationEnabled"
     static let translationTargetKey = "translationTarget"
     static let isDevModeEnabledKey = "isDevModeEnabled"
+    static let preferredColorSchemeKey = "preferredColorScheme"
 }
 
 @Observable class SettingsViewModel {
@@ -80,6 +82,11 @@ fileprivate extension String {
         didSet {
             UserDefaults.standard.set(isDevModeEnabled, forKey: .isDevModeEnabledKey)
             setUpLogger()
+        }
+    }
+    var preferredColorScheme: PreferredColorScheme {
+        didSet {
+            UserDefaults.standard.setValue(preferredColorScheme.toString(), forKey: .preferredColorSchemeKey)
         }
     }
     
@@ -139,6 +146,12 @@ fileprivate extension String {
 #else
         translationTarget = targetLanguageIdentifier == nil ? nil : .init(identifier: targetLanguageIdentifier!)
 #endif
+        
+        if let preferredColorSchemeStr = UserDefaults.standard.object(forKey: .preferredColorSchemeKey) as? String {
+            self.preferredColorScheme = .fromString(preferredColorSchemeStr)
+        } else {
+            self.preferredColorScheme = .system
+        }
 
         let downloadFrequencyRawValue = UserDefaults.standard.double(forKey: .downloadFrequencyKey)
         if let downloadFrequency = DownloadFrequency(rawValue: downloadFrequencyRawValue) {

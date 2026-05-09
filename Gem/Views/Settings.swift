@@ -3,6 +3,8 @@ import Translation
 import HackerNewsKit
 
 struct Settings: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dismiss) var dismiss
     @Environment(\.openURL) private var openURL
     @Bindable var vm = SettingsViewModel.shared
     @State var url: IdentifiableURL?
@@ -30,6 +32,18 @@ struct Settings: View {
     
     var body: some View {
         List {
+            Section {
+                Picker("Preferred Color Scheme", selection: $vm.preferredColorScheme) {
+                    ForEach(PreferredColorScheme.allCases, id: \.self) { value in
+                        Text(value.label)
+                            .tag(value)
+                    }
+                }
+            }
+            .onChange(of: vm.preferredColorScheme) { _, newValue in
+                dismiss()
+            }
+            
             Section {
                 Picker("Default Story Type", selection: $vm.defaultStoryType) {
                     ForEach(StoryType.allCases, id: \.self) { value in
