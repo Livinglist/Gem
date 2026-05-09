@@ -10,7 +10,7 @@ struct GemApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.scenePhase) private var phase
     var offlineRepository: OfflineRepository = .shared
-    
+    var settings: SettingsViewModel = .shared
     let auth: AuthenticationManager = .shared
     let notification: RepliesViewModel = .shared
     
@@ -38,6 +38,7 @@ struct GemApp: App {
                     .ignoresSafeArea()
                 }
             }
+            .preferredColorScheme(settings.preferredColorScheme.colorScheme)
             .onAppear {
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
             }
