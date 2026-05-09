@@ -2,11 +2,17 @@ import Foundation
 import UIKit
 
 extension Bool {
-     static var iOS16: Bool {
-         guard #available(iOS 16.0, *) else {
-             return false
-         }
+    static var iOS16: Bool {
+        guard #available(iOS 16.0, *) else {
+            return false
+        }
+        
+        return true
+    }
+}
 
-         return true
-     }
- }
+extension Bool? {
+    var orFalse: Bool {
+        self ?? false
+    }
+}

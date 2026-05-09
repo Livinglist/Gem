@@ -3,6 +3,129 @@ import WebKit
 import HackerNewsKit
 import Translation
 
+struct PanelConfig: Identifiable, Equatable {
+    let id: Int
+}
+
+struct ActivePanelKey: PreferenceKey {
+    struct Info: Equatable {
+        var frame: CGRect
+        var panels: [PanelConfig]
+        var dragProgress: CGFloat
+        var isSwiping: Bool
+    }
+    static var defaultValue: Info? = nil
+    static func reduce(value: inout Info?, nextValue: () -> Info?) {
+        value = nextValue() ?? value
+    }
+}
+
+struct TimeMachineRow<RowContent: View>: View {
+    let panels: [PanelConfig]
+    let rowContent: RowContent
+    
+    @State private var dragProgress: CGFloat = 0
+    @State private var lastHapticIndex: Int = -1
+    @State private var isSwiping = false
+    @State private var isHorizontalDrag = false
+    @State private var dragOriginX: CGFloat? = nil
+    private let haptic = UIImpactFeedbackGenerator(style: .rigid)
+    
+    private let panelSize = CGSize(width: 300, height: 180)
+    private let depthScale: CGFloat = 0.85   // how much smaller each level gets
+    private let depthOpacity: CGFloat = 0.80  // how much more transparent each level gets
+    private var dragSensitivity: CGFloat {
+        let usableWidth: CGFloat = 320 // conservative screen width budget
+        return usableWidth / CGFloat(max(panels.count, 1))
+    }
+    
+    init(panels: [PanelConfig], @ViewBuilder rowContent: () -> RowContent) {
+        self.panels = panels
+        self.rowContent = rowContent()
+    }
+    
+    // depth: 0 = front, positive = further back, negative = being dismissed
+    private func props(for index: Int) -> (scale: CGFloat, opacity: Double) {
+        let depth = CGFloat(index) - dragProgress
+        
+        if depth <= -1 {
+            return (0, 0)
+        } else if depth < 0 {
+            // Front panel swiping away: grows and fades out
+            let t = -depth  // 0 → 1
+            return (1 + t * 0.3, Double(1 - t))
+        } else {
+            // In the stack: shrinks and dims the further back
+            return (
+                pow(depthScale, depth),
+                Double(pow(depthOpacity, depth))
+            )
+        }
+    }
+
+    private func applyStickiness(_ raw: CGFloat) -> CGFloat {
+        let step = floor(raw)
+        let t = raw - step
+        // Cubic ease-in: stays stuck near 0, then accelerates hard toward next panel
+        let smooth = t * t * t
+        return step + smooth
+    }
+    
+    var body: some View {
+        rowContent
+            .frame(maxWidth: .infinity)
+            .background(
+                GeometryReader { geo in
+                    Color.clear.preference(
+                        key: ActivePanelKey.self,
+                        value: isSwiping ? ActivePanelKey.Info(
+                            frame: geo.frame(in: .named("threadScroll")),
+                            panels: panels,
+                            dragProgress: dragProgress,
+                            isSwiping: isSwiping
+                        ) : nil
+                    )
+                }
+            )
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 30, coordinateSpace: .local)
+                    .onChanged { value in
+                        if !isHorizontalDrag && !isSwiping {
+                            guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                            isHorizontalDrag = true
+                        }
+                        guard isHorizontalDrag, value.translation.width < 0 else { return }
+                        
+                        if !isSwiping {
+                            isSwiping = true
+                            dragOriginX = value.translation.width  // snapshot where we actually started
+                        }
+                        
+                        let origin = dragOriginX ?? value.translation.width
+                        let adjusted = max(-(value.translation.width - origin), 0)
+                        let raw = adjusted / dragSensitivity
+                        let clamped = min(raw, CGFloat(panels.count - 1))
+                        dragProgress = applyStickiness(clamped)
+                        
+                        let currentIndex = Int(dragProgress)
+                        if currentIndex != lastHapticIndex {
+                            haptic.impactOccurred(intensity: 1.0)
+                            lastHapticIndex = currentIndex
+                        }
+                    }
+                    .onEnded { _ in
+                        dragOriginX = nil
+                        isHorizontalDrag = false
+                        lastHapticIndex = -1
+                        withAnimation(.spring(duration: 0.45, bounce: 0.2)) {
+                            dragProgress = 0
+                            isSwiping = false
+                        }
+                    }
+            )
+    }
+}
+
 struct Thread: View {
     @Environment(AuthenticationManager.self) var auth
     @State private var vm: ThreadViewModel
@@ -32,7 +155,6 @@ struct Thread: View {
     
     var body: some View {
         mainItemView
-            //.sensoryFeedback(.selection, trigger: commentTapped) { $1 != nil }
             .sensoryFeedback(.impact(flexibility: .solid), trigger: isSearchPresented) { $1 }
             .sensoryFeedback(.success, trigger: vm.translationStatus) { _, status in status == .completed }
             .withToast(actionPerformed: $actionPerformed)
@@ -106,7 +228,7 @@ struct Thread: View {
                             if comment.isHidden ?? true {
                                 EmptyView()
                                     .id(comment.id)
-                            } else {
+                            } else if comment.level == 0 {
                                 CommentTile(comment: comment, vm: vm, actionPerformed: $actionPerformed)
                                     .id(comment.id)
                                     .onTapGesture {
@@ -116,12 +238,62 @@ struct Thread: View {
                                         insertion: .move(edge: .trailing),
                                         removal: .move(edge: .trailing)
                                     ))
+                            } else {
+                                TimeMachineRow(
+                                    panels: getAncestors(of: comment)
+                                ) {
+                                    CommentTile(comment: comment, vm: vm, actionPerformed: $actionPerformed)
+                                        .id(comment.id)
+                                        .onTapGesture {
+                                            commentTapped = comment
+                                        }
+                                        .transition(.asymmetric(
+                                            insertion: .move(edge: .trailing),
+                                            removal: .move(edge: .trailing)
+                                        ))
+                                }
                             }
                         }
                     }
-                } 
+                }
                 
                 Spacer().frame(height: 60)
+            }
+            .coordinateSpace(name: "threadScroll")
+            .overlayPreferenceValue(ActivePanelKey.self) { value in
+                if let value, value.isSwiping {
+                    let presence: Double = value.isSwiping ? 0.8 : 0
+                    
+                    Color.black
+                        .opacity(presence)
+                        .animation(.easeInOut(duration: 0.2), value: value.isSwiping)
+                        .ignoresSafeArea()
+                        .allowsHitTesting(false)
+                    
+                    GeometryReader { geo in
+                        let maxPanelHeight = geo.size.height * 0.8
+                        
+                        ForEach(value.panels.indices.reversed(), id: \.self) { i in
+                            let (scale, opacity) = panelProps(index: i, progress: value.dragProgress)
+                            let cid = value.panels[i].id
+                            if let comment = vm.comments.first(where: { $0.id == cid }) {
+                                CommentTile(
+                                    comment: comment,
+                                    vm: vm,
+                                    allowActions: false,
+                                    showLevelIndent: false
+                                )
+                                .frame(width: geo.size.width)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .frame(maxHeight: maxPanelHeight, alignment: .top)
+                                .clipped()
+                                .scaleEffect(scale, anchor: .top)
+                                .opacity(opacity)
+                                .allowsHitTesting(false)
+                            }
+                        }
+                    }
+                }
             }
             .onAppear {
                 vm.scrollViewProxy = proxy
@@ -215,6 +387,26 @@ struct Thread: View {
         .onDisappear {
             self.vm.cleanUp()
         }
+    }
+    
+    private func getAncestors(of comment: Comment) -> [PanelConfig] {
+        var ancestors = [Int]()
+        var id = comment.parent
+        while id != nil && id != -1 {
+            ancestors.append(id!)
+            id = (vm.comments.first(where: { $0.id == id })?.parent)
+        }
+        return ancestors.map { .init(id: $0)}
+    }
+    
+    private func panelProps(index: Int, progress: CGFloat) -> (scale: CGFloat, opacity: Double) {
+        let depth = CGFloat(index) - progress
+        if depth <= -1 { return (0, 0) }
+        if depth < 0 {
+            let t = -depth
+            return (1 + t * 0.3, Double(1 - t))
+        }
+        return (pow(0.85, depth), Double(pow(0.80, depth)))
     }
     
     private func onFlagTap() {
