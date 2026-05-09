@@ -3,12 +3,19 @@ import SwiftUI
 
 extension Thread {
     struct TimeMachineTutorialSheet: View {
-        private let player: AVPlayer = {
-            guard let path = Bundle.main.path(forResource: "time_machine", ofType: "m4v") else {
-                return AVPlayer()
+        let player: AVQueuePlayer
+        let looper: AVPlayerLooper
+        
+        init() {
+            let queuePlayer = AVQueuePlayer()
+            if let path = Bundle.main.path(forResource: "time_machine", ofType: "m4v") {
+                let item = AVPlayerItem(url: URL(fileURLWithPath: path))
+                looper = AVPlayerLooper(player: queuePlayer, templateItem: item)
+            } else {
+                looper = AVPlayerLooper(player: queuePlayer, templateItem: AVPlayerItem(url: URL(fileURLWithPath: "")))
             }
-            return AVPlayer(url: URL(fileURLWithPath: path))
-        }()
+            player = queuePlayer
+        }
         
         var body: some View {
             ZStack(alignment: .top) {
@@ -32,7 +39,7 @@ extension Thread {
     }
     
     private struct AVPlayerView: UIViewRepresentable {
-        let player: AVPlayer
+        let player: AVQueuePlayer
         
         func makeUIView(context: Context) -> PlayerUIView {
             PlayerUIView(player: player)
@@ -44,7 +51,7 @@ extension Thread {
     private class PlayerUIView: UIView {
         private let playerLayer = AVPlayerLayer()
         
-        init(player: AVPlayer) {
+        init(player: AVQueuePlayer) {
             super.init(frame: .zero)
             playerLayer.player = player
             playerLayer.videoGravity = .resizeAspect
