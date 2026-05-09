@@ -21,6 +21,7 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
 - [x] [Notification on new replies](#pins-favorites-and-replies)
 - [x] [Offline mode](#offline-mode)
 - [x] [New comments highlighting](#in-thread-search-and-new-comments-indicator) since last visit
+- [x] [Time Machine](#time-machine) for easy access to ancestor comments
 
 ## Home
 <p align="center">
@@ -48,6 +49,11 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
   <img width="200" src="Resources/Screenshots/thread_eager_light.png">
   <img width="200" src="Resources/Screenshots/thread_lazy.png">
   <img width="200" src="Resources/Screenshots/thread_lazy_light.png">
+</p>
+
+## Time Machine
+<p align="center">
+  <img width="240" src="Resources/Screenshots/time_machine.gif">
 </p>
 
 ## Thread translation
