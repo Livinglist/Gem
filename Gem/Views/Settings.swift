@@ -3,7 +3,6 @@ import Translation
 import HackerNewsKit
 
 struct Settings: View {
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) var dismiss
     @Environment(\.openURL) private var openURL
     @Bindable var vm = SettingsViewModel.shared
@@ -40,7 +39,7 @@ struct Settings: View {
                     }
                 }
             }
-            .onChange(of: vm.preferredColorScheme) { _, newValue in
+            .onChange(of: vm.preferredColorScheme) {
                 dismiss()
             }
             
