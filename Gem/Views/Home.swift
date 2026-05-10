@@ -132,6 +132,7 @@ struct Home: View {
                             if offlineRepository.isDownloading {
                                 ToolbarItem(placement: .topBarTrailing) {
                                     Text("\(offlineRepository.completionCount)")
+                                        .contentTransition(.numericText())
                                 }
                             }
                             ToolbarItem(placement: .topBarTrailing) {
