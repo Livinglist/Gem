@@ -51,7 +51,7 @@ struct Settings: View {
                     }
                 }
             } footer: {
-                Text("The type of story to be shown on the launch.")
+                Text("The story type shown when the app launches.")
             }
             
             Section {
@@ -61,8 +61,11 @@ struct Settings: View {
                             .tag(value)
                     }
                 }
+            } header: {
+                Text("Thread")
+            } footer: {
+                Text("Eager mode pre-loads all replies automatically. Lazy mode loads replies only when requested.")
             }
-            
             Section {
                 Toggle(isOn: $vm.isAutoScrollEnabled) {
                     Text("Auto-scroll on Collapse")
