@@ -148,7 +148,7 @@ fileprivate extension ModelContainer {
                         await self.downloadChildComments(of: story, level: 0)
                         return story.id
                     }
-                }Gem/Repositories/OfflineRepository.swift
+                }
 
                 for await completedId in group {
                     guard isDownloading else {
