@@ -23,10 +23,13 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
 - [x] [New comments highlighting](#in-thread-search-and-new-comments-indicator) since last visit
 - [x] [Time Machine](#time-machine) for easy access to ancestor comments
 
-
-| Walkthru | Thread Translation | New Replies | Time Machine | In-thread Search |
-|-------|-------|-------|-------|-------|
-| <video width="150" src="https://github.com/user-attachments/assets/5c96a66c-6125-49d8-b61d-010b6f632a75"> | <video width="150" src="https://github.com/user-attachments/assets/ba105851-5b5a-44fe-a671-6e556d6e1ef2"> | <video width="150" src="https://github.com/user-attachments/assets/58df09f9-bac7-4458-bc5e-4772d12f5f15"> | <video width="150" src="https://github.com/user-attachments/assets/f22f299d-8f49-4cb8-89c9-714e10747b81"> | <video width="150" src="https://github.com/user-attachments/assets/85d070eb-aa28-4c94-bbbc-8540339782dd"> |
+| Title | Video |
+|-------|-------|
+| Walkthru | <video width="150" src="https://github.com/user-attachments/assets/5c96a66c-6125-49d8-b61d-010b6f632a75"> |
+| Thread Translation | <video width="150" src="https://github.com/user-attachments/assets/ba105851-5b5a-44fe-a671-6e556d6e1ef2"> |
+| New Replies | <video width="150" src="https://github.com/user-attachments/assets/58df09f9-bac7-4458-bc5e-4772d12f5f15"> |
+| Time Machine | <video width="150" src="https://github.com/user-attachments/assets/f22f299d-8f49-4cb8-89c9-714e10747b81"> |
+| In-thread Search | <video width="150" src="https://github.com/user-attachments/assets/85d070eb-aa28-4c94-bbbc-8540339782dd"> |
 
 ## Home
 <p align="center">
