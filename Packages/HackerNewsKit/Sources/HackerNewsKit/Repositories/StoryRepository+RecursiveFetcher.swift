@@ -97,7 +97,7 @@ extension StoryRepository {
     
     private func fetchCommentsRecursivelyFromWeb(of item: any Item, completion: @escaping (Comment?) -> Void) async throws {
         let itemId = item.id;
-        let descendants = item is Story ? item.descendants : nil;
+        let descendants = item is Story ? item.descendants : item.kids?.count;
         var parentTextCount = 0
         let dateFormatter : DateFormatter = DateFormatter()
         let locale = Locale(identifier: "en_US_POSIX")
@@ -159,7 +159,7 @@ extension StoryRepository {
             return
         }
         
-        while elements.isEmpty == false {
+        while !elements.isEmpty {
             for element in elements {
                 /// Get comment id.
                 guard let cmtIdString = try? element.attr("id") else { continue }
