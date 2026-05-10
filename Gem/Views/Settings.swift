@@ -61,8 +61,6 @@ struct Settings: View {
                             .tag(value)
                     }
                 }
-            } footer: {
-                Text("Offline mode currently only supports lazy fetching.")
             }
             
             Section {
