@@ -50,8 +50,6 @@ struct Settings: View {
                             .tag(value)
                     }
                 }
-            } footer: {
-                Text("The type of story to be shown on the launch.")
             }
             
             Section {
