@@ -30,10 +30,6 @@ struct TimeMachineRow<RowContent: View>: View {
     @State private var isHorizontalDrag = false
     @State private var dragOriginX: CGFloat? = nil
     private let haptic = UIImpactFeedbackGenerator(style: .rigid)
-    
-    private let panelSize = CGSize(width: 300, height: 180)
-    private let depthScale: CGFloat = 0.85   // how much smaller each level gets
-    private let depthOpacity: CGFloat = 0.80  // how much more transparent each level gets
     private var dragSensitivity: CGFloat {
         let usableWidth: CGFloat = 320 // conservative screen width budget
         return usableWidth / CGFloat(max(panels.count, 1))
@@ -42,25 +38,6 @@ struct TimeMachineRow<RowContent: View>: View {
     init(panels: [PanelConfig], @ViewBuilder rowContent: () -> RowContent) {
         self.panels = panels
         self.rowContent = rowContent()
-    }
-    
-    // depth: 0 = front, positive = further back, negative = being dismissed
-    private func props(for index: Int) -> (scale: CGFloat, opacity: Double) {
-        let depth = CGFloat(index) - dragProgress
-        
-        if depth <= -1 {
-            return (0, 0)
-        } else if depth < 0 {
-            // Front panel swiping away: grows and fades out
-            let t = -depth  // 0 → 1
-            return (1 + t * 0.3, Double(1 - t))
-        } else {
-            // In the stack: shrinks and dims the further back
-            return (
-                pow(depthScale, depth),
-                Double(pow(depthOpacity, depth))
-            )
-        }
     }
     
     private func applyStickiness(_ raw: CGFloat) -> CGFloat {
@@ -152,12 +129,9 @@ struct Thread: View {
     @State private var commentTapped: Comment? = nil
     
     let settings: SettingsViewModel = .shared
-    
-    let level: Int
     let item: any Item
     
     init(item: any Item, level: Int = 0) {
-        self.level = level
         self.item = item
         self.vm = ThreadViewModel(item)
         
@@ -258,11 +232,11 @@ struct Thread: View {
                                     panels: getAncestors(of: comment)
                                 ) {
                                     CommentTile(comment: comment, vm: vm, actionPerformed: $actionPerformed)
-                                        .onTapGesture {
-                                            commentTapped = comment
-                                        }
                                 }
                                 .id(comment.id)
+                                .onTapGesture {
+                                    commentTapped = comment
+                                }
                                 .transition(.asymmetric(
                                     insertion: .move(edge: .trailing),
                                     removal: .move(edge: .trailing)
@@ -276,17 +250,14 @@ struct Thread: View {
             }
             .coordinateSpace(name: "threadScroll")
             .overlayPreferenceValue(ActivePanelKey.self) { value in
-                if let value, value.isSwiping {
-                    let presence: Double = value.isSwiping ? 0.8 : 0
-                    
+                if let value {
                     Color.black
-                        .opacity(presence)
-                        .animation(.easeInOut(duration: 0.2), value: value.isSwiping)
+                        .opacity(0.8)
                         .ignoresSafeArea()
                         .allowsHitTesting(false)
                     
                     GeometryReader { geo in
-                        let maxPanelHeight = geo.size.height * 0.8
+                        let maxPanelHeight = geo.size.height * 0.9
                         
                         ForEach(value.panels.indices.reversed(), id: \.self) { i in
                             let (scale, opacity) = panelProps(index: i, progress: value.dragProgress)
