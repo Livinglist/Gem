@@ -24,9 +24,13 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
 - [x] [Time Machine](#time-machine) for easy access to ancestor comments
 
 
-| Walkthru | Thread Translation | New Replies | Time Machine | In-thread Search |
-|-------|-------|-------|-------|-------|
-| <video width="150" src="https://github.com/user-attachments/assets/ef89a4a6-a855-437c-bd81-9f6b215ff72b"> | <video width="150" src="https://github.com/user-attachments/assets/1482f9a2-01c0-4c6d-98de-1b5699eaa18a"> | <video width="150" src="https://github.com/user-attachments/assets/a98c4b81-3cfb-4383-baec-cf487aeb5925"> | <video width="150" src="https://github.com/user-attachments/assets/4d7d2082-dc76-48ef-821a-476a4d78f6f1"> | <video width="150" src="https://github.com/user-attachments/assets/a5044e66-3eb3-4b24-a424-c1af8a041792"> |
+| Walkthru | Thread Translation | New Replies |
+|-------|-------|-------|
+| <video width="150" src="https://github.com/user-attachments/assets/ef89a4a6-a855-437c-bd81-9f6b215ff72b"> | <video width="150" src="https://github.com/user-attachments/assets/1482f9a2-01c0-4c6d-98de-1b5699eaa18a"> | <video width="150" src="https://github.com/user-attachments/assets/a98c4b81-3cfb-4383-baec-cf487aeb5925"> |
+
+| Time Machine | In-thread Search |
+|-------|-------|
+| <video width="150" src="https://github.com/user-attachments/assets/4d7d2082-dc76-48ef-821a-476a4d78f6f1"> | <video width="150" src="https://github.com/user-attachments/assets/a5044e66-3eb3-4b24-a424-c1af8a041792"> |
 
 
 
