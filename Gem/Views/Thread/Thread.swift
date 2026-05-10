@@ -3,111 +3,118 @@ import WebKit
 import HackerNewsKit
 import Translation
 
-struct PanelConfig: Identifiable, Equatable {
-    let id: Int
-}
-
-struct ActivePanelKey: PreferenceKey {
-    struct Info: Equatable {
-        var frame: CGRect
-        var panels: [PanelConfig]
-        var dragProgress: CGFloat
-        var isSwiping: Bool
-    }
-    static var defaultValue: Info? = nil
-    static func reduce(value: inout Info?, nextValue: () -> Info?) {
-        value = nextValue() ?? value
-    }
-}
-
-struct TimeMachineRow<RowContent: View>: View {
-    let panels: [PanelConfig]
-    let rowContent: RowContent
+extension Thread {
     
-    @State private var dragProgress: CGFloat = 0
-    @State private var lastHapticIndex: Int = -1
-    @State private var isSwiping = false
-    @State private var isHorizontalDrag = false
-    @State private var dragOriginX: CGFloat? = nil
-    private let haptic = UIImpactFeedbackGenerator(style: .rigid)
-    private var dragSensitivity: CGFloat {
-        let usableWidth: CGFloat = 320 // conservative screen width budget
-        return usableWidth / CGFloat(max(panels.count, 1))
+    enum CoordinateSpaces {
+        static let threadScrollView = "threadScrollView"
     }
     
-    init(panels: [PanelConfig], @ViewBuilder rowContent: () -> RowContent) {
-        self.panels = panels
-        self.rowContent = rowContent()
+    struct PanelConfig: Identifiable, Equatable {
+        let id: Int
     }
     
-    private func applyStickiness(_ raw: CGFloat) -> CGFloat {
-        let step = floor(raw)
-        let t = raw - step
-        // Cubic ease-in: stays stuck near 0, then accelerates hard toward next panel
-        let smooth = t * t * t
-        return step + smooth
+    struct ActivePanelKey: PreferenceKey {
+        struct Info: Equatable {
+            var frame: CGRect
+            var panels: [PanelConfig]
+            var dragProgress: CGFloat
+            var isSwiping: Bool
+        }
+        static var defaultValue: Info? = nil
+        static func reduce(value: inout Info?, nextValue: () -> Info?) {
+            value = nextValue() ?? value
+        }
     }
     
-    var body: some View {
-        ZStack(alignment: .trailing) {
-            rowContent
-                .frame(maxWidth: .infinity)
-                .background(
-                    GeometryReader { geo in
-                        Color.clear.preference(
-                            key: ActivePanelKey.self,
-                            value: isSwiping ? ActivePanelKey.Info(
-                                frame: geo.frame(in: .named("threadScroll")),
-                                panels: panels,
-                                dragProgress: dragProgress,
-                                isSwiping: isSwiping
-                            ) : nil
-                        )
-                    }
-                )
-            
-            // Invisible right-20% gesture zone
-            GeometryReader { geo in
-                Color.clear
-                    .frame(width: geo.size.width * 0.2)
-                    .contentShape(Rectangle())
-                    .simultaneousGesture(
-                        DragGesture(minimumDistance: 30, coordinateSpace: .local)
-                            .onChanged { value in
-                                if !isHorizontalDrag && !isSwiping {
-                                    guard abs(value.translation.width) > abs(value.translation.height) else { return }
-                                    isHorizontalDrag = true
-                                }
-                                guard isHorizontalDrag, value.translation.width < 0 else { return }
-                                
-                                if !isSwiping {
-                                    isSwiping = true
-                                    dragOriginX = value.translation.width  // snapshot where we actually started
-                                }
-                                
-                                let origin = dragOriginX ?? value.translation.width
-                                let adjusted = max(-(value.translation.width - origin), 0)
-                                let raw = adjusted / dragSensitivity
-                                let clamped = min(raw, CGFloat(panels.count - 1))
-                                dragProgress = applyStickiness(clamped)
-                                
-                                let currentIndex = Int(dragProgress)
-                                if currentIndex != lastHapticIndex {
-                                    haptic.impactOccurred(intensity: 1.0)
-                                    lastHapticIndex = currentIndex
-                                }
-                            }
-                            .onEnded { _ in
-                                dragOriginX = nil
-                                isHorizontalDrag = false
-                                lastHapticIndex = -1
-                                withAnimation(.spring(duration: 0.45, bounce: 0.2)) {
-                                    dragProgress = 0
-                                    isSwiping = false
-                                }
-                            }
+    struct TimeMachineRow<RowContent: View>: View {
+        let panels: [PanelConfig]
+        let rowContent: RowContent
+        
+        @State private var dragProgress: CGFloat = 0
+        @State private var lastHapticIndex: Int = -1
+        @State private var isSwiping = false
+        @State private var isHorizontalDrag = false
+        @State private var dragOriginX: CGFloat? = nil
+        private let haptic = UIImpactFeedbackGenerator(style: .rigid)
+        private var dragSensitivity: CGFloat {
+            let usableWidth: CGFloat = 320 // conservative screen width budget
+            return usableWidth / CGFloat(max(panels.count, 1))
+        }
+        
+        init(panels: [PanelConfig], @ViewBuilder rowContent: () -> RowContent) {
+            self.panels = panels
+            self.rowContent = rowContent()
+        }
+        
+        private func applyStickiness(_ raw: CGFloat) -> CGFloat {
+            let step = floor(raw)
+            let t = raw - step
+            // Cubic ease-in: stays stuck near 0, then accelerates hard toward next panel
+            let smooth = t * t * t
+            return step + smooth
+        }
+        
+        var body: some View {
+            ZStack(alignment: .trailing) {
+                rowContent
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        GeometryReader { geo in
+                            Color.clear.preference(
+                                key: ActivePanelKey.self,
+                                value: isSwiping ? ActivePanelKey.Info(
+                                    frame: geo.frame(in: .named(CoordinateSpaces.threadScrollView)),
+                                    panels: panels,
+                                    dragProgress: dragProgress,
+                                    isSwiping: isSwiping
+                                ) : nil
+                            )
+                        }
                     )
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+                
+                // Invisible right-20% gesture zone
+                GeometryReader { geo in
+                    Color.clear
+                        .frame(width: geo.size.width * 0.2)
+                        .contentShape(Rectangle())
+                        .simultaneousGesture(
+                            DragGesture(minimumDistance: 30, coordinateSpace: .local)
+                                .onChanged { value in
+                                    if !isHorizontalDrag && !isSwiping {
+                                        guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                                        isHorizontalDrag = true
+                                    }
+                                    guard isHorizontalDrag, value.translation.width < 0 else { return }
+                                    
+                                    if !isSwiping {
+                                        isSwiping = true
+                                        dragOriginX = value.translation.width  // snapshot where we actually started
+                                    }
+                                    
+                                    let origin = dragOriginX ?? value.translation.width
+                                    let adjusted = max(-(value.translation.width - origin), 0)
+                                    let raw = adjusted / dragSensitivity
+                                    let clamped = min(raw, CGFloat(panels.count - 1))
+                                    dragProgress = applyStickiness(clamped)
+                                    
+                                    let currentIndex = Int(dragProgress)
+                                    if currentIndex != lastHapticIndex {
+                                        haptic.impactOccurred(intensity: 1.0)
+                                        lastHapticIndex = currentIndex
+                                    }
+                                }
+                                .onEnded { _ in
+                                    dragOriginX = nil
+                                    isHorizontalDrag = false
+                                    lastHapticIndex = -1
+                                    withAnimation(.spring(duration: 0.45, bounce: 0.2)) {
+                                        dragProgress = 0
+                                        isSwiping = false
+                                    }
+                                }
+                        )
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
             }
         }
     }
@@ -248,7 +255,7 @@ struct Thread: View {
                 
                 Spacer().frame(height: 60)
             }
-            .coordinateSpace(name: "threadScroll")
+            .coordinateSpace(name: CoordinateSpaces.threadScrollView)
             .overlayPreferenceValue(ActivePanelKey.self) { value in
                 if let value {
                     Color.black
@@ -390,11 +397,11 @@ struct Thread: View {
     private func getAncestors(of comment: Comment) -> [PanelConfig] {
         var ancestors = [Int]()
         var id = comment.parent
-        while id != nil && id != -1 {
+        while id != nil && id != -1 && item.id != id {
             ancestors.append(id!)
             id = (vm.comments.first(where: { $0.id == id })?.parent)
         }
-        return ancestors.map { .init(id: $0)}
+        return ancestors.map { .init(id: $0) }
     }
     
     private func panelProps(index: Int, progress: CGFloat) -> (scale: CGFloat, opacity: Double) {
