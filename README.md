@@ -23,6 +23,8 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
 - [x] [New comments highlighting](#in-thread-search-and-new-comments-indicator) since last visit
 - [x] [Time Machine](#time-machine) for easy access to ancestor comments
 
+https://github.com/user-attachments/assets/5c96a66c-6125-49d8-b61d-010b6f632a75
+
 ## Home
 <p align="center">
   <img width="200" src="Resources/Screenshots/home_side_menu.png">
