@@ -30,7 +30,8 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
 
 | Time Machine | In-thread Search | Offline Mode |
 |-------|-------|-------|
-| <video width="150" src="https://github.com/user-attachments/assets/4d7d2082-dc76-48ef-821a-476a4d78f6f1"> | <video width="150" src="https://github.com/user-attachments/assets/a5044e66-3eb3-4b24-a424-c1af8a041792"> | <video width="150" src="https://github.com/user-attachments/assets/c2a5775d-7f56-48e6-9966-e8b53b9de290"> |
+| <video width="150" src="https://github.com/user-attachments/assets/22bad9e5-bb56-48ee-bc95-3f0680d72114"> | <video width="150" src="https://github.com/user-attachments/assets/a5044e66-3eb3-4b24-a424-c1af8a041792"> | <video width="150" src="https://github.com/user-attachments/assets/c2a5775d-7f56-48e6-9966-e8b53b9de290"> |
+
 
 
 ## Home
