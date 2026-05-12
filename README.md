@@ -26,11 +26,13 @@ A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
 
 | Walkthru | Thread Translation | New Replies |
 |-------|-------|-------|
-| <video width="150" src="https://github.com/user-attachments/assets/8f3f3f65-f87f-4a3e-ac9f-240c9fac4ece"> | <video width="150" src="https://github.com/user-attachments/assets/1482f9a2-01c0-4c6d-98de-1b5699eaa18a"> | <video width="150" src="https://github.com/user-attachments/assets/a98c4b81-3cfb-4383-baec-cf487aeb5925"> |
+| <video width="150" src="https://github.com/user-attachments/assets/ef89a4a6-a855-437c-bd81-9f6b215ff72b"> | <video width="150" src="https://github.com/user-attachments/assets/1482f9a2-01c0-4c6d-98de-1b5699eaa18a"> | <video width="150" src="https://github.com/user-attachments/assets/a98c4b81-3cfb-4383-baec-cf487aeb5925"> |
 
 | Time Machine | In-thread Search | Offline Mode |
 |-------|-------|-------|
 | <video width="150" src="https://github.com/user-attachments/assets/22bad9e5-bb56-48ee-bc95-3f0680d72114"> | <video width="150" src="https://github.com/user-attachments/assets/a5044e66-3eb3-4b24-a424-c1af8a041792"> | <video width="150" src="https://github.com/user-attachments/assets/c2a5775d-7f56-48e6-9966-e8b53b9de290"> |
+
+
 
 ## Home
 <p align="center">
