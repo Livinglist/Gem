@@ -8,7 +8,7 @@ extension Thread {
         
         init() {
             let queuePlayer = AVQueuePlayer()
-            if let path = Bundle.main.path(forResource: "time_machine", ofType: "m4v") {
+            if let path = Bundle.main.path(forResource: "time_machine", ofType: "mp4") {
                 let item = AVPlayerItem(url: URL(fileURLWithPath: path))
                 looper = AVPlayerLooper(player: queuePlayer, templateItem: item)
             } else {
