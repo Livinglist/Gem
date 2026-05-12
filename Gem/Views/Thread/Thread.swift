@@ -267,7 +267,7 @@ struct Thread: View {
                         let maxPanelHeight = geo.size.height * 0.9
                         
                         ForEach(value.panels.indices.reversed(), id: \.self) { i in
-                            let (scale, opacity, topPadding) = panelProps(index: i, progress: value.dragProgress)
+                            let (scale, opacity, offset) = panelProps(index: i, progress: value.dragProgress)
                             let cid = value.panels[i].id
                             if let comment = vm.comments.first(where: { $0.id == cid }) {
                                 BorderedCommentTile(
@@ -281,7 +281,7 @@ struct Thread: View {
                                 .clipped()
                                 .scaleEffect(scale, anchor: .top)
                                 .opacity(opacity)
-                                .offset(y: topPadding)
+                                .offset(y: offset)
                                 .allowsHitTesting(false)
                             }
                         }
@@ -404,14 +404,17 @@ struct Thread: View {
         return ancestors.map { .init(id: $0) }
     }
     
-    private func panelProps(index: Int, progress: CGFloat) -> (scale: CGFloat, opacity: Double, topPadding: Double) {
+    private func panelProps(index: Int, progress: CGFloat) -> (scale: CGFloat, opacity: Double, offset: Double) {
         let depth = CGFloat(index) - progress
         if depth <= -1 { return (0, 0, 0) }
         if depth < 0 {
             let t = -depth
-            return (1 + t * 0.3, Double(1 - t), Double(1 - t))
+            return (1 + t * 0.3, Double(1 - t), 0)
         }
-        return (pow(0.85, depth), Double(pow(0.80, depth)), -4 * depth)
+        let scale = pow(0.85, depth)
+        let opacity = Double(pow(0.80, depth))
+        let offset = -4 * depth
+        return (scale, opacity, offset)
     }
     
     private func onFlagTap() {
