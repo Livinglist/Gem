@@ -267,14 +267,13 @@ struct Thread: View {
                         let maxPanelHeight = geo.size.height * 0.9
                         
                         ForEach(value.panels.indices.reversed(), id: \.self) { i in
-                            let (scale, opacity) = panelProps(index: i, progress: value.dragProgress)
+                            let (scale, opacity, topPadding) = panelProps(index: i, progress: value.dragProgress)
                             let cid = value.panels[i].id
                             if let comment = vm.comments.first(where: { $0.id == cid }) {
-                                CommentTile(
+                                BorderedCommentTile(
                                     comment: comment,
                                     vm: vm,
-                                    allowActions: false,
-                                    showLevelIndent: false
+                                    maxHeight: maxPanelHeight,
                                 )
                                 .frame(width: geo.size.width)
                                 .fixedSize(horizontal: false, vertical: true)
@@ -282,6 +281,7 @@ struct Thread: View {
                                 .clipped()
                                 .scaleEffect(scale, anchor: .top)
                                 .opacity(opacity)
+                                .offset(y: topPadding)
                                 .allowsHitTesting(false)
                             }
                         }
@@ -404,14 +404,14 @@ struct Thread: View {
         return ancestors.map { .init(id: $0) }
     }
     
-    private func panelProps(index: Int, progress: CGFloat) -> (scale: CGFloat, opacity: Double) {
+    private func panelProps(index: Int, progress: CGFloat) -> (scale: CGFloat, opacity: Double, topPadding: Double) {
         let depth = CGFloat(index) - progress
-        if depth <= -1 { return (0, 0) }
+        if depth <= -1 { return (0, 0, 0) }
         if depth < 0 {
             let t = -depth
-            return (1 + t * 0.3, Double(1 - t))
+            return (1 + t * 0.3, Double(1 - t), Double(1 - t))
         }
-        return (pow(0.85, depth), Double(pow(0.80, depth)))
+        return (pow(0.85, depth), Double(pow(0.80, depth)), -4 * depth)
     }
     
     private func onFlagTap() {
