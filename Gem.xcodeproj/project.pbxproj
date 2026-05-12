@@ -7,9 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		120C14F92FAF27FF0053ED07 /* time_machine.m4v in Resources */ = {isa = PBXBuildFile; fileRef = 120C14F82FAF27DC0053ED07 /* time_machine.m4v */; };
 		120C14FB2FAF28E20053ED07 /* TimeMachineTutorialSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 120C14FA2FAF28E20053ED07 /* TimeMachineTutorialSheet.swift */; };
 		120C14FF2FAF41E40053ED07 /* PreferredColorScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 120C14FE2FAF41E40053ED07 /* PreferredColorScheme.swift */; };
+		120C15012FB2DBC40053ED07 /* BorderedCommentTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 120C15002FB2DBC00053ED07 /* BorderedCommentTile.swift */; };
+		120C15042FB2E5C50053ED07 /* time_machine.m4v in Resources */ = {isa = PBXBuildFile; fileRef = 120C15032FB2E5C50053ED07 /* time_machine.m4v */; };
 		121938A02FA83A6100D6B14A /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1219389F2FA83A5F00D6B14A /* UserModel.swift */; };
 		121938A22FA83B3B00D6B14A /* FetchMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 121938A12FA83B3B00D6B14A /* FetchMode.swift */; };
 		121938A42FA83B4E00D6B14A /* DownloadFrequency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 121938A32FA83B4E00D6B14A /* DownloadFrequency.swift */; };
@@ -185,10 +186,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		120C14F82FAF27DC0053ED07 /* time_machine.m4v */ = {isa = PBXFileReference; lastKnownFileType = file; path = time_machine.m4v; sourceTree = "<group>"; };
 		120C14FA2FAF28E20053ED07 /* TimeMachineTutorialSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeMachineTutorialSheet.swift; sourceTree = "<group>"; };
 		120C14FD2FAF342D0053ED07 /* time_machine.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = time_machine.gif; sourceTree = "<group>"; };
 		120C14FE2FAF41E40053ED07 /* PreferredColorScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferredColorScheme.swift; sourceTree = "<group>"; };
+		120C15002FB2DBC00053ED07 /* BorderedCommentTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedCommentTile.swift; sourceTree = "<group>"; };
+		120C15032FB2E5C50053ED07 /* time_machine.m4v */ = {isa = PBXFileReference; lastKnownFileType = file; path = time_machine.m4v; sourceTree = "<group>"; };
 		1219389F2FA83A5F00D6B14A /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
 		121938A12FA83B3B00D6B14A /* FetchMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchMode.swift; sourceTree = "<group>"; };
 		121938A32FA83B4E00D6B14A /* DownloadFrequency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadFrequency.swift; sourceTree = "<group>"; };
@@ -440,7 +442,7 @@
 		120C14F72FAF27CE0053ED07 /* Videos */ = {
 			isa = PBXGroup;
 			children = (
-				120C14F82FAF27DC0053ED07 /* time_machine.m4v */,
+				120C15032FB2E5C50053ED07 /* time_machine.m4v */,
 			);
 			path = Videos;
 			sourceTree = "<group>";
@@ -457,6 +459,7 @@
 		126015912FA7377600C8E507 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				120C15002FB2DBC00053ED07 /* BorderedCommentTile.swift */,
 				120C14FA2FAF28E20053ED07 /* TimeMachineTutorialSheet.swift */,
 				1260158F2FA7376100C8E507 /* GoToParentButton.swift */,
 				E131BD412F8DB98F00F7E034 /* LinkPreview.swift */,
@@ -1011,10 +1014,10 @@
 		E1D7A3A92F8D850600D8C934 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
-				120C14F92FAF27FF0053ED07 /* time_machine.m4v in Resources */,
 				E1ACB6FA2F8F11EF00382813 /* Gem App Icon.icon in Resources */,
 				126015952FA73DE300C8E507 /* boing.ahap in Resources */,
 				E131BDA22F8DB98F00F7E034 /* Assets.xcassets in Resources */,
+				120C15042FB2E5C50053ED07 /* time_machine.m4v in Resources */,
 				E1AB28B92F92B76200A8B707 /* heartbeats.ahap in Resources */,
 			);
 		};
@@ -1083,6 +1086,7 @@
 				E131BD732F8DB98F00F7E034 /* CommentCollection.swift in Sources */,
 				E131BD742F8DB98F00F7E034 /* Destination.swift in Sources */,
 				E131BD752F8DB98F00F7E034 /* Status.swift in Sources */,
+				120C15012FB2DBC40053ED07 /* BorderedCommentTile.swift in Sources */,
 				E131BD762F8DB98F00F7E034 /* StoryCollection.swift in Sources */,
 				E131BD772F8DB98F00F7E034 /* RepliesViewModel.swift in Sources */,
 				E131BD782F8DB98F00F7E034 /* AuthenticationManager.swift in Sources */,
