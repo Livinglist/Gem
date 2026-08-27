@@ -12,6 +12,7 @@ on:
       - HomeWidget/**
       - ActionExtension/**
       - ShareExtension/**
+      - Packages/**
       - .github/workflows/publish_ios.yml
 
 jobs:
