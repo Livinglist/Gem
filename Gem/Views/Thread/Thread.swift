@@ -35,6 +35,7 @@ extension Thread {
         @State private var isSwiping = false
         @State private var isHorizontalDrag = false
         @State private var dragOriginX: CGFloat? = nil
+        @State private var rowWidth: CGFloat = 0
         private let haptic = UIImpactFeedbackGenerator(style: .rigid)
         private var dragSensitivity: CGFloat {
             let usableWidth: CGFloat = 320 // conservative screen width budget
@@ -60,62 +61,61 @@ extension Thread {
                     .frame(maxWidth: .infinity)
                     .background(
                         GeometryReader { geo in
-                            Color.clear.preference(
-                                key: ActivePanelKey.self,
-                                value: isSwiping ? ActivePanelKey.Info(
-                                    frame: geo.frame(in: .named(CoordinateSpaces.threadScrollView)),
-                                    panels: panels,
-                                    dragProgress: dragProgress,
-                                    isSwiping: isSwiping
-                                ) : nil
-                            )
+                            Color.clear
+                                .preference(
+                                    key: ActivePanelKey.self,
+                                    value: isSwiping ? ActivePanelKey.Info(
+                                        frame: geo.frame(in: .named(CoordinateSpaces.threadScrollView)),
+                                        panels: panels,
+                                        dragProgress: dragProgress,
+                                        isSwiping: isSwiping
+                                    ) : nil
+                                )
+                                .onAppear { rowWidth = geo.size.width }
+                                .onChange(of: geo.size.width) { _, newValue in rowWidth = newValue }
                         }
                     )
-                
-                // Invisible right-20% gesture zone
-                GeometryReader { geo in
-                    Color.clear
-                        .frame(width: geo.size.width * 0.2)
-                        .contentShape(Rectangle())
-                        .simultaneousGesture(
-                            DragGesture(minimumDistance: 30, coordinateSpace: .local)
-                                .onChanged { value in
-                                    if !isHorizontalDrag && !isSwiping {
-                                        guard abs(value.translation.width) > abs(value.translation.height) else { return }
-                                        isHorizontalDrag = true
-                                    }
-                                    guard isHorizontalDrag, value.translation.width < 0 else { return }
-                                    
-                                    if !isSwiping {
-                                        isSwiping = true
-                                        dragOriginX = value.translation.width  // snapshot where we actually started
-                                    }
-                                    
-                                    let origin = dragOriginX ?? value.translation.width
-                                    let adjusted = max(-(value.translation.width - origin), 0)
-                                    let raw = adjusted / dragSensitivity
-                                    let clamped = min(raw, CGFloat(panels.count - 1))
-                                    dragProgress = applyStickiness(clamped)
-                                    
-                                    let currentIndex = Int(dragProgress)
-                                    if currentIndex != lastHapticIndex {
-                                        haptic.impactOccurred(intensity: 1.0)
-                                        lastHapticIndex = currentIndex
-                                    }
-                                }
-                                .onEnded { _ in
-                                    dragOriginX = nil
-                                    isHorizontalDrag = false
-                                    lastHapticIndex = -1
-                                    withAnimation(.spring(duration: 0.45, bounce: 0.2)) {
-                                        dragProgress = 0
-                                        isSwiping = false
-                                    }
-                                }
-                        )
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                }
             }
+            // Swipe is driven from the right-20% of the row. The gesture lives on the
+            // row content itself (instead of an overlaid, hit-testable zone) so that taps
+            // on trailing elements like the timestamp still reach their own tap gestures.
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 30, coordinateSpace: .local)
+                    .onChanged { value in
+                        if !isHorizontalDrag && !isSwiping {
+                            guard value.startLocation.x > rowWidth * 0.8 else { return }
+                            guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                            isHorizontalDrag = true
+                        }
+                        guard isHorizontalDrag, value.translation.width < 0 else { return }
+
+                        if !isSwiping {
+                            isSwiping = true
+                            dragOriginX = value.translation.width  // snapshot where we actually started
+                        }
+
+                        let origin = dragOriginX ?? value.translation.width
+                        let adjusted = max(-(value.translation.width - origin), 0)
+                        let raw = adjusted / dragSensitivity
+                        let clamped = min(raw, CGFloat(panels.count - 1))
+                        dragProgress = applyStickiness(clamped)
+
+                        let currentIndex = Int(dragProgress)
+                        if currentIndex != lastHapticIndex {
+                            haptic.impactOccurred(intensity: 1.0)
+                            lastHapticIndex = currentIndex
+                        }
+                    }
+                    .onEnded { _ in
+                        dragOriginX = nil
+                        isHorizontalDrag = false
+                        lastHapticIndex = -1
+                        withAnimation(.spring(duration: 0.45, bounce: 0.2)) {
+                            dragProgress = 0
+                            isSwiping = false
+                        }
+                    }
+            )
         }
     }
 }
