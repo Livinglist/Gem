@@ -7,7 +7,7 @@
 A [Hacker News](https://news.ycombinator.com/) client built with SwiftUI.
 
 
-[![Publish (iOS)](https://github.com/Livinglist/Gem/actions/workflows/publish_ios.yml/badge.svg?branch=main)](https://github.com/Livinglist/Gem/actions/workflows/publish_ios.yml) <img src="https://img.shields.io/itunes/v/6762153947?label=App%20Store&logo=appstore"> <img src="https://img.shields.io/github/stars/livinglist/gem">
+[![Publish (iOS)](https://github.com/Livinglist/Gem/actions/workflows/publish_ios.yml/badge.svg?branch=main)](https://github.com/Livinglist/Gem/actions/workflows/publish_ios.yml) <img src="https://img.shields.io/itunes/v/6762153947?label=App%20Store&logo=appstore"> <img src="https://img.shields.io/github/release/livinglist/gem.svg?logo=github"> <img src="https://img.shields.io/github/stars/livinglist/gem">
 
 [<img src="Resources/app_store_badge.png" height="50">](https://apps.apple.com/us/app/gem/id6762153947?platform=iphone) 
 
