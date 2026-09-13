@@ -11,6 +11,24 @@ public enum FetchError: Error {
     case generic(Error)
 }
 
+extension DateFormatter {
+    static let dateFormatterWithMicroseconds: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = .gmt
+        return formatter
+    }()
+    
+    static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = .gmt
+        return formatter
+    }()
+}
+
 extension StoryRepository {
     public func fetchCommentsRecursively(of item: any Item, from source: CommentSource) async throws -> [Comment] {
         var comments = [Comment]()
@@ -99,11 +117,7 @@ extension StoryRepository {
         let itemId = item.id;
         let descendants = item is Story ? item.descendants : item.kids?.count;
         var parentTextCount = 0
-        let dateFormatter : DateFormatter = DateFormatter()
         let locale = Locale(identifier: "en_US_POSIX")
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
-        dateFormatter.timeZone = .gmt
-        dateFormatter.locale = locale
 
         func fetchElements(page: Int) async throws -> Elements {
             do {
@@ -177,7 +191,8 @@ extension StoryRepository {
                 /// Get comment age.
                 guard let cmtAgeElements = try? element.select(Self.commentAgeSelector) else { continue }
                 guard let ageString = try? cmtAgeElements.attr("title").components(separatedBy: .whitespaces).first else { continue }
-                guard let timestamp = dateFormatter.date(from: ageString)?.timeIntervalSince1970 else { continue }
+                guard let date = DateFormatter.dateFormatter.date(from: ageString) ?? DateFormatter.dateFormatterWithMicroseconds.date(from: ageString) else { continue }
+                let timestamp = date.timeIntervalSince1970
 
                 /// Get comment indent.
                 guard let cmtIndentElements = try? element.select(Self.commentIndentSelector) else { continue }
