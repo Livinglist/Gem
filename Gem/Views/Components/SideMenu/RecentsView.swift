@@ -32,6 +32,5 @@ struct RecentsView: View {
                     }
             }
         }
-        .padding(.bottom, 100)
     }
 }

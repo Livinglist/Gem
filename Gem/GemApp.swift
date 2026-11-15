@@ -20,7 +20,6 @@ struct GemApp: App {
                 Color(.secondarySystemBackground)
                     .ignoresSafeArea()
                 Home()
-                    .ignoresSafeArea()
                 if offlineRepository.isOfflineReading {
                     VStack {
                         Spacer()

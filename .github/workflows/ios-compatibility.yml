@@ -1,0 +1,65 @@
+name: iOS compatibility
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - Gem/**
+      - Gem.xcodeproj/**
+      - HomeWidget/**
+      - ActionExtension/**
+      - ShareExtension/**
+      - Packages/**
+      - .github/workflows/ios-compatibility.yml
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  simulator-build:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [Debug, Release]
+    env:
+      CONFIGURATION: ${{ matrix.configuration }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Build universal simulator app
+        run: |
+          xcodebuild build \
+            -project Gem.xcodeproj \
+            -scheme Gem \
+            -configuration "$CONFIGURATION" \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/GemDerivedData" \
+            CODE_SIGNING_ALLOWED=NO
+      - name: Verify built device and orientation support
+        run: |
+          python3 - <<'PY'
+          import os
+          import plistlib
+          from pathlib import Path
+
+          app = (Path(os.environ['RUNNER_TEMP']) / 'GemDerivedData' / 'Build' /
+                 'Products' / (os.environ['CONFIGURATION'] + '-iphonesimulator') / 'Gem.app')
+          with (app / 'Info.plist').open('rb') as source:
+              info = plistlib.load(source)
+          assert set(info['UIDeviceFamily']) == {1, 2}, 'App must support iPhone and iPad'
+          assert not info.get('UIRequiresFullScreen', False), 'Window resizing must be allowed'
+          orientations = {
+              'UIInterfaceOrientationPortrait',
+              'UIInterfaceOrientationLandscapeLeft',
+              'UIInterfaceOrientationLandscapeRight',
+          }
+          assert orientations <= set(info['UISupportedInterfaceOrientations'])
+          assert orientations | {'UIInterfaceOrientationPortraitUpsideDown'} <= set(
+              info['UISupportedInterfaceOrientations~ipad'])
+          print('Built app supports iPhone, iPad, rotation, and resizable windows.')
+          PY
