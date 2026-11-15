@@ -3,33 +3,30 @@ import HackerNewsKit
 
 struct ShareMenu: View {
     let item: any Item
-    
+
     @ViewBuilder
     var shareLabel: some View {
         Label("Share", systemImage: "square.and.arrow.up")
     }
-    
+
     var body: some View {
-        if item.url.orEmpty.isEmpty {
-            Button {
-                showShareSheet(url: item.itemUrl)
-            } label: {
-                shareLabel
-            }
-        } else {
-            Menu {
-                Button {
-                    showShareSheet(url: item.url.orEmpty)
+        if let itemURL = URL(string: item.itemUrl) {
+            if let url = item.url, !url.isEmpty,
+               let storyURL = URL(string: url), storyURL.scheme != nil {
+                Menu {
+                    ShareLink(item: storyURL) {
+                        Text("Link to story")
+                    }
+                    ShareLink(item: itemURL) {
+                        Text("Link to HN")
+                    }
                 } label: {
-                    Text("Link to story")
+                    shareLabel
                 }
-                Button {
-                    showShareSheet(url: item.itemUrl)
-                } label: {
-                    Text("Link to HN")
+            } else {
+                ShareLink(item: itemURL) {
+                    shareLabel
                 }
-            } label: {
-                shareLabel
             }
         }
     }

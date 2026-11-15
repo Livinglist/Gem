@@ -17,10 +17,9 @@ struct GemApp: App {
     var body: some Scene {
         WindowGroup {
             ZStack {
-                Color(.secondarySystemBackground)
+                Color(.systemBackground)
                     .ignoresSafeArea()
                 Home()
-                    .ignoresSafeArea()
                 if offlineRepository.isOfflineReading {
                     VStack {
                         Spacer()

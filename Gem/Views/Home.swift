@@ -8,243 +8,87 @@ struct Home: View {
     @Environment(AuthenticationManager.self) var auth
     @Environment(\.requestReview) private var requestReview
     @Bindable private var router: Router = .shared
-    
+
     @State private var isUrlSheetPresented: Bool = .init()
     @State private var isAbortDownloadAlertPresented: Bool = .init()
     @State private var actionPerformed: Action = .none
     @State private var showSlideOutMenu: Bool = false
-    @State private var dragOffset: Double = 0
+    @State private var isSidebarVisible = true
+    @State private var dragOffset: CGFloat = 0
+    @State private var isMenuDragCancelled = false
+    @GestureState private var isMenuDragging = false
     @State private var selectedMenuItem: MenuItem = .home
     @State private var url: IdentifiableURL? = nil
     private var storyVM: StoryViewModel = .shared
     private var offlineRepository: OfflineRepository = .shared
-    
+
     private let settings: SettingsViewModel = .shared
     private let appStoreReviewReuqestTrigger = 10
-    private let menuWidth: CGFloat = 300
-    
-    var sideMenuScale: CGFloat {
-        let baseScaleFactor = 0.95
-        let maxScaleFactor = 1.0
-        if dragOffset == 0 {
-            return showSlideOutMenu ? maxScaleFactor : baseScaleFactor
-        }
-        let scaleFactor = baseScaleFactor + (0.1 * progress)
-        return scaleFactor.clamped(to: baseScaleFactor...maxScaleFactor)
-    }
-    
-    var progress: Double {
-        if dragOffset == 0 {
-            return showSlideOutMenu ? 1 : 0
-        } else if dragOffset > 0 {
-            return abs(dragOffset) / menuWidth
-        } else {
-            return (menuWidth + dragOffset) / menuWidth
-        }
-    }
-    
-    var mainContentDimOpacity: CGFloat {
-        let maxOpacity = 0.1
-        if dragOffset == 0 {
-            return showSlideOutMenu ? maxOpacity : 0
-        }
-        let opacity = maxOpacity * progress
-        return opacity
-    }
-    
-    var mainContentDimOverlay: some View {
-        Color.black.opacity(mainContentDimOpacity)
-            .ignoresSafeArea()
-            .clipShape(RoundedRectangle(cornerRadius: 47, style: .continuous))
-            .onTapGesture {
-                UIImpactFeedbackGenerator(style: .soft).impactOccurred()
-                withAnimation(.bouncy.speed(300)) {
-                    showSlideOutMenu = false
-                }
-            }
-            .allowsHitTesting(showSlideOutMenu)
-    }
-    
-    var sideMenuDimOpacity: CGFloat {
-        let maxOpacity = 0.3
-        if dragOffset == 0 {
-            return showSlideOutMenu ? 0 : maxOpacity
-        }
-        let opacity = maxOpacity * (1.0 - progress)
-        return opacity
-    }
-    
-    var sideMenuDimOverlay: some View {
-        Color.black.opacity(sideMenuDimOpacity)
-            .ignoresSafeArea()
-            .allowsHitTesting(!showSlideOutMenu)
-    }
-    
+
     var body: some View {
-        ZStack(alignment: .leading) {
-            // Side Menu
-            ZStack {
-                SideMenu(menuWidth: menuWidth, onDismiss: { selectedItem in
-                    withAnimation(.bouncy.speed(300))  {
-                        showSlideOutMenu = false
-                    }
-                    
-                    if let selectedItem {
-                        withAnimation(.snappy.speed(200)) {
-                            selectedMenuItem = selectedItem
-                        }
-                    }
-                })
-                .scaleEffect(sideMenuScale, anchor: .center)
-                .overlay {
-                    sideMenuDimOverlay
-                }
-            }
-            .frame(width: menuWidth + 60, alignment: .leading)
-            .background(Color(.secondarySystemBackground))
-            .edgesIgnoringSafeArea(.vertical)
-            
+        GeometryReader { geometry in
+            // Use the current window, so rotation, multitasking, and folding all
+            // adapt without replacing the NavigationStack or its destination state.
+            let menuWidth = min(CGFloat(300), max(0, geometry.size.width - 60))
+            // Leave 400 points for content beside the 300-point sidebar,
+            // including on iPad mini in portrait.
+            let supportsSidebar = geometry.size.width >= 700
+            let hasSidebar = supportsSidebar && isSidebarVisible
+            let offset = supportsSidebar ? 0 : (showSlideOutMenu ? menuWidth : 0) + dragOffset
+            let progress = menuWidth > 0 ? (offset / menuWidth).clamped(to: 0...1) : 0
+
             ZStack(alignment: .leading) {
-                NavigationStack(path: $router.path) {
-                    ZStack {
-                        switch selectedMenuItem {
-                        case .home: Stories()
-                        case .pinned: Pins()
-                        case .favorites: Favorites()
-                        case .replies: Replies()
-                        case .search: Search()
+                SideMenu(menuWidth: menuWidth, selectedMenuItem: $selectedMenuItem) { selectedItem in
+                    withAnimation(.snappy(duration: 0.25)) {
+                        showSlideOutMenu = false
+                        dragOffset = 0
+                        if let selectedItem {
+                            selectedMenuItem = selectedItem
+                            router.path = NavigationPath()
                         }
                     }
-                    .toolbar {
-                        ToolbarItem(placement: .topBarLeading) {
-                            Button {
-                                withAnimation(.bouncy.speed(300)) {
-                                    showSlideOutMenu = !showSlideOutMenu
-                                }
-                            } label: {
-                                Label("Side menu", systemImage: "book.pages")
-                                    .labelStyle(.iconOnly)
-                                    .foregroundStyle(.foreground)
-                                    .glassEffect()
-                            }
-                        }
-                        if selectedMenuItem == .home {
-                            if offlineRepository.isDownloading {
-                                ToolbarItem(placement: .topBarTrailing) {
-                                    Text("\(offlineRepository.completionCount)")
-                                        .contentTransition(.numericText())
-                                }
-                            }
-                            ToolbarItem(placement: .topBarTrailing) {
-                                DownloadMenu(storyViewModel: storyVM,
-                                             offlineRepository: offlineRepository,
-                                             isAbortDownloadAlertPresented: $isAbortDownloadAlertPresented)
-                            }
-                        }
-                    }
-                    .toolbarTitleDisplayMode(.inline)
-                    .withToast(actionPerformed: $actionPerformed)
-                    .alert("Abort Download", isPresented: $isAbortDownloadAlertPresented) {
-                        Button {
-                            offlineRepository.abortDownload()
-                        } label: {
-                            Text("Confirm")
-                        }
-                        Button(role: .cancel) {
-                            offlineRepository.abortDownload()
-                        } label: {
-                            Text("Confirm")
-                        }
-                    }
-                    .sheet(item: $url) { url in
-                        SafariView(url: url.url)
-                    }
-                    .onOpenURL(perform: { url in
-                        if let id = url.absoluteString.itemId {
-                            Task {
-                                let story = await StoryRepository.shared.fetchStory(id)
-                                guard let story = story else { return }
-                                router.to(story)
-                            }
-                        }
-                    })
-                    .onChange(of: offlineRepository.isOfflineReading) {
-                        Task {
-                            await storyVM.fetchStories()
-                        }
-                    }
-                    .environment(\.openURL, OpenURLAction { url in
-                        if let id = url.absoluteString.itemId {
-                            Task {
-                                let item = await StoryRepository.shared.fetchItem(id)
-                                guard let item = item else {
-                                    self.url = IdentifiableURL(url: url)
-                                    return
-                                }
-                                
-                                router.to(item)
-                            }
-                            return .handled
-                        } else {
-                            self.url = IdentifiableURL(url: url)
-                            return .handled
-                        }
-                    })
-                    .navigationDestination(for: Comment.self) { cmt in
-                        Thread(item: cmt, level: 0)
-                    }
-                    .navigationDestination(for: Story.self) { story in
-                        Thread(item: story, level: 0)
-                    }
-                    .navigationDestination(for: Destination.self) { val in val.toView() }
                 }
-                .clipShape(RoundedRectangle(cornerRadius: 47, style: .continuous))
-                .overlay {
-                    mainContentDimOverlay
+                .opacity(hasSidebar ? 1 : progress)
+                .allowsHitTesting(hasSidebar || showSlideOutMenu)
+                .accessibilityHidden(!hasSidebar && !showSlideOutMenu)
+
+                // Native navigation backgrounds extend into the container safe areas.
+                // Clipping this stack would crop them and expose strips above/below it.
+                mainContent(supportsSidebar: supportsSidebar)
+                    .overlay {
+                        if !supportsSidebar && progress > 0 {
+                            Color.black.opacity(0.1 * progress)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    withAnimation(.snappy(duration: 0.25)) {
+                                        showSlideOutMenu = false
+                                        dragOffset = 0
+                                    }
+                                }
+                                .accessibilityLabel("Close side menu")
+                                .accessibilityAddTraits(.isButton)
+                        }
+                    }
+                    .offset(x: offset)
+                    .padding(.leading, hasSidebar ? menuWidth : 0)
+            }
+            .simultaneousGesture(
+                menuDragGesture(menuWidth: menuWidth),
+                isEnabled: !supportsSidebar && (showSlideOutMenu || router.path.isEmpty)
+            )
+            .onChange(of: geometry.size) { _, _ in
+                // A drag begun at the old width must not displace the resized window.
+                isMenuDragCancelled = isMenuDragging
+                dragOffset = 0
+                showSlideOutMenu = false
+            }
+            .onChange(of: isMenuDragging) { _, isDragging in
+                if !isDragging {
+                    isMenuDragCancelled = false
+                    dragOffset = 0
                 }
             }
-            .id("mainView")
-            .offset(x: dragOffset == 0 ? (showSlideOutMenu ? menuWidth : 0) : (dragOffset > 0 ? dragOffset : menuWidth + dragOffset))
-            .shadow(radius: 5)
         }
-        .simultaneousGesture(
-            DragGesture()
-                .onChanged { value in
-                    let translation = value.translation.width
-                    let vector = CGVector(dx: value.location.x - value.startLocation.x, dy: value.location.y - value.startLocation.y)
-                    let radians = atan2(vector.dy, vector.dx)
-                    let angle = radians * 180 / .pi
-                    guard dragOffset != 0 || ( -10...10 ~= angle || 160...180 ~= angle) else { return }
-                    
-                    // If menu is closed, only allow dragging from the left edge (positive)
-                    // If menu is open, only allow dragging to the left (negative)
-                    if !showSlideOutMenu && translation > 0 {
-                        dragOffset = translation
-                    } else if showSlideOutMenu && translation < 0 {
-                        dragOffset = translation
-                    }
-                }
-                .onEnded { value in
-                    let vector = CGVector(dx: value.location.x - value.startLocation.x, dy: value.location.y - value.startLocation.y)
-                    let radians = atan2(vector.dy, vector.dx)
-                    let angle = radians * 180 / .pi
-                    guard dragOffset != 0 || (-10...10 ~= angle || 160...180 ~= angle) else {
-                        withAnimation {
-                            dragOffset = 0
-                        }
-                        return
-                    }
-                    
-                    withAnimation(.bouncy.speed(300)) {
-                        // Threshold: if dragged more than 1/4 of the width, toggle state
-                        if abs(value.translation.width) > menuWidth / 4 {
-                            showSlideOutMenu = value.translation.width > 0
-                        }
-                        dragOffset = 0 // Always reset temporary offset
-                    }
-                },
-            isEnabled: showSlideOutMenu || router.path.isEmpty
-        )
         .sensoryFeedback(.impact(flexibility: .solid), trigger: showSlideOutMenu)
         .task(priority: .background) {
             try? await Task.sleep(until: .now + .seconds(2))
@@ -255,6 +99,153 @@ struct Home: View {
                 settings.appOpenCounter = appStoreReviewReuqestTrigger + 1
             } else if appOpenCounter < appStoreReviewReuqestTrigger {
                 settings.appOpenCounter = appOpenCounter + 1
+            }
+        }
+    }
+
+    private func menuDragGesture(menuWidth: CGFloat) -> some Gesture {
+        DragGesture()
+            .updating($isMenuDragging) { _, isDragging, _ in
+                isDragging = true
+            }
+            .onChanged { value in
+                guard !isMenuDragCancelled else { return }
+                let translation = value.translation
+                guard abs(translation.width) > abs(translation.height) else { return }
+                guard showSlideOutMenu || value.startLocation.x <= 40 else { return }
+
+                if showSlideOutMenu {
+                    dragOffset = translation.width.clamped(to: -menuWidth...0)
+                } else {
+                    dragOffset = translation.width.clamped(to: 0...menuWidth)
+                }
+            }
+            .onEnded { value in
+                guard !isMenuDragCancelled else { return }
+                withAnimation(.snappy(duration: 0.25)) {
+                    if abs(dragOffset) > menuWidth / 4 {
+                        showSlideOutMenu = value.translation.width > 0
+                    }
+                    dragOffset = 0
+                }
+            }
+    }
+
+    private func mainContent(supportsSidebar: Bool) -> some View {
+        NavigationStack(path: $router.path) {
+            ZStack {
+                switch selectedMenuItem {
+                case .home: Stories()
+                case .pinned: Pins()
+                case .favorites: Favorites()
+                case .replies: Replies()
+                case .search: Search()
+                }
+            }
+            .toolbar {
+                sidebarToggle(supportsSidebar: supportsSidebar)
+                if selectedMenuItem == .home {
+                    if offlineRepository.isDownloading {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Text("\(offlineRepository.completionCount)")
+                                .contentTransition(.numericText())
+                        }
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        DownloadMenu(storyViewModel: storyVM,
+                                     offlineRepository: offlineRepository,
+                                     isAbortDownloadAlertPresented: $isAbortDownloadAlertPresented)
+                    }
+                }
+            }
+            .toolbarTitleDisplayMode(.inline)
+            .withToast(actionPerformed: $actionPerformed)
+            .alert("Abort Download", isPresented: $isAbortDownloadAlertPresented) {
+                Button {
+                    offlineRepository.abortDownload()
+                } label: {
+                    Text("Confirm")
+                }
+                Button(role: .cancel) {
+                    offlineRepository.abortDownload()
+                } label: {
+                    Text("Confirm")
+                }
+            }
+            .sheet(item: $url) { url in
+                SafariView(url: url.url)
+            }
+            .onOpenURL(perform: { url in
+                if let id = url.absoluteString.itemId {
+                    Task {
+                        let story = await StoryRepository.shared.fetchStory(id)
+                        guard let story = story else { return }
+                        router.to(story)
+                    }
+                }
+            })
+            .onChange(of: offlineRepository.isOfflineReading) {
+                Task {
+                    await storyVM.fetchStories()
+                }
+            }
+            .environment(\.openURL, OpenURLAction { url in
+                if let id = url.absoluteString.itemId {
+                    Task {
+                        let item = await StoryRepository.shared.fetchItem(id)
+                        guard let item = item else {
+                            self.url = IdentifiableURL(url: url)
+                            return
+                        }
+
+                        router.to(item)
+                    }
+                    return .handled
+                } else {
+                    self.url = IdentifiableURL(url: url)
+                    return .handled
+                }
+            })
+            .navigationDestination(for: Comment.self) { cmt in
+                Thread(item: cmt, level: 0)
+                    .toolbar {
+                        if supportsSidebar { sidebarToggle(supportsSidebar: true) }
+                    }
+            }
+            .navigationDestination(for: Story.self) { story in
+                Thread(item: story, level: 0)
+                    .toolbar {
+                        if supportsSidebar { sidebarToggle(supportsSidebar: true) }
+                    }
+            }
+            .navigationDestination(for: Destination.self) { val in
+                val.toView()
+                    .toolbar {
+                        if supportsSidebar { sidebarToggle(supportsSidebar: true) }
+                    }
+            }
+        }
+    }
+
+    private func sidebarToggle(supportsSidebar: Bool) -> some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button {
+                withAnimation(.snappy(duration: 0.25)) {
+                    dragOffset = 0
+                    if supportsSidebar {
+                        isSidebarVisible.toggle()
+                    } else {
+                        showSlideOutMenu.toggle()
+                    }
+                }
+            } label: {
+                Label(
+                    supportsSidebar ? (isSidebarVisible ? "Hide sidebar" : "Show sidebar") : "Side menu",
+                    systemImage: supportsSidebar ? "sidebar.left" : "book.pages"
+                )
+                .labelStyle(.iconOnly)
+                .foregroundStyle(.foreground)
+                .glassEffect()
             }
         }
     }

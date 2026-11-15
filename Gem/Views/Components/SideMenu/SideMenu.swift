@@ -3,17 +3,17 @@ import SwiftUI
 struct MenuRow: View {
     let icon: String
     let title: String
-    
+
     var body: some View {
         HStack(spacing: 15) {
             Image(systemName: icon)
                 .font(.system(size: 18))
                 .foregroundColor(.secondary)
                 .frame(width: 24)
-            
+
             Text(title)
                 .font(.body)
-            
+
             Spacer()
         }
         .contentShape(Rectangle())
@@ -22,7 +22,7 @@ struct MenuRow: View {
 
 enum MenuItem: String, Hashable, Sendable, CaseIterable {
     case home = "house", pinned = "pin", favorites = "heart.rectangle", replies = "bell.badge", search = "magnifyingglass"
-    
+
     var label: String {
         switch self {
         case .home: "Home"
@@ -37,27 +37,27 @@ enum MenuItem: String, Hashable, Sendable, CaseIterable {
 struct SideMenu: View {
     @Environment(AuthenticationManager.self) var auth
     @Environment(\.colorScheme) var colorScheme
-    
+
     let menuWidth: CGFloat
+    @Binding var selectedMenuItem: MenuItem
     let onDismiss: (MenuItem?) -> Void
-    
-    @State private var selectedMenuItem: MenuItem = .home
+
     @State private var username: String = .init()
     @State private var password: String = .init()
     @State private var isEulaDialogPresented: Bool = .init()
     @State private var isLoginDialogPresented: Bool = .init()
     @State private var isSettingsPresented: Bool = .init()
     @State private var actionPerformed: Action = .none
-    
+
     @Namespace private var namespace
-    
+
     struct MenuButton: View {
         @Binding var selectedMenuItem: MenuItem
-        
+
         let menuItem: MenuItem
         let namespace: Namespace.ID
         let onTap: () -> Void
-        
+
         var body: some View {
             Button {
                 withAnimation {
@@ -76,47 +76,52 @@ struct SideMenu: View {
             }
         }
     }
-    
+
     var body: some View {
-        ZStack(alignment: .bottomLeading) {
-            VStack(alignment: .leading, spacing: 0) {
-                ScrollView {
-                    GlassEffectContainer {
-                        VStack(alignment: .leading, spacing: 0) {
-                            ForEach(MenuItem.allCases, id: \.self) { menuItem in
-                                MenuButton(selectedMenuItem: $selectedMenuItem, menuItem: menuItem, namespace: namespace) {
-                                    onDismiss(menuItem)
-                                }
-                                .id(menuItem)
-                            }
-                        }
-                        .padding(.horizontal)
-                        .padding(.top, 120)
-                    }
-                    
-                    RecentsView(onDismiss: onDismiss)
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .scrollIndicators(.hidden)
-                
-                Spacer()
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 6) {
+                Text("Gem")
+                    .font(.system(size: 24, weight: .semibold, design: .serif))
+                Image("GemIcon")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .if(colorScheme == .light) { $0.colorInvert() }
             }
-            
+            .padding()
+            .accessibilityElement(children: .combine)
+
+            ScrollView {
+                GlassEffectContainer {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(MenuItem.allCases, id: \.self) { menuItem in
+                            MenuButton(selectedMenuItem: $selectedMenuItem, menuItem: menuItem, namespace: namespace) {
+                                onDismiss(menuItem)
+                            }
+                            .id(menuItem)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+
+                RecentsView(onDismiss: onDismiss)
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .scrollIndicators(.hidden)
+
             HStack {
                 AuthButton(isLoginDialogPresented: $isLoginDialogPresented)
-                    .ignoresSafeArea()
-                
-                Spacer()
-                
+
+                Spacer(minLength: 0)
+
                 Button {
                     isSettingsPresented = true
                 } label: {
                     Label("Settings", systemImage: "gearshape")
                         .labelStyle(.iconOnly)
                         .foregroundStyle(.foreground)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 6)
+                        .padding(6)
                         .frame(width: 48, height: 48)
                 }
                 .sensoryFeedback(.impact(flexibility: .soft), trigger: isSettingsPresented)
@@ -126,54 +131,10 @@ struct SideMenu: View {
                 .padding(.leading, 12)
             }
             .padding()
-            .padding(.bottom, 12)
-            
-            VStack(alignment: .leading, spacing: 0) {
-                Color(.secondarySystemBackground)
-                    .opacity(0.9)
-                    .frame(width: menuWidth, height: 100)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .blur(radius: 16)
-                Spacer()
-            }
-            
-            VStack(alignment: .leading, spacing: 0) {
-                Text("Gem")
-                    .font(.system(size: 24, weight: .semibold, design: .serif))
-                    .padding(.horizontal)
-                    .padding(.top, 70)
-                    .foregroundStyle(.accent.opacity(0.3))
-                Spacer()
-            }
-            .blur(radius: 2)
-            
-            VStack(alignment: .leading, spacing: 0) {
-                HStack(spacing: 6) {
-                    Text("Gem")
-                        .font(.system(size: 24, weight: .semibold, design: .serif))
-                        .padding(.leading)
-                        .padding(.top, 70)
-                    if colorScheme == .dark {
-                        Image("GemIcon")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
-                            .padding(.top, 70)
-                    } else {
-                        Image("GemIcon")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
-                            .padding(.top, 70)
-                            .colorInvert()
-                    }
-                }
-                Spacer()
-            }
         }
         .frame(width: menuWidth, alignment: .leading)
+        .frame(maxHeight: .infinity)
         .background(Color(.secondarySystemBackground))
-        .edgesIgnoringSafeArea(.vertical)
         .alert("Login", isPresented: $isLoginDialogPresented, actions: {
             TextField("Username", text: $username)
                 .autocorrectionDisabled(true)
@@ -209,7 +170,7 @@ struct SideMenu: View {
                     WebView(url: url)
                         .ignoresSafeArea()
                 }
-                
+
                 VStack {
                     Text("By signing in, you are agreeing to the Hacker News Guidelines.")
                         .multilineTextAlignment(.center)
@@ -229,21 +190,21 @@ struct SideMenu: View {
                         .buttonStyle(.glass)
                         .frame(maxWidth: .infinity)
                         .padding(.bottom)
-                        
+
                         Spacer()
-                        
+
                         Button {
                             HapticFeedbackService.shared.ultralight()
                             self.isEulaDialogPresented = false
-                            
+
                             guard username.isNotEmpty && password.isNotEmpty else {
                                 HapticFeedbackService.shared.error()
                                 return
                             }
-                            
+
                             Task {
                                 let res = await auth.logIn(username: username, password: password, shouldRememberMe: true)
-                                
+
                                 if res {
                                     actionPerformed = .login
                                 } else {
