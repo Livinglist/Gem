@@ -13,6 +13,7 @@ struct Home: View {
     @State private var isAbortDownloadAlertPresented: Bool = .init()
     @State private var actionPerformed: Action = .none
     @State private var showSlideOutMenu: Bool = false
+    @State private var isSidebarVisible = true
     @State private var dragOffset: CGFloat = 0
     @State private var isMenuDragCancelled = false
     @GestureState private var isMenuDragging = false
@@ -29,8 +30,11 @@ struct Home: View {
             // Use the current window, so rotation, multitasking, and folding all
             // adapt without replacing the NavigationStack or its destination state.
             let menuWidth = min(CGFloat(300), max(0, geometry.size.width - 60))
-            let hasSidebar = geometry.size.width >= 800
-            let offset = hasSidebar ? 0 : (showSlideOutMenu ? menuWidth : 0) + dragOffset
+            // Leave 400 points for content beside the 300-point sidebar,
+            // including on iPad mini in portrait.
+            let supportsSidebar = geometry.size.width >= 700
+            let hasSidebar = supportsSidebar && isSidebarVisible
+            let offset = supportsSidebar ? 0 : (showSlideOutMenu ? menuWidth : 0) + dragOffset
             let progress = menuWidth > 0 ? (offset / menuWidth).clamped(to: 0...1) : 0
 
             ZStack(alignment: .leading) {
@@ -48,10 +52,11 @@ struct Home: View {
                 .allowsHitTesting(hasSidebar || showSlideOutMenu)
                 .accessibilityHidden(!hasSidebar && !showSlideOutMenu)
 
-                mainContent(hasSidebar: hasSidebar)
-                    .clipShape(RoundedRectangle(cornerRadius: hasSidebar ? 0 : 24 * progress))
+                // Native navigation backgrounds extend into the container safe areas.
+                // Clipping this stack would crop them and expose strips above/below it.
+                mainContent(supportsSidebar: supportsSidebar)
                     .overlay {
-                        if !hasSidebar && progress > 0 {
+                        if !supportsSidebar && progress > 0 {
                             Color.black.opacity(0.1 * progress)
                                 .contentShape(Rectangle())
                                 .onTapGesture {
@@ -69,7 +74,7 @@ struct Home: View {
             }
             .simultaneousGesture(
                 menuDragGesture(menuWidth: menuWidth),
-                isEnabled: !hasSidebar && (showSlideOutMenu || router.path.isEmpty)
+                isEnabled: !supportsSidebar && (showSlideOutMenu || router.path.isEmpty)
             )
             .onChange(of: geometry.size) { _, _ in
                 // A drag begun at the old width must not displace the resized window.
@@ -126,7 +131,7 @@ struct Home: View {
             }
     }
 
-    private func mainContent(hasSidebar: Bool) -> some View {
+    private func mainContent(supportsSidebar: Bool) -> some View {
         NavigationStack(path: $router.path) {
             ZStack {
                 switch selectedMenuItem {
@@ -138,20 +143,7 @@ struct Home: View {
                 }
             }
             .toolbar {
-                if !hasSidebar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button {
-                            withAnimation(.snappy(duration: 0.25)) {
-                                showSlideOutMenu = !showSlideOutMenu
-                            }
-                        } label: {
-                            Label("Side menu", systemImage: "book.pages")
-                                .labelStyle(.iconOnly)
-                                .foregroundStyle(.foreground)
-                                .glassEffect()
-                        }
-                    }
-                }
+                sidebarToggle(supportsSidebar: supportsSidebar)
                 if selectedMenuItem == .home {
                     if offlineRepository.isDownloading {
                         ToolbarItem(placement: .topBarTrailing) {
@@ -216,11 +208,45 @@ struct Home: View {
             })
             .navigationDestination(for: Comment.self) { cmt in
                 Thread(item: cmt, level: 0)
+                    .toolbar {
+                        if supportsSidebar { sidebarToggle(supportsSidebar: true) }
+                    }
             }
             .navigationDestination(for: Story.self) { story in
                 Thread(item: story, level: 0)
+                    .toolbar {
+                        if supportsSidebar { sidebarToggle(supportsSidebar: true) }
+                    }
             }
-            .navigationDestination(for: Destination.self) { val in val.toView() }
+            .navigationDestination(for: Destination.self) { val in
+                val.toView()
+                    .toolbar {
+                        if supportsSidebar { sidebarToggle(supportsSidebar: true) }
+                    }
+            }
+        }
+    }
+
+    private func sidebarToggle(supportsSidebar: Bool) -> some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button {
+                withAnimation(.snappy(duration: 0.25)) {
+                    dragOffset = 0
+                    if supportsSidebar {
+                        isSidebarVisible.toggle()
+                    } else {
+                        showSlideOutMenu.toggle()
+                    }
+                }
+            } label: {
+                Label(
+                    supportsSidebar ? (isSidebarVisible ? "Hide sidebar" : "Show sidebar") : "Side menu",
+                    systemImage: supportsSidebar ? "sidebar.left" : "book.pages"
+                )
+                .labelStyle(.iconOnly)
+                .foregroundStyle(.foreground)
+                .glassEffect()
+            }
         }
     }
 }

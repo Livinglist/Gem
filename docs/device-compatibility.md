@@ -1,10 +1,18 @@
 # Device compatibility checks
 
 Gem targets iPhone and iPad on iOS/iPadOS 26 or later. Layout follows the
-current window width: at 800 points or wider the menu stays visible as a
-300-point sidebar; below that it becomes a drawer. Narrow drawers leave at
-least 60 points of the main view visible. The same navigation stack is used
-at every width.
+current window width: at 700 points or wider the menu can stay visible as a
+300-point sidebar; below that it becomes a drawer. The sidebar is shown by
+default. The leading toolbar button shows or hides it, including while a
+thread is open, and the choice is preserved through window resizing.
+Selecting a section or recent story keeps a visible wide sidebar open.
+Narrow drawers leave at least 60 points of the main view visible. The same
+navigation stack is used at every width.
+
+The navigation stack is not clipped to the safe-area bounds, so its native
+background can extend behind the status bar and home indicator. The app
+uses the system background, while navigation content and sidebar controls
+continue to respect their safe-area insets.
 
 “iPhone Duo” is treated as a resizable/foldable iPhone layout. No model-name
 checks or assumed hardware dimensions are required. Hardware-specific
@@ -27,11 +35,14 @@ or device; the workflow does not exercise the UI.
 | --- | --- |
 | iPhone portrait, including a narrow window | Drawer opens from the menu button or left-edge swipe; rows and footer remain reachable. |
 | iPhone landscape | Content respects the camera cutout and home indicator; header, menu list, and footer fit or scroll. |
-| iPad portrait and landscape | Native full-resolution app; sidebar appears when the usable window width is at least 800 points. |
-| iPad Split View or window resizing | Sidebar changes to a drawer below 800 points; no stale drawer offset remains. |
-| Repeated resizing across 799/800 points with a thread open | The thread, navigation path, and reading position remain intact. |
+| Home in portrait and landscape, light and dark appearance | No contrasting strips above or below the navigation view; content stays clear of the status bar, camera cutout, and home indicator. |
+| iPad portrait and landscape, including iPad mini | Native full-resolution app; sidebar is shown by default when the usable window width is at least 700 points. |
+| Repeatedly press the leading sidebar toolbar button, including with a thread open | Sidebar shows and hides, main content uses the available width, and the thread and navigation path remain intact. |
+| iPad Split View or window resizing | Sidebar changes to a drawer below 700 points; no stale drawer offset remains. |
+| Repeated resizing across 699/700 points with a thread open | The thread, navigation path, and reading position remain intact. |
+| Hide the wide sidebar, resize below 700 points, then widen again; repeat with it shown | The chosen wide-sidebar visibility is restored; compact windows still use the drawer. |
 | Resize or rotate with a drawer gesture in progress | Drawer closes and temporary drag offset resets. |
-| Switch among Home, Pins, Favorites, Replies, and Search | Highlight matches the selected section; switching returns to that section's root. |
+| Switch among Home, Pins, Favorites, Replies, and Search | Highlight matches the selected section; switching returns to that section's root. The wide sidebar stays open after selection. |
 | Open a recent story | Drawer closes and the story opens; on a wide window the sidebar stays visible. |
 | Open Settings, profile, search, reply, or Safari sheets, then resize | Sheet remains usable and dismisses normally. |
 | Share from a story menu or comment context menu | Native share UI opens from the active view; both story and HN links share correctly on iPad. |
